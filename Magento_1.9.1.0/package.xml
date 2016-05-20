@@ -4,7 +4,7 @@
     <version>0.1.0</version>
     <stability>beta</stability>
     <license>GNU General Public License (GPL)</license>
-    <channel>Community</channel>
+    <channel>community</channel>
     <extends/>
     <summary>Qixol Promo</summary>
     <description>Qixol Promo</description>
