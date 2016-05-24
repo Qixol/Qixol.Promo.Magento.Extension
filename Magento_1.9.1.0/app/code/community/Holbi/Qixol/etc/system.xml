@@ -16,7 +16,7 @@
             <show_in_store>1</show_in_store>
             <groups>
               <integraion translate="label">
-                    <label>General / Intagration</label>
+                    <label>General / Integration</label>
                     <sort_order>50</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>0</show_in_website>
@@ -229,7 +229,7 @@
                             <show_in_store>0</show_in_store>
                         </synchship>    
                         <synchcurrency translate="label">
-                            <label>Synchronise Curency Sore List</label>
+                            <label>Synchronise Currency List</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>                            
                             <sort_order>5</sort_order>
