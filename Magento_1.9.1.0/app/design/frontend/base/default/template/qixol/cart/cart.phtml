@@ -145,75 +145,75 @@
             <tbody>
               <?php foreach($this->getItems() as $_item): ?>
 <?php
-//{{qixol start wrap block
-if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')==0&&($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['free_added']>0)){
-             $multiple_coeff=((float)$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['quantity']/(float)$_item->getQty());
-             $_item->setQty((string)$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['quantity']);
-             //$_item->setPrice($_item->getPrice()*$multiple_coeff);
-             //$_item->setBasePrice($_item->getBasePrice()*$multiple_coeff);
-             //$_item->setPriceInclTax($_item->getPriceInclTax()*$multiple_coeff);
-             //$_item->setBasePriceInclTax($_item->getBasePriceInclTax()*$multiple_coeff);
-             //$_item->setBasePriceInclTax($_item->getBasePriceInclTax()*$multiple_coeff);
-             $_item->setRowTotal($_item->getRowTotal()*$multiple_coeff);
-             $_item->setBaseRowTotal($_item->getBaseRowTotal()*$multiple_coeff);
-             $_item->setRowTotalInclTax($_item->getRowTotalInclTax()*$multiple_coeff);
-             $_item->setBaseRowTotalInclTax($_item->getBaseRowTotalInclTax()*$multiple_coeff);
-
-
-             unset($multiple_coeff);
-}
-// }} qixol
+////{{qixol start wrap block
+//if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')==0&&($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['free_added']>0)){
+//             $multiple_coeff=((float)$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['quantity']/(float)$_item->getQty());
+//             $_item->setQty((string)$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['quantity']);
+//             //$_item->setPrice($_item->getPrice()*$multiple_coeff);
+//             //$_item->setBasePrice($_item->getBasePrice()*$multiple_coeff);
+//             //$_item->setPriceInclTax($_item->getPriceInclTax()*$multiple_coeff);
+//             //$_item->setBasePriceInclTax($_item->getBasePriceInclTax()*$multiple_coeff);
+//             //$_item->setBasePriceInclTax($_item->getBasePriceInclTax()*$multiple_coeff);
+//             $_item->setRowTotal($_item->getRowTotal()*$multiple_coeff);
+//             $_item->setBaseRowTotal($_item->getBaseRowTotal()*$multiple_coeff);
+//             $_item->setRowTotalInclTax($_item->getRowTotalInclTax()*$multiple_coeff);
+//             $_item->setBaseRowTotalInclTax($_item->getBaseRowTotalInclTax()*$multiple_coeff);
+//
+//
+//             unset($multiple_coeff);
+//}
+//// }} qixol
 ?>
                   <?php echo $this->getItemHtml($_item) ?>
               <?php endforeach ?>
 <?php
-//{{qixol start wrap block
-
-if (isset($_SESSION['qixol_quoted_items'])){
-foreach ($_SESSION['qixol_quoted_items']['items']  as $idx_cart=>$item_to_show){
-    if ($item_to_show['new']>0&&(int)$item_to_show['data']['isdelivery']==0&&(int)$item_to_show['data']['splitfromlineid']==0){
-          if ($productId=Mage::getModel('catalog/product')->getIdBySku((string)$item_to_show['data']['variantcode']!=''?(string)$item_to_show['data']['variantcode']:(string)$item_to_show['data']['productcode'])){
-
-             $productObj = Mage::getModel('catalog/product')->load($productId);
-             $quoteItem = Mage::getModel('sales/quote_item')->setStoreId(Mage::app()->getStore()->getId())->setProduct($productObj);
-             $quoteItem->setConvertedPrice((string)$item_to_show['data']['price']);
-             $quoteItem->setRowTotal((string)$item_to_show['data']['price']);
-             $quoteItem->setBaseRowTotal((string)$item_to_show['data']['price']);
-             $quoteItem->setQty((string)$item_to_show['data']['quantity']);
-             $quoteItem->setFreeProduct((int)$item_to_show['free_added']);
-             $quoteItem->setQuote($this);
-             $quoteItem->setId($idx_cart);
-             echo $this->getItemHtml($quoteItem);
-          }
-    }
-}
-
-if (isset($_SESSION['qixol_quoted_items']['summary'])){
-foreach ($_SESSION['qixol_quoted_items']['summary']  as $inline_cart_promotion)
-  if($inline_cart_promotion['data']['basketlevel']>0){
+////{{qixol start wrap block
+//
+//if (isset($_SESSION['qixol_quoted_items'])){
+//foreach ($_SESSION['qixol_quoted_items']['items']  as $idx_cart=>$item_to_show){
+//    if ($item_to_show['new']>0&&(int)$item_to_show['data']['isdelivery']==0&&(int)$item_to_show['data']['splitfromlineid']==0){
+//          if ($productId=Mage::getModel('catalog/product')->getIdBySku((string)$item_to_show['data']['variantcode']!=''?(string)$item_to_show['data']['variantcode']:(string)$item_to_show['data']['productcode'])){
+//
+//             $productObj = Mage::getModel('catalog/product')->load($productId);
+//             $quoteItem = Mage::getModel('sales/quote_item')->setStoreId(Mage::app()->getStore()->getId())->setProduct($productObj);
+//             $quoteItem->setConvertedPrice((string)$item_to_show['data']['price']);
+//             $quoteItem->setRowTotal((string)$item_to_show['data']['price']);
+//             $quoteItem->setBaseRowTotal((string)$item_to_show['data']['price']);
+//             $quoteItem->setQty((string)$item_to_show['data']['quantity']);
+//             $quoteItem->setFreeProduct((int)$item_to_show['free_added']);
+//             $quoteItem->setQuote($this);
+//             $quoteItem->setId($idx_cart);
+//             echo $this->getItemHtml($quoteItem);
+//          }
+//    }
+//}
+//
+//if (isset($_SESSION['qixol_quoted_items']['summary'])){
+//foreach ($_SESSION['qixol_quoted_items']['summary']  as $inline_cart_promotion)
+//  if($inline_cart_promotion['data']['basketlevel']>0){
 ?>
-<tr class='promotion_cart_inline_box'>
+<!--<tr class='promotion_cart_inline_box'>
     <td class="product-cart-image">&nbsp;</td>
-    <td class="product-cart-info" colspan='3'><?php echo $inline_cart_promotion['data']['display_text']; ?></td>
+    <td class="product-cart-info" colspan='3'><?php // echo $inline_cart_promotion['data']['display_text']; ?></td>
     <td class="product-cart-total" colspan='2'><?php 
-switch ($inline_cart_promotion['data']['type']){
-case 'ISSUEPOINTS';
-      echo $inline_cart_promotion['data']['issuedpoints']."&nbsp;pt."; 
-break;
-case 'DELIVERYREDUCTION';
-      echo $this->helper('checkout')->formatPrice($inline_cart_promotion['data']['discountamount']); 
-break;
-case 'BASKETREDUCTION';
-      echo $this->helper('checkout')->formatPrice($inline_cart_promotion['data']['discountamount']); 
-break;
-}
+//switch ($inline_cart_promotion['data']['type']){
+//case 'ISSUEPOINTS';
+//      echo $inline_cart_promotion['data']['issuedpoints']."&nbsp;pt."; 
+//break;
+//case 'DELIVERYREDUCTION';
+//      echo $this->helper('checkout')->formatPrice($inline_cart_promotion['data']['discountamount']); 
+//break;
+//case 'BASKETREDUCTION';
+//      echo $this->helper('checkout')->formatPrice($inline_cart_promotion['data']['discountamount']); 
+//break;
+//}
 ?></td>
 </tr>
 <?
   }
 }
 }
-//}} qixol end wrap block
+//}} qixol end wrap block-->
 ?>
             </tbody>
         </table>
