@@ -1118,7 +1118,7 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
 
-        if (Mage::getStoreConfig('qixol/syhchronized/synchstore') == 0){
+        if (Mage::getStoreConfig('qixol/syhchronized/synchstores') == 0){
             return;
         }
 
