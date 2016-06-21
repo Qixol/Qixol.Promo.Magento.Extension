@@ -33,6 +33,12 @@ class Holbi_Qixol_AjaxController extends Mage_Adminhtml_Controller_Action
           $finished=$tmp_data['finished'];
         } else $finished=0;
 
+        $tmp_data=$export->getExportStatus('store');
+        if ($tmp_data['id']>0){
+          $message_output.='<strong>'.$_hlp->__('Stores').'</strong>:'.$_hlp->__($tmp_data['extended_message']!=''?$tmp_data['extended_message']:$tmp_data['last_message'])."<br><br><hr>";
+          $finished=$tmp_data['finished'];
+        } else $finished=0;
+
         if ($message_output!='') {
             // JSON
              print '{ "message": "'.$_hlp->__((string)$message_arr['message']).'","extmessage": "'.addslashes(nl2br((string)$message_output)).'", "finished": "'.(int)$finished.'"}';
