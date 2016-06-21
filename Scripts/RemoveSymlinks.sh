@@ -12,16 +12,16 @@ unlink /home/ken/public_html/magento-store.com/public/app/locale/en_US/Holbi_Qix
 
 # media directories and files
 # TODO: should this directory be renamed to qixol_promo?
-rm -rf /home/ken/public_html/magento-store.com/media/custom
+rm -rf /home/ken/public_html/magento-store.com/public/media/custom
 
 # skin directories and files
-unlink /home/ken/public_html/magento-store.com/skin/adminhtml/default/default/_run.gif
-unlink /home/ken/public_html/magento-store.com/skin/adminhtml/default/default/_yes.gif
-unlink /home/ken/public_html/magento-store.com/skin/frontend/base/default/css/qixol.css
-rm -rf /home/ken/public_html/magento-store.com/skin/frontend/base/default/images/qixol
-rm -rf /home/ken/public_html/magento-store.com/skin/frontend/base/default/images/media
-rm -rf /home/ken/public_html/magento-store.com/skin/frontend/base/default/js/lib
+unlink /home/ken/public_html/magento-store.com/public/skin/adminhtml/default/default/images/_run.gif
+unlink /home/ken/public_html/magento-store.com/public/skin/adminhtml/default/default/images/_yes.gif
+unlink /home/ken/public_html/magento-store.com/public/skin/frontend/base/default/css/qixol.css
+rm -rf /home/ken/public_html/magento-store.com/public/skin/frontend/base/default/qixol
+rm -rf /home/ken/public_html/magento-store.com/public/skin/frontend/base/default/media
+rm -rf /home/ken/public_html/magento-store.com/public/skin/frontend/base/default/js/lib
 
 # var directories and files
-rm -rf /home/ken/public_html/magento-store.com/var/logs_qixol
+rm -rf /home/ken/public_html/magento-store.com/public/var/logs_qixol
 
