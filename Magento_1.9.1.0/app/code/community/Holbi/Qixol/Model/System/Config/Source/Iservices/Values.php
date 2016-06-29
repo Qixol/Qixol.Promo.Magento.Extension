@@ -9,7 +9,6 @@ class Holbi_Qixol_Model_System_Config_Source_Iservices_Values
             array('label'=>$hlp->__('evaluation services'), 'value'=>'evaluation'),
             array('label'=>$hlp->__('live services'), 'value'=>'live'),
             array('label'=>$hlp->__('custom services'), 'value'=>'custom')
-
         );
     }
 

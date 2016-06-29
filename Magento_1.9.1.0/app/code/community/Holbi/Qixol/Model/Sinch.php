@@ -2,27 +2,29 @@
 
 //ini_set('memory_limit','256M');
 require_once ('config.php');
-class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract {
+require_once('RESTPromoService.php');
+require_once('SOAPPromoService.php');
+
+class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
+{
     private $process_export_status_table;
     private $process_export_status_id=array();
     private $export_poducts_statistic_table;
     private $export_poducts_statistic_id=array();
     private $export_by = 'MANUAL';
-    private $evaluationBasketServicesUrl = 'http://evaluation.qixolpromo.com/BasketService.svc';
-    private $evaluationImportServicesUrl = 'http://evaluation.qixolpromo.com/ImportService.svc';
-    private $evaluationExportServicesUrl = 'http://evaluation.qixolpromo.com/ExportService.svc';
-    private $liveBasketServicesUrl = 'http://evaluation.qixolpromo.com/BaskettService.svc';
-    private $liveImportServicesUrl = 'http://evaluation.qixolpromo.com/ImportService.svc';
-    private $liveExportServicesUrl = 'http://evaluation.qixolpromo.com/ExportService.svc';
-    
+    private $promoService;
 
-    function __construct(){
-        //teble for store current sate
+    function __construct()
+    {
         $this->process_export_status_table=Mage::getSingleton('core/resource')->getTableName('qixol_process_export_status_table');
-        //teble for store global state result
-        $this->export_poducts_statistic_table=Mage::getSingleton('core/resource')->getTableName('qixol_product_export_stat');
         $this->_logFile=LOG_FILE;  
-        $this->pushLog("constructor"); 
+        $this->pushLog("constructor");
+
+        if (Mage::getStoreConfig('qixol/integraion/serviceProtocol') == 'REST') {
+            $this->promoService = new RESTPromoService();
+        } else {
+            $this->promoService = new SOAPPromoService();
+        }
     }
 
     function pushLog($log){
@@ -33,60 +35,6 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract {
         }
     }
 
-    function importServiceUrl() {
-      switch (Mage::getStoreConfig('qixol/integraion/services')) {
-          case 'evaluation':
-            $importServiceUrl = $this->evaluationImportServicesUrl;
-              break;
-          case 'live':
-            $importServiceUrl = $this->liveImportServicesUrl;
-              break;
-          case 'custom':
-              $importServiceUrl = Mage::getStoreConfig('qixol/integraion/importManagerServiceAddress');
-              break;
-          default:
-            $importServiceUrl = $this->evaluationImportServicesUrl;
-            break;
-      }
-        return $importServiceUrl;
-    }
-    
-    function exportServiceUrl() {
-      switch (Mage::getStoreConfig('qixol/integraion/services')) {
-          case 'evaluation':
-            $exportServiceUrl = $this->evaluationExportServicesUrl;
-              break;
-          case 'live':
-            $exportServiceUrl = $this->liveExportServicesUrl;
-              break;
-          case 'custom':
-              $exportServiceUrl = Mage::getStoreConfig('qixol/integraion/exportManagerServiceAddress');
-              break;
-          default:
-            $exportServiceUrl = $this->evaluationExportServicesUrl;
-            break;
-      }
-        return $exportServiceUrl;
-    }
-
-    function basketServiceUrl() {
-      switch (Mage::getStoreConfig('qixol/integraion/services')) {
-          case 'evaluation':
-            $basketServiceUrl = $this->evaluationBasketServicesUrl;
-              break;
-          case 'live':
-            $basketServiceUrl = $this->liveBasketServicesUrl;
-              break;
-          case 'custom':
-              $basketServiceUrl = Mage::getStoreConfig('qixol/integraion/basketManagerServiceAddress');
-              break;
-          default:
-            $basketServiceUrl = $this->evaluationBasketServicesUrl;
-            break;
-      }
-        return $basketServiceUrl;
-    }
-    
     function cron_run_export(){//call from cron product export
         $this->pushLog("Start export from cron:".date("Y-m-d H:i:s"));
         $this->export_by='CRON';
@@ -98,8 +46,8 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract {
         $this->pushLog("Start export from cron:".date("Y-m-d H:i:s"));
         $this->export_by='CRON';
          if (Mage::getStoreConfig('holbi/qixol/enabled')>0){
-        $this->run_import_Promotions(); 
-        $this->run_import_DayPromotions();
+        $this->run_import_promotionsForProducts(); 
+        $this->run_import_promotionsForBaskets();
         }
         $this->pushLog("Finish export from cron".date("Y-m-d H:i:s"));   
     }
@@ -149,45 +97,23 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract {
         return $_status;
     }
     
-    function run_export(){ //run from admin area
+    function run_export(){
        $this->run_export_qixolData();
-       echo "done";
+       echo 'done';
     }   
     
     function run_import(){
-       if (Mage::getStoreConfig('holbi/qixol/enabled')>0){
-         //temporary run here but should be by cron only...
-         $this->run_import_Promotions();
-         //temporary run here but should be by cron only...
-         $this->run_import_DayPromotions();
-      }
-     echo "done";
+        if (Mage::getStoreConfig('holbi/qixol/enabled') == 0){
+            return;
+        }
+        $this->run_import_promotionsForProducts();
+        $this->run_import_promotionsForBaskets();
+        echo 'done';
     }
 
     function run_processOrder($cart){
         global $_SESSION;
-        /* as customer described, there is no need to get validated cart , just set confirmed flag to  ValidateBasket
-        $soapclient = new soapclient($this->basketServiceUrl(), array('trace' => 1));
-                  $types_array = $soapclient->__getTypes();
-                  $functions_array = $soapclient->__getFunctions();
-           if (isset($_SESSION['qixol_quoted_items']['cart_data']['id'])){
-                try {
-                  $result = $soapclient->__soapCall('RetrieveValidatedBasket', array('RetrieveValidatedBasket' => array('companyKey' => Mage::getStoreConfig('qixol/integraion/companykey'),'basketRef'=>$_SESSION['qixol_quoted_items']['cart_data']['id'])));
-                  print_r($result);
-                  //$xml_shopping_cart_validated=$result->ValidateBasketResult;
-                  //replace backet and store order
-
-                } catch (SoapFault $e) {
-                          echo "REQUEST:\n" . $soapclient->__getLastRequestHeaders();
-                          echo $soapclient->__getLastRequest() . "\n";
-
-                          echo "RESPONSE:\n" . $soapclient->__getLastResponseHeaders();
-                          echo $soapclient->__getLastResponse() . "\n";
-              }
-           }*/
-
-         return $this->run_ImportCart($cart,true);// set true to confirm cart(process cart)
-
+        return $this->run_ImportCart($cart,true);// set true to confirm cart(process cart)
     }
 
     function run_ImportCart($cart,$set_confirmed=false){
@@ -296,7 +222,7 @@ if ($shipping_price_exists==0){//somethimes returns zero
 
                 if ($data_products!=''){
 //echo "call promotions";
-                  $promotions='<basket id="'./*Mage::getSingleton("core/session")->getEncryptedSessionId()*/$_SESSION['qixol_quoted_items']['cart_session_id'].'" companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
+                  $basket='<basket id="'./*Mage::getSingleton("core/session")->getEncryptedSessionId()*/$_SESSION['qixol_quoted_items']['cart_session_id'].'" companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
                               '" baskettotal="'.$cart->getGrandTotal().
                               '" basketdate="'.date("Y-m-d\TH:i:s",strtotime("+ 1 DAY")).'" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
                               '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.(
@@ -311,29 +237,16 @@ if ($shipping_price_exists==0){//somethimes returns zero
                               '" currencycode="'.Mage::app()->getStore()->getCurrentCurrencyCode().
                               ($set_confirmed?'" confirmed="true':"").
                               '" >'.$coupons_applyed.'<items>'.$data_products.'</items></basket>';
-//echo $promotions."\n\n\n";
-                  $soapclient = new soapclient($this->basketServiceUrl().'?singleWsdl', array(    'trace' => 1,
-                                                                                    'location' => $this->basketServiceUrl()));
-                  //$types_array = $soapclient->__getTypes();
-                  //$functions_array = $soapclient->__getFunctions();
 
-                    try {
-
-                      $result = $soapclient->__soapCall('ValidateBasket', array('ValidateBasket' => array('basketXml' => $promotions)));
-                      $xml_shopping_cart_validated=$result->ValidateBasketResult;
-//print_r($xml_shopping_cart_validated);
-//echo $xml_shopping_cart_validated."\n\n\n";
-//temporary....
-//$xml_shopping_cart_validated='<response id="2d2pi81tbatge0pm14gkhr7ru5" date="2015-12-22T17:43:06" companykey="2U-6DyxID02m1-rddeplwA" customergroup="NOT LOGGED IN" channel="WEB" store="WEB" storegroup="WEB" manualdiscount="0" basketdiscount="15.0000" linestotaldiscount="0" totaldiscount="15.0000" baskettotal="78.0000" originalbaskettotal="78" deliverymanualdiscount="0" deliveryprice="0" deliverypromotiondiscount="0" deliverytotaldiscount="0" deliveryoriginalprice="0" totalissuedpoints="7800"><items><item id="46" engineid="1613" productcode="test_5" variantcode="" barcode="" price="33" manualdiscount="0" quantity="1" linepromotiondiscount="0" totaldiscount="0" originalprice="33" originalquantity="1" originalamount="33" appliedpromotioncount="2" isdelivery="false" lineamount="33"><description>test product 5</description><promotions><promotion id="119" discountamount="0" instance="1" forlineid="46" basketlevel="true" /><promotion id="116" discountamount="0" instance="1" forlineid="46" basketlevel="true" /></promotions></item><item id="47" engineid="1503" productcode="Test1_01" variantcode="" barcode="" price="9" manualdiscount="0" quantity="5" linepromotiondiscount="0" totaldiscount="0" originalprice="9" originalquantity="5" originalamount="45" appliedpromotioncount="2" isdelivery="false" lineamount="45"><description>test product 1</description><promotions><promotion id="119" discountamount="0" instance="1" forlineid="47" basketlevel="true" /><promotion id="116" discountamount="0" instance="1" forlineid="47" basketlevel="true" /></promotions></item><item id="48" engineid="0" productcode="123456" price="15.0000" manualdiscount="0" quantity="1" linepromotiondiscount="0" totaldiscount="0" originalprice="15.0000" originalquantity="1" originalamount="15.0000" appliedpromotioncount="1" isdelivery="false" generated="true" lineamount="15.0000"><description>test product 2</description><promotions><promotion id="116" discountamount="15.0000" instance="1" forlineid="48" basketlevel="true" /></promotions></item></items><coupons /><summary result="true" promotionsapplied="2"><promotions><promotion type="FREEPRODUCT" display="Free product" id="116" discountamount="15.0000" instance="1" basketlevel="true"><name>Qixol 7a</name><displaytext>Buy "test product 1 / Test1_01" get "test product 2 / 123456" free (applies ONCE only)</displaytext></promotion><promotion type="ISSUEPOINTS" display="Receive points" id="119" discountamount="0" instance="1" issuedpoints="7800" basketlevel="true"><name>Qixol 9</name><displaytext>Spend more than 50.00 - get points</displaytext></promotion></promotions><messages /></summary></response>';
-//$xml_shopping_cart_validated='<response id="508ke06681i38qt23gmfv239n4" date="2015-12-23T14:11:44" companykey="2U-6DyxID02m1-rddeplwA" customergroup="NOT LOGGED IN" channel="WEB" store="WEB" storegroup="WEB" manualdiscount="0" basketdiscount="0" linestotaldiscount="13.50" totaldiscount="13.50" baskettotal="31.49" originalbaskettotal="44.99" deliverymanualdiscount="0" deliveryprice="0" deliverypromotiondiscount="0" deliverytotaldiscount="0" deliveryoriginalprice="0"><items><item id="62" engineid="1611" productcode="config_1" variantcode="test2_01_01" barcode="" price="31.49" manualdiscount="0" quantity="1" linepromotiondiscount="13.50" totaldiscount="13.50" originalprice="44.99" originalquantity="1" originalamount="44.99" appliedpromotioncount="1" isdelivery="false" lineamount="31.49"><description>Child 1</description><promotions><promotion id="121" discountamount="13.50" instance="1" forlineid="62" /></promotions></item></items><coupons /><summary result="true" promotionsapplied="1"><promotions><promotion type="PRODUCTSREDUCTION" display="Product discount" id="121" discountamount="13.50" instance="1"><name>Qixol 10</name><displaytext>Use an issued coupon, get 30% off any Size = L product</displaytext></promotion></promotions><messages /></summary></response>';
+                    $result = $this->promoService->BasketValidate($basket);
+                    // $this->addExportStatus('basket', 'basket', $result->message, 1);
+                    if ($result->success) {
+                        $xml_shopping_cart_validated = $result->message;
                       $new_cart_structure=array();
-//$update_cart=false;
                       if (strlen($xml_shopping_cart_validated)>10){
                         $xml_object = simplexml_load_string($xml_shopping_cart_validated);
-//print_r($xml_object);
 
-
-                            $attributes_cart=$xml_object->attributes();
+                        $attributes_cart=$xml_object->attributes();
                             $new_cart_structure['cart_data']=array();
                             $new_cart_structure['cart_data']['id']=(isset($attributes_cart['id'])?(string)$attributes_cart['id']:0);
                             $new_cart_structure['cart_data']['manualdiscount']=(isset($attributes_cart['manualdiscount'])?(float)$attributes_cart['manualdiscount']:0);
@@ -520,32 +433,29 @@ if ($shipping_price_exists==0){//somethimes returns zero
 
 
                                         //!!!!!!!!!!!!!!! get valid to for coupon
-                                                  $validtill='0000-00-00 00:00:00';
-                                                  $soapclient_coupon = new soapclient($this->basketServiceUrl().'?singleWsdl', array(   'trace'     => 1,
-                                                                                                                                        'location'  => $this->basketServiceUrl()));                                           
-                                                    try {
-                                                        $update_item=false;
-                                                        $result_coupon = $soapclient_coupon->__soapCall('ValidateCouponCode', array('ValidateCouponCode' => array('companyKey' => Mage::getStoreConfig('qixol/integraion/companykey'),'couponCode' => (string)$coupon_attributes['code'])));
-                                                        $xml_coupon_code_validated=$result_coupon->ValidateCouponCodeResult;
-                                                        if (strlen($xml_coupon_code_validated)>10){
-                                                              $xml_coupon_object = simplexml_load_string($xml_coupon_code_validated);
-                                                                    foreach ($xml_coupon_object as $xml_coupon_object_root_key=>$xml_coupon_object_object_sub){
-                                                                      if ($xml_coupon_object_root_key=='coupon'){
-                                                                                foreach ($xml_coupon_object_object_sub as $xml_coupon_object_coupon_key=>$xml_coupon_object_object_coupon){
-                                                                                  if ($xml_coupon_object_coupon_key=='codes'){
-                                                                                      foreach ($xml_coupon_object_object_coupon as $xml_coupon_object_object_coupon_obj){
-                                                                                                $xml_coupon_object_object_coupon_attributes=$xml_coupon_object_object_coupon_obj->attributes();
-                                                                                                $validtill=date("Y-m-d H:i:s",strtotime((string)$xml_coupon_object_object_coupon_attributes['validto']));
-                                                                                            }                                            
-                                                                                      }
-                                                                                  }
-                                                                              }
-                                                                          }
-                                                                      }
+                                            $validtill='0000-00-00 00:00:00';
 
-                                                    } catch (SoapFault $e) {
-                                        ;
-                                                    }
+                                            $result = $this->promoService->CouponCodeValidate((string)$coupon_attributes['code']);
+                                            if ($result->success) {
+                                                  $update_item=false;
+                                                  $xml_coupon_code_validated = $result->message;
+                                                  if (strlen($xml_coupon_code_validated)>10){
+                                                        $xml_coupon_object = simplexml_load_string($xml_coupon_code_validated);
+                                                              foreach ($xml_coupon_object as $xml_coupon_object_root_key=>$xml_coupon_object_object_sub){
+                                                                if ($xml_coupon_object_root_key=='coupon'){
+                                                                          foreach ($xml_coupon_object_object_sub as $xml_coupon_object_coupon_key=>$xml_coupon_object_object_coupon){
+                                                                            if ($xml_coupon_object_coupon_key=='codes'){
+                                                                                foreach ($xml_coupon_object_object_coupon as $xml_coupon_object_object_coupon_obj){
+                                                                                          $xml_coupon_object_object_coupon_attributes=$xml_coupon_object_object_coupon_obj->attributes();
+                                                                                          $validtill=date("Y-m-d H:i:s",strtotime((string)$xml_coupon_object_object_coupon_attributes['validto']));
+                                                                                      }                                            
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+
+                                              }
                                         //!!!!!!!!!!!!!!! end valid to for coupon
                                            $new_cart_structure['coupons'][(string)$coupon_attributes['code']]['description']=(string)$xml_items_sub->couponname;//(string)$coupon_attributes['reportingcode']
                                            $new_cart_structure['coupons'][(string)$coupon_attributes['code']]['validtill']=($validtill=='1970-01-01 00:00:00'?"0000-00-00 00:00:00":$validtill);//(string)$coupon_attributes['code']
@@ -631,17 +541,6 @@ if ($shipping_price_exists==0){//somethimes returns zero
                       //$result->RetrievePromotionsForProductsResult
 
 
-                    } catch (SoapFault $e) {
-  
-                      echo "REQUEST:\n" . $soapclient->__getLastRequestHeaders();
-                      echo $soapclient->__getLastRequest() . "\n";
-
-                      echo "RESPONSE:\n" . $soapclient->__getLastResponseHeaders();
-                      echo $soapclient->__getLastResponse() . "\n";
-
-                     // print_r($e->faultstring);
-
-
                     }
                  }
 //print_r($new_cart_structure);
@@ -651,284 +550,77 @@ if ($shipping_price_exists==0){//somethimes returns zero
 
     }
 
-    function parseDayPromotions($promotion_new_xml=''){
-          $xml_object = simplexml_load_string($promotion_new_xml);
+    function run_import_promotionsForProducts(){
+        
+        if (Mage::getStoreConfig('holbi/qixol/enabled') == 0){
+            return;
+        }
+        
+        $this->addExportStatus("process", 'promotions', '', 0);
 
-          $xml_object = simplexml_load_string($promotion_new_xml);
-                     //print_r($xml_object);
-          if ($xml_object instanceof SimpleXMLElement) {     
-                     foreach ($xml_object as $xml_root_key=>$xml_object_sub){
-                        if ($xml_root_key=='promotions'){
-                          foreach ($xml_object_sub as $xml_promotions){
-                            unset($promotion_model);
-                            $attributes=$xml_promotions->attributes();
-                           $promotion_model=Mage::getModel('qixol/promotions')->load((int)$attributes['id']);
-                          if (count($promotion_model->getData())>0){
-                                $promotion_model->setUpdateTime(date("Y-m-d H:i:s"));
-                             
-                          } else {
-                              unset($promotion_model);
-                              $promotion_model=Mage::getModel('qixol/promotions');
-                              $promotion_model->setCreatedTime(date("Y-m-d H:i:s"));
-                              $promotion_model->setUpdateTime('0000-00-00 00:00:00');
-                          }
-
-                          $promotion_model->setPromotionId((int)$attributes['id']);
-                          $promotion_model->setPromotionType(isset($attributes['type'])?(string)$attributes['type']:"");
-
-                          $promotion_model->setDiscountpercent(isset($attributes['discountpercent'])?(double)$attributes['discountpercent']:0);
-                          $promotion_model->setDiscountamount(isset($attributes['discountamount'])?(double)$attributes['discountamount']:0);
-                          $promotion_model->setHascouponrestrictions(isset($attributes['hascouponrestrictions'])?(int)$attributes['hascouponrestrictions']:0);
-
-                          $promotion_model->setPromotionName(isset($xml_promotions->name)?(string)$xml_promotions->name:"");
-                          $promotion_model->setPromotionText(isset($xml_promotions->displaytext)?(string)$xml_promotions->displaytext:"");
-
-                          try {
-                          $promotion_model->save();
-                          } catch(Exception $e) {
-                            print_r($e);
-                          }
-  
-
-                          }
-                        }
-                     }
-                     //delete not updated simple way
-                       $promotion_has_products=Mage::getResourceModel('qixol/promotions');
-                       $promotion_has_products->removeOldDayPromotion();
-          }
-    }
-
-    function parsePromotions($promotion_new_xml=''){
-          $active_promotions=array();
-          $new_promotions=array();
-          $promotions_list=Mage::getModel('qixol/Promotions')->getCollection();
-          foreach ($promotions_list as $current_promotion){
-              $active_promotions[$current_promotion->getPromotionId()]=$current_promotion->getPromotionType();
-          }
-           //first test data
-          //$promotion_new_xml='<response><promotions><promotion id="106" type="BUNDLE" yourref="QIXOL-2" bundleprice="50.00"><name>Qixol 2</name><displaytext>Buy three test config products for 50</displaytext></promotion><promotion id="107" type="BOGOF" discountpercent="50.00"><name>Qixol 3a</name><displaytext>test config product 4 - BOGOF</displaytext></promotion><promotion id="108" type="BOGOF" discountpercent="50.00"><name>Qixol 3b</name><displaytext>Test Config product 5  BOGOF</displaytext></promotion><promotion id="109" type="BOGOR" discountpercent="50.00"><name>Qixol 4a</name><displaytext>test config product 6 BOGOR</displaytext></promotion><promotion id="110" type="BOGOR" discountpercent="2.00"><name>Qixol 4b</name><displaytext>test config product 7 BOGOR</displaytext></promotion><promotion id="111" type="BOGOR" discountpercent="24.99"><name>Qixol 4c</name><displaytext>Buy two "Test config product 8" get the second for 24.99</displaytext></promotion><promotion id="112" type="DEAL"><name>Qixol 5a</name><displaytext>Buy a small green, small black and small white product, get the cheapest free</displaytext></promotion><promotion id="113" type="DEAL"><name>Qixol 5b</name><displaytext>Buy a medium red, medium white and medium black product for 19.99</displaytext></promotion><promotion id="116" type="FREEPRODUCT"><name>Qixol 7a</name><displaytext>Buy "test product 1 / Test1_01" get "test product 2 / 123456" free (applies ONCE only)</displaytext></promotion><promotion id="117" type="FREEPRODUCT"><name>Qixol 7b</name><displaytext>Buy "test product 4 / test_4" get "test product 5 / test_5" free for each "test product 4"</displaytext></promotion><promotion id="118" type="ISSUECOUPON"><name>Qixol 8a</name><displaytext>Buy "testing" (test2_01) get a coupon code</displaytext></promotion><promotion id="121" type="PRODUCTSREDUCTION" discountpercent="30.00"><name>Qixol 10</name><displaytext>Use an issued coupon, get 30% off any Size = L product</displaytext></promotion></promotions><products><product productcode="config_11"/><product productcode="config_11" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/></promotions></product><product productcode="config_11" variantcode="test2_01_03"/><product productcode="config_11" variantcode="test1_1"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_11" variantcode="test2_2"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_11" variantcode="test3_3"/><product productcode="config_11" variantcode="test4_4"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_11" variantcode="test5_5"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_11" variantcode="Test6_6"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_11" variantcode="test7_7"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_11" variantcode="test8_8"><promotions><promotion id="121" requiredqty="1"/></promotions></product><product productcode="config_10"/><product productcode="config_10" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/></promotions></product><product productcode="config_10" variantcode="test2_01_03"/><product productcode="config_10" variantcode="test1_1"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_10" variantcode="test2_2"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_10" variantcode="test3_3"/><product productcode="config_10" variantcode="test4_4"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_9"/><product productcode="config_9" variantcode="test1_1"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_9" variantcode="test2_2"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_9" variantcode="test5_5"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_9" variantcode="Test6_6"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_9" variantcode="test7_7"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_9" variantcode="test8_8"><promotions><promotion id="121" requiredqty="1"/></promotions></product><product productcode="test8_8"/><product productcode="test7_7"/><product productcode="config_8"><promotions><promotion id="111" requiredqty="2"/></promotions></product><product productcode="config_8" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/><promotion id="111" requiredqty="2"/></promotions></product><product productcode="config_8" variantcode="test2_01_03"><promotions><promotion id="111" requiredqty="2"/></promotions></product><product productcode="config_8" variantcode="test1_1"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/><promotion id="111" requiredqty="2"/></promotions></product><product productcode="config_8" variantcode="test2_2"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="111" requiredqty="2"/></promotions></product><product productcode="config_8" variantcode="test3_3"><promotions><promotion id="111" requiredqty="2"/></promotions></product><product productcode="config_7"><promotions><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_7" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_7" variantcode="test2_01_03"><promotions><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_7" variantcode="test1_1"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_7" variantcode="test2_2"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_7" variantcode="test3_3"><promotions><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_7" variantcode="test4_4"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_7" variantcode="test5_5"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_7" variantcode="Test6_6"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="110" requiredqty="2"/></promotions></product><product productcode="config_6"><promotions><promotion id="109" requiredqty="2"/></promotions></product><product productcode="config_6" variantcode="test1_1"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/><promotion id="109" requiredqty="2"/></promotions></product><product productcode="config_6" variantcode="test2_2"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="109" requiredqty="2"/></promotions></product><product productcode="config_6" variantcode="test4_4"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="109" requiredqty="2"/></promotions></product><product productcode="config_6" variantcode="test5_5"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/><promotion id="109" requiredqty="2"/></promotions></product><product productcode="config_6" variantcode="Test6_6"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="109" requiredqty="2"/></promotions></product><product productcode="config_5"><promotions><promotion id="108" requiredqty="2"/></promotions></product><product productcode="config_5" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/><promotion id="108" requiredqty="2"/></promotions></product><product productcode="config_5" variantcode="test2_01_03"><promotions><promotion id="108" requiredqty="2"/></promotions></product><product productcode="config_5" variantcode="test1_1"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/><promotion id="108" requiredqty="2"/></promotions></product><product productcode="config_5" variantcode="test3_3"><promotions><promotion id="108" requiredqty="2"/></promotions></product><product productcode="config_5" variantcode="test4_4"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="108" requiredqty="2"/></promotions></product><product productcode="config_5" variantcode="test5_5"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/><promotion id="108" requiredqty="2"/></promotions></product><product productcode="config_5" variantcode="Test6_6"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="108" requiredqty="2"/></promotions></product><product productcode="Test6_6"/><product productcode="test5_5"/><product productcode="test4_4"/><product productcode="test3_3"/><product productcode="config_4"><promotions><promotion id="107" requiredqty="2"/></promotions></product><product productcode="config_4" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/><promotion id="107" requiredqty="2"/></promotions></product><product productcode="config_4" variantcode="test2_01_03"><promotions><promotion id="107" requiredqty="2"/></promotions></product><product productcode="config_4" variantcode="test1_1"><promotions><promotion id="112" requiredqty="1" multipleproductrestrictions="1"/><promotion id="107" requiredqty="2"/></promotions></product><product productcode="config_4" variantcode="test2_2"><promotions><promotion id="113" requiredqty="1" multipleproductrestrictions="1"/><promotion id="107" requiredqty="2"/></promotions></product><product productcode="test2_2"/><product productcode="test1_1"/><product productcode="config_3"><promotions><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_3" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_3" variantcode="test2_01_03"><promotions><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_2"><promotions><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_2" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_2" variantcode="test2_01_03"><promotions><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_1"><promotions><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_1" variantcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="config_1" variantcode="test2_01_03"><promotions><promotion id="106" requiredqty="1" multipleproductrestrictions="1"/></promotions></product><product productcode="test_5"/><product productcode="test_4"><promotions><promotion id="117" requiredqty="1"/></promotions></product><product productcode="test_3"/><product productcode="123456"/><product productcode="test2_01_03"/><product productcode="test2_01_01"><promotions><promotion id="121" requiredqty="1"/></promotions></product><product productcode="test2_01"><promotions><promotion id="118" requiredqty="1"/></promotions></product><product productcode="test2_01" variantcode="test2_01_01"><promotions><promotion id="118" requiredqty="1"/><promotion id="121" requiredqty="1"/></promotions></product><product productcode="test2_01" variantcode="test2_01_03"><promotions><promotion id="118" requiredqty="1"/></promotions></product><product productcode="Test1_01"><promotions><promotion id="116" requiredqty="1"/></promotions></product></products><summary result="true"/></response>';
-          $xml_object = simplexml_load_string($promotion_new_xml);
-                     //print_r($xml_object);
-          if ($xml_object instanceof SimpleXMLElement) {     
-                          foreach ($xml_object->promotions->promotion as $xml_promotions){
-                            unset($promotion_model);
-                            $attributes=$xml_promotions->attributes();
-                           $promotion_model=Mage::getModel('qixol/promotions')->load((int)$attributes['id']);
-                          if (count($promotion_model->getData())>0){
-                                $promotion_model->setUpdateTime(date("Y-m-d H:i:s"));
-                             
-                          } else {
-                              unset($promotion_model);
-                              $promotion_model=Mage::getModel('qixol/promotions');
-                              $promotion_model->setCreatedTime(date("Y-m-d H:i:s"));
-                              $promotion_model->setUpdateTime('0000-00-00 00:00:00');
-                          }
-
-                          $promotion_model->setPromotionId((int)$attributes['id']);
-                          $promotion_model->setIsForProduct(1);
-                          $promotion_model->setPromotionType(isset($attributes['type'])?(string)$attributes['type']:"");
-                          $new_promotions[$promotion_model->getPromotionId()]=$promotion_model->getPromotionType();
-
-                          $promotion_model->setDiscountamount(isset($attributes['discountamount'])?(double)$attributes['discountamount']:0);
-
-                          $promotion_model->setDiscountpercent(isset($attributes['discountpercent'])?(double)$attributes['discountpercent']:0);
-                          $promotion_model->setYourref(isset($attributes['yourref'])?(string)$attributes['yourref']:"");
-
-                          $promotion_model->setBundleprice(isset($attributes['bundleprice'])?(double)$attributes['bundleprice']:0);
-                          $promotion_model->setPromotionName(isset($xml_promotions->name)?(string)$xml_promotions->name:"");
-                          $promotion_model->setPromotionText(isset($xml_promotions->displaytext)?(string)$xml_promotions->displaytext:"");
-                          $promotion_model->setFromDate('0000-00-00 00:00:00');
-                          $promotion_model->setTillDate('0000-00-00 00:00:00');
-                          
-                          if (isset($xml_promotions->availabletimes)&&isset($xml_promotions->availabletimes->availabletime)){
-                            foreach ($xml_promotions->availabletimes->availabletime as $availabletime){
-                                $time_attributes=$availabletime->attributes();
-                                if ((string)$time_attributes['start']!=''){
-                                    $promotion_model->setFromDate('2000-01-01 '.(string)$time_attributes['start']);
-                                    $promotion_model->setIsEveryday(1);
-                                }
-                                if ((string)$time_attributes['start']!=''){
-                                    $promotion_model->setTillDate('2000-01-01 '.(string)$time_attributes['end']);
-                                    $promotion_model->setIsEveryday(1);
-                                }
-                            }
-                          }
-                          if ($promotion_model->getFromDate()=='0000-00-00 00:00:00'&&$promotion_model->setTillDate()=='0000-00-00 00:00:00'){
-                                    $promotion_model->setIsEveryday(0);
-                          }
-                          try {
-                            $promotion_model->save();
-                          } catch(Exception $e) {
-                            print_r($e);
-                          }
-  
-
-                          }
-
-                        //temporary because of bag settings this flag
-                        $write_data = Mage::getSingleton('core/resource')->getConnection('core_write');
-                        $write_data->query("update qixol_promotions_type set is_everyday=1 where from_date!='0000-00-00 00:00:00' or till_date!='0000-00-00 00:00:00'");
-
-                          foreach ($xml_object->products->product as $xml_products){
-//print_r($xml_products);
-                                    $attributes=$xml_products->attributes();
-                                if (isset($xml_products->promotions)&&!isset($xml_products->promotions->promotion[0])){
-                                   $ttemp_data=$xml_products->promotions->promotion;
-                                   unset($xml_products->promotions->promotion);
-                                   $xml_products->promotions->promotion[0]=$ttemp_data;
-                                   unset($ttemp_data);
-                                }
-                                foreach  ($xml_products->promotions->promotion as $idx_name=>$xml_promotion_data){
-
-
-                                    //if ($idx_name=='promotions'){
-                                        //foreach ($xml_promotion as $xml_promotion_data){
-                                        $xml_promotion_data_attributes=$xml_promotion_data->attributes();
-                                        $promotion_to_product_array=array();
-                                       $promotion_to_product_array['created_time']=date("Y-m-d H:i:s");
-                                       $promotion_to_product_array['update_time']=date("Y-m-d H:i:s");
-                                       //get product id
-                                         $promotion_to_product_array['product_id']=0;
-                                          $product_search_tmp = Mage::getModel('catalog/product');              
-                                          if ($product_id_tmp=$product_search_tmp->getIdBySku(((string)$attributes['variantcode']!=''?(string)$attributes['variantcode']:(string)$attributes['productcode']))){
-                                               $promotion_to_product_array['product_id']=(int)$product_id_tmp;
-                                          }
-                                       //get parent_id
-                                         $promotion_to_product_array['parent_product_id']=0;
-                                          if ((string)$attributes['variantcode']!=''){
-                                              $product_search_tmp = Mage::getModel('catalog/product');              
-                                              if ($product_id_tmp=$product_search_tmp->getIdBySku((string)$attributes['productcode'])){
-                                                  $promotion_to_product_array['parent_product_id']=(int)$product_id_tmp;
-                                              }
-                                          }
-
-                                       $promotion_to_product_array['promotion_id']=(int)$xml_promotion_data_attributes['id'];;
-                                       $promotion_to_product_array['parentsku']=((string)$attributes['variantcode']!=''?(string)$attributes['productcode']:'');
-                                       $promotion_to_product_array['sku']=((string)$attributes['variantcode']!=''?(string)$attributes['variantcode']:(string)$attributes['productcode']);
-
-                                       $promotion_to_product_array['requiredqty']=(isset($xml_promotion_data_attributes['requiredqty'])?(int)$xml_promotion_data_attributes['requiredqty']:0);
-                                       $promotion_to_product_array['multipleproductrestrictions']=isset($xml_promotion_data_attributes['multipleproductrestrictions'])?(int)$xml_promotion_data_attributes['multipleproductrestrictions']:0;
-                                        $promotion_has_products=Mage::getResourceSingleton('qixol/promotions');
-                                        $promotion_has_products->updatePromotionProduct($promotion_to_product_array);
-                                        }
-                                   // }
-                                //} 
-
-                          }
-                     //delete not updated simple way
-                       $promotion_has_products=Mage::getResourceModel('qixol/promotions');
-                       $promotion_has_products->removeOldPromotion();
-                       $promotion_has_products->removeOldPromotedProduct();
-                       /* $condition=$promotion_has_products->_getWriteAdapter()->quoteInto('(update_time <= ?)', "(now() - interval 1 hour)");
-                        $promotion_has_products->_getWriteAdapter()->delete($this->getTable('promotions'), $condition);
-                       */
-
-                     /*foreach ($active_promotions as $p_id=>$p_type){
-                       if (!isset($new_promotions[$p_id])){
-                             //delete
-                       }elseif($new_promotions[$p_id]!=$p_type){
-                          //promotion type changed ???
-                       }
-                            
-                     }*/
-
-          }
-    }
-
-    function run_import_Promotions(){
-      //process get all product promotions cause qixol do not provede all promotions for a day without requesting per product,
-      //maybe need to run once a 10 minutes
-          $this->addExportStatus("process", 'promotions' ,'',0);
-
-                  $soapclient = new soapclient($this->exportServiceUrl().'?singleWsdl', array(   'trace'     => 1,
-                                                                                                'location'  => $this->exportServiceUrl()));
-                  //$types_array = $soapclient->__getTypes();
-
-                  //$functions_array = $soapclient->__getFunctions();
-
-                 $products_list = Mage::getModel('catalog/product')->getCollection()
+        $products_list = Mage::getModel('catalog/product')->getCollection()
                                   ->addAttributeToSelect('*')->addAttributeToFilter('visibility', array('neq'=>1))
                                   ->addAttributeToSort('entity_id', 'desc'); 
 
-                foreach ($products_list as $product) {
-                $data .= '<product productcode="'.$product->getSku().'" variantcode="" barcode="" price="'.$product->getPrice().'"><description>'.$this->CDT($product->getName()).'</description><imageurl>'.$this->CDT($product->getImage() != 'no_selection' ? $product->getImageUrl() : '').'</imageurl>';
-                    $products_data.='<product productcode="'.$product->getSku().'" variantcode="" />';
-                    if ($product->isConfigurable()){ //with variations
-                            //$associatedAttributes = $product->getTypeInstance()->getConfigurableAttributesAsArray($product);    
-                            $childs_products_list=$product->getTypeInstance()->getUsedProducts();
-                            foreach ($childs_products_list as $childProduct_tmp) {    
-                              $childProduct = Mage::getModel('catalog/product')->load($childProduct_tmp->getId());
-                              $products_data.='<product productcode="'.$product->getSku().'" variantcode="'.$childProduct->getSku().'" />';
-                            }
-                   }
-
+        foreach ($products_list as $product) {
+            $data .= '<product productcode="'.$product->getSku().'" variantcode="" barcode="" price="'.$product->getPrice().'"><description>'.$this->CDT($product->getName()).'</description><imageurl>'.$this->CDT($product->getImage() != 'no_selection' ? $product->getImageUrl() : '').'</imageurl>';
+            $products_data.='<product productcode="'.$product->getSku().'" variantcode="" />';
+            if ($product->isConfigurable()){ //with variations
+                //$associatedAttributes = $product->getTypeInstance()->getConfigurableAttributesAsArray($product);    
+                $childs_products_list=$product->getTypeInstance()->getUsedProducts();
+                foreach ($childs_products_list as $childProduct_tmp) {    
+                    $childProduct = Mage::getModel('catalog/product')->load($childProduct_tmp->getId());
+                    $products_data.='<product productcode="'.$product->getSku().'" variantcode="'.$childProduct->getSku().'" />';
                 }
-                if ($products_data!=''){
+            }
 
-                  $promotions='<request companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
-                              '" validationdate="'.date("Y-m-d",strtotime("+ 1 DAY")).'T00:00:00" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
-                              '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.Mage::getStoreConfig('qixol/syhchronized/channel').
-                              '" validatefortime="false"><products>'.$products_data.'</products></request>';
+        }
+        
+        if ($products_data!=''){
 
-                  $soapclient = new soapclient($this->exportServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                                'location'  => $this->exportServiceUrl()));
-                  //$types_array = $soapclient->__getTypes();
-                  //$functions_array = $soapclient->__getFunctions();
+            $promotions='<request companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
+                                  '" validationdate="'.date("Y-m-d",strtotime("+ 1 DAY")).'T00:00:00" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
+                                  '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.Mage::getStoreConfig('qixol/syhchronized/channel').
+                                  '" validatefortime="false"><products>'.$products_data.'</products></request>';
 
-                    try {
-                      $result = $soapclient->__soapCall('RetrievePromotionsForProducts', array('RetrievePromotionsForProducts' => array('xmlExportRequest' => $promotions)));
-                      $promotions_xml=$result->RetrievePromotionsForProductsResult;
-                      //print_r($result->RetrievePromotionsForProductsResult);
-                       if ($promotions_xml!=''){
-                         $this->parsePromotions($promotions_xml);
-                         $this->addExportStatus("success", 'promotions' , 'imported' ,1);
-                       }
-                      //store in database for promotions here
-                      //$result->RetrievePromotionsForProductsResult
+            $result = $this->promoService->PromotionsForProducts($promotions);
 
-
-                    } catch (SoapFault $e) {
-                      print_r($e->faultstring);
-                     $this->addExportStatus("error", 'promotions' , addslashes($e->faultstring) ,1);
-                      $this->pushLog("Finish import promotions error ".$e->faultstring);
-                    }
-                 }
-
-
-
-      return ;
+            if ($result->success) {                  
+                if ($result->message != ''){
+                    $this->promoService->parsePromotionsForProducts($result->message);
+                    $this->addExportStatus("success", 'promotions', 'imported', 1);
+                } else {
+                    $this->addExportStatus("success", 'promotions', 'imported - no promotions', 1);
+                }
+            } else {
+                $this->addExportStatus("error", 'promotions', addslashes($result->message), 1);
+                $this->pushLog("Finish import promotions error ".$result->message);
+            }
+        } else {
+            $this->addExportStatus("process", 'promotions', 'no products found for promotion retrieval', 1);
+        }
+        return;
     }
 
-    function run_import_DayPromotions(){
-               //retrieve promotion for a day 
+    function run_import_promotionsForBaskets(){
 
-                $this->addExportStatus("process", 'backetpromotions' ,'',0);
-                  $promotions='<request companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
-                              '" validationdate="'.date("Y-m-d",strtotime("+ 1 DAY")).'T00:00:00" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
-                              '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.Mage::getStoreConfig('qixol/syhchronized/channel').
-                              '" validatefortime="false"></request>';
+        $this->addExportStatus("process", 'basketpromotions' ,'',0);
+        $promotions='<request companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
+                    '" validationdate="'.date("Y-m-d",strtotime("+ 1 DAY")).'T00:00:00" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
+                    '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.Mage::getStoreConfig('qixol/syhchronized/channel').
+                    '" validatefortime="false"></request>';
 
-                  $soapclient = new soapclient($this->exportServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                                'location'  => $this->exportServiceUrl()));
-                  //$types_array = $soapclient->__getTypes();
-                  //$functions_array = $soapclient->__getFunctions();
+        $result = $this->promoService->PromotionsForBaskets($promotions);
 
-                    try {
-                      $result = $soapclient->__soapCall('RetrievePromotionsForBaskets', array('RetrievePromotionsForBaskets' => array('xmlExportRequest' => $promotions)));
-                      $promotions_xml=$result->RetrievePromotionsForBasketsResult;
-
-                       if ($promotions_xml!=''){
-                         $this->parseDayPromotions($promotions_xml);
-                         $this->addExportStatus("success", 'backetpromotions' , 'imported' ,1);
-                       }
-
-
-                    } catch (SoapFault $e) {
-                      print_r($e->faultstring);
-                     $this->addExportStatus("error", 'backetpromotions' , addslashes($e->faultstring) ,1);
-                      $this->pushLog("Finish import promotions error ".$e->faultstring);
-                    }
+        if ($result->success)
+        {
+            $this->promoService->parsePromotionsForBaskets($result->message);
+            $this->addExportStatus("success", 'basketpromotions', 'imported', 1);
+        } else {
+            $this->addExportStatus("error", 'basketpromotions', addslashes($result->message), 1);
+            $this->pushLog("Finish import promotions error ".$result->message);
+        }
+        return;
     }
 
     function run_export_customerGroups() {
@@ -937,15 +629,13 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
 
-        //customers groups attribute
-        //{{
         if (Mage::getStoreConfig('qixol/syhchronized/synchcustomer') == 0){
             return;
         }
         
-         $curent_state=$this->getExportStatus('customers');
+         $current_state=$this->getExportStatus('customers');
         //do not run again if in process
-        if ($curent_state['id']==0||$curent_state['finished']==1||strtotime($curent_state['last_updated'])<strtotime("-1 hour")){
+        if ($current_state['id']==0||$current_state['finished']==1||strtotime($current_state['last_updated'])<strtotime("-1 hour")){
 
 
           //get mapping    
@@ -976,16 +666,13 @@ if ($shipping_price_exists==0){//somethimes returns zero
             if ($group_to_send!='')
             {//entity="basket" 
               $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="customergroup"><items>'.$group_to_send.'</items></import>';
-              $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                            'location'  => $this->importServiceUrl()));
-              $types_array = $soapclient->__getTypes();
-              $functions_array = $soapclient->__getFunctions();
-
-                try {
-                  $result = $soapclient->__soapCall('ImportEntityAttributeValues', array('ImportEntityAttributeValues' => array('xmlToImport' => $data)));
-                  $this->addExportStatus("success", 'customers' ,addslashes($result->ImportEntityAttributeValuesResult),1);
-                } catch (SoapFault $e) {
-                  $this->addExportStatus("error", 'customers' , addslashes($e->faultstring) ,1);
+              $result = $this->promoService->CustomerGroupExport($data);
+              if ($result->success)
+              {
+                   $this->addExportStatus("success", 'customers', addslashes($result->message),1);
+              }
+                else {
+                    $this->addExportStatus("error", 'customers', addslashes($result->message),1);
                 }
             }
         }
@@ -1003,9 +690,9 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
         
-         $curent_state=$this->getExportStatus('delivery');
+         $current_state=$this->getExportStatus('delivery');
         //do not run again if in process
-        if ($curent_state['id']==0||$curent_state['finished']==1||strtotime($curent_state['last_updated'])<strtotime("-1 hour")){
+        if ($current_state['id']==0||$current_state['finished']==1||strtotime($current_state['last_updated'])<strtotime("-1 hour")){
           $this->addExportStatus("process", 'delivery' ,'',0);
        
           //get mapping    
@@ -1054,18 +741,22 @@ if ($shipping_price_exists==0){//somethimes returns zero
             }
 
           if ($shipping_to_send!='')
-          {//entity="basket" 
+          {
             $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="deliverymethod"><items>'.$shipping_to_send.'</items></import>';
-              $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                            'location'  => $this->importServiceUrl()));
-            $types_array = $soapclient->__getTypes();
-            $functions_array = $soapclient->__getFunctions();
-              try {
-                $result = $soapclient->__soapCall('ImportEntityAttributeValues', array('ImportEntityAttributeValues' => array('xmlToImport' => $data)));
-                $this->addExportStatus("success", 'delivery' ,addslashes($result->ImportEntityAttributeValuesResult),1);
-              } catch (SoapFault $e) {
-                $this->addExportStatus("error", 'delivery', addslashes($e->faultstring) ,1);
-              }
+            //$this->soapCallShippingMethodsExport($data);
+            $result = $this->promoService->ShippingMethodsExport($data);
+            if ($result->success)
+            {
+                $this->addExportStatus("success", 'delivery' ,addslashes($result->message),1);
+            }
+            else
+            {
+              $this->addExportStatus("error", 'delivery' ,addslashes($result->message),1);
+            }
+          }
+          else
+          {
+            $this->addExportStatus("success", 'delivery', 'There are no shipping methods to send', 1);
           }
       }
     }    
@@ -1080,9 +771,9 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
         
-         $curent_state=$this->getExportStatus('currency');
+         $current_state=$this->getExportStatus('currency');
         //do not run again if in process
-        if ($curent_state['id']==0||$curent_state['finished']==1||strtotime($curent_state['last_updated'])<strtotime("-1 hour")){
+        if ($current_state['id']==0||$current_state['finished']==1||strtotime($current_state['last_updated'])<strtotime("-1 hour")){
           $this->addExportStatus("process", 'currency' ,'',0);
            $currency_to_send='';
            $only_active_currency=Mage::getStoreConfig('currency/options/allow');
@@ -1092,22 +783,20 @@ if ($shipping_price_exists==0){//somethimes returns zero
                           $currency_to_send.='<item display="'.$code_curr.'">'. Mage::app()->getLocale()->currency( $code_curr )->getName().'</item>';  
             }
 
-          if ($currency_to_send!='');
+          if ($currency_to_send != '')
           {//entity="basket" 
             $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="currencycode"><items>'.$currency_to_send.'</items></import>';
-              $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                            'location'  => $this->importServiceUrl()));
-            $types_array = $soapclient->__getTypes();
-            $functions_array = $soapclient->__getFunctions();
-              try {
-                $result = $soapclient->__soapCall('ImportEntityAttributeValues', array('ImportEntityAttributeValues' => array('xmlToImport' => $data)));
-                $this->addExportStatus("success", 'currency' ,addslashes($result->ImportEntityAttributeValuesResult),1);
-              } catch (SoapFault $e) {
-                $this->addExportStatus("error", 'currency', addslashes($e->faultstring) ,1);
-              }
-//temporary before fixed !!!!!!!!!!! (now not returns result)
-                $this->addExportStatus("success", 'currency' ,addslashes($result->ImportEntityAttributeValuesResult),1);
-//000000000000000
+            //$this->soapCallCurrenciesExport($data);
+            $result = $this->promoService->CurrenciesExport($data);
+            if ($result->success)
+            {
+              $this->addExportStatus("success", 'currency', addslashes($result->message), 1);
+            }
+            else {
+              $this->addExportStatus("error", 'currency', addslashes($result->message), 1);
+            }
+          } else {
+              $this->addExportStatus("success", 'currency', 'No currencies to send', 1);
           }
       }
     }
@@ -1122,9 +811,9 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
 
-         $curent_state=$this->getExportStatus('store');
+         $current_state=$this->getExportStatus('store');
         //do not run again if in process
-        if ($curent_state['id']==0||$curent_state['finished']==1||strtotime($curent_state['last_updated'])<strtotime("-1 hour")){
+        if ($current_state['id']==0||$current_state['finished']==1||strtotime($current_state['last_updated'])<strtotime("-1 hour")){
           $this->addExportStatus("process", 'store' ,'',0);
            $store_to_send='';
 
@@ -1148,53 +837,53 @@ if ($shipping_price_exists==0){//somethimes returns zero
                 }
             }
 
-          if ($store_to_send!='');
-          {//entity="basket" 
+          if ($store_to_send != '')
+          {
             $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="store"><items>'.$store_to_send.'</items></import>';
-              $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                            'location'  => $this->importServiceUrl()));
-            $types_array = $soapclient->__getTypes();
-            $functions_array = $soapclient->__getFunctions();
-              try {
-                $result = $soapclient->__soapCall('ImportEntityAttributeValues', array('ImportEntityAttributeValues' => array('xmlToImport' => $data)));
-                $this->addExportStatus("success", 'store' ,addslashes($result->ImportEntityAttributeValuesResult),1);
-              } catch (SoapFault $e) {
-                $this->addExportStatus("error", 'store', addslashes($e->faultstring) ,1);
-              }
-//temporary before fixed !!!!!!!!!!! (now not returns result)
-                $this->addExportStatus("success", 'store' ,addslashes($result->ImportEntityAttributeValuesResult),1);
-//000000000000000
+            //$this->soapCallStoresExport($data);
+            $result =$this->promoService->StoresExport($data);
+            if ($result->success)
+            {
+                $this->addExportStatus("success", 'store', addslashes($result->message), 1);
+            }
+            else
+            {
+                $this->addExportStatus("error", 'store', addslashes($result->message), 1);
+            }
           }
+        else
+        {
+          $this->addExportStatus("success", 'store', 'There are no stores to send', 1);
+        }
       }
     }
 
     function run_export_products() {
-      if (Mage::getStoreConfig('holbi/qixol/enabled')==0) {
-          return;
-      }
+
+        if (Mage::getStoreConfig('holbi/qixol/enabled')==0) {
+            return;
+        }
       
-      if (Mage::getStoreConfig('qixol/syhchronized/synchproducts')==0) {
-          return;
-      }
+        if (Mage::getStoreConfig('qixol/syhchronized/synchproducts')==0) {
+            return;
+        }
       
-      $curent_state=$this->getExportStatus('products');
-        //prevent double run script
-      if ($curent_state['id']==0||$curent_state['finished']==1||strtotime($curent_state['last_updated'])<strtotime("-1 hour")){
-
-       $write_data = Mage::getSingleton('core/resource')->getConnection('core_write');
-       $write_data->query("
-         delete from ".$this->process_export_status_table." where export_what='products'
-       ");
-
-        //clear old data
-       $write_data = Mage::getSingleton('core/resource')->getConnection('core_write');
-       $write_data->query("delete from ".$this->export_poducts_statistic_table." where start_export<(now() - interval 1 month)");
-
+        $current_state = $this->getExportStatus('products');
+        // prevent double run script
+        if ($current_state['id'] != 0 &&
+                $current_state['finished'] != 1 &&
+                strtotime($current_state['last_updated']) < strtotime("-1 hour")) {
+            return;
+        }
+      
+        $write_data = Mage::getSingleton('core/resource')->getConnection('core_write');
+        $write_data->query("
+            delete from ".$this->process_export_status_table." where export_what='products'
+        ");
 
         //process products here
         $number_products_exported=0;
         $this->addExportStatus("process", 'products' ,'',0);
-
 
         $products_list = Mage::getModel('catalog/product')->getCollection()->addAttributeToSelect('*')->addAttributeToFilter('visibility', array('neq'=>1))->addAttributeToSort('entity_id', 'desc'); 
         
@@ -1215,7 +904,7 @@ if ($shipping_price_exists==0){//somethimes returns zero
            if (count($products_list))
             foreach ($products_list as $product) {
                 $send_product=true;
-                //for simple product checks is it as a child for configurable and do not send it if parent active 
+                $imageUrl = $this->CDT($product->getImage() != 'no_selection' ? $product->getImageUrl() : '');
                 if (!$product->isConfigurable()){
                              $parentId = Mage::getResourceSingleton('catalog/product_type_configurable')->getParentIdsByChild($product->getId());
                              //sometimes could be grouped if such module installed
@@ -1227,6 +916,7 @@ if ($shipping_price_exists==0){//somethimes returns zero
                                        ; //if object not supported appears exception                                
                                 }*/
                             if (is_array($parentId)&&count($parentId))
+                            {
                             foreach ($parentId as  $parent_product_id){
                                 $prod_parent_obj = Mage::getModel('catalog/product')->load($parent_product_id);
                                       //do not send if this product exists as child in any active parent product
@@ -1235,16 +925,22 @@ if ($shipping_price_exists==0){//somethimes returns zero
                                     break;
                                   }
                              }
+                             if ($imageUrl == '') {
+                                $parentProduct = Mage::getModel('catalog/product')->load($parentId[0]);
+                                $imageUrl = $parentProduct->getImageUrl();
+                             }
+                            }
 
                 }
-                if  ($product->getTypeId() == 'bundle') {
+                if  ($product->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) {
                     $send_product = false;
                 }
                 if ($product->getPrice() == '') {
                     $send_product = false;
                 }
                 if ($send_product){
-                    $data .= '<product productcode="'.$product->getSku().'" variantcode="" barcode="" price="'.$product->getPrice().'"><description>'.$this->CDT($product->getName()).'</description><imageurl>'.$this->CDT($product->getImage() != 'no_selection' ? $product->getImageUrl() : '').'</imageurl>';
+                    $data .= '<product productcode="'.$product->getSku().'" variantcode="" barcode="" price="'.$product->getPrice().'"><description>'.$this->CDT($product->getName()).'</description>';
+                    $data .= '<imageurl>'.$imageUrl.'</imageurl>';
                     $attributes_arr=explode(",",$attributes);
                     if (count($attributes_arr)){
                         $data .= '<attributes>';
@@ -1306,27 +1002,27 @@ if ($shipping_price_exists==0){//somethimes returns zero
                }
             }
 
-        $data .= '</products></import>';
-        if ($data!=''){
-              $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                            'location'  => $this->importServiceUrl()));
-          $types_array = $soapclient->__getTypes();
-          $functions_array = $soapclient->__getFunctions();
-            try {
-              $result = $soapclient->__soapCall('ImportProducts', array('ImportProducts' => array('xmlToImport' => $data)));
-               if (is_array($remove_deleted)&&count($remove_deleted)>0){
-                  $write_data = Mage::getSingleton('core/resource')->getConnection('core_write');
-                  $write_data->query("delete from qixol_product_to_delete where entity_id in (".join(",",$remove_deleted).")");
-               }
-              $this->addExportStatus("success", 'products' ,addslashes($result->ImportProductsResult),1);
-            } catch (SoapFault $e) {
-              print_r($e->faultstring);
-              $this->addExportStatus("error", 'products' ,addslashes($e->faultstring),1);
+            $data .= '</products></import>';
+            if ($data!=''){
+                $result = $this->promoService->ProductsExport($data);
+                
+                if ($result->success)
+                {
+                    $this->addExportStatus("success", 'products', addslashes($result->message), 1);
+                    if (is_array($remove_deleted)&&count($remove_deleted)>0)
+                    {
+                        $write_data = Mage::getSingleton('core/resource')->getConnection('core_write');
+                        $write_data->query("delete from qixol_product_to_delete where entity_id in (".join(",",$remove_deleted).")");
+                    }
+                }
+                else {
+                    $this->addExportStatus("error", 'products', addslashes($result->message), 1);
+                }
             }
-         } else {
-             $this->addExportStatus("success", 'products', 'no products to send', 1);
-         }
-        }
+            else
+            {
+                $this->addExportStatus("success", 'products', 'no products to send', 1);
+            }
         }
     }
     
@@ -1348,7 +1044,7 @@ if ($shipping_price_exists==0){//somethimes returns zero
       return "<![CDATA[".$in_str."]]>";
     }   
 
-   function getExportStatus($for='products'){
+    public function getExportStatus($for='products'){
             //should get ststus here
             //id ->database log, message=>last message in log, error - on error =1; finished->on script finished =1
         $query="SELECT 
@@ -1372,12 +1068,11 @@ if ($shipping_price_exists==0){//somethimes returns zero
             $messages=array('id'=>'0','message'=>'inactive', 'error'=>0, 'finished'=>0);
           }
 
-
         return $messages;
 
    }
 
-    function addExportStatus($message, $for ,$extended_message='',$finished=0){
+    public function addExportStatus($message, $for ,$extended_message='',$finished=0){
         if (!isset($this->process_export_status_id[$for])||$this->process_export_status_id[$for]==0){
             $query="INSERT INTO ".$this->process_export_status_table." 
                 (last_message, export_what,exports_start,exports_last_updated,is_finished,extended_message) 

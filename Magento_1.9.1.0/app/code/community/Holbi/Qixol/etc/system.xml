@@ -52,32 +52,64 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </services>                        
-                        <importManagerServiceAddress>
-                            <label>Import Manager Service Address</label>
-                            <comment>Import Manager Service Address</comment>
-                            <depends><services>custom</services></depends>
+                        <serviceProtocol translate="label comment">
+                            <label>Service Protocol</label>
+                            <comment>Service Protocol</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>qixol/System_Config_Source_IServiceProtocols_Values</source_model>
+                            <sort_order>31</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </serviceProtocol>
+                        <restServiceAddress translate="label comment">
+                            <label>REST Service Address</label>
+                            <comment>REST Service Address</comment>
+                            <depends>
+                                <services>custom</services>
+                                <serviceProtocol>REST</serviceProtocol>
+                            </depends>
                             <frontend_type>text</frontend_type>
                             <sort_order>301</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </importManagerServiceAddress>
-                        <exportManagerServiceAddress>
-                            <label>Export Manager Service Address</label>
-                            <comment>Export Manager Service Address</comment>
-                            <depends><services>custom</services></depends>
+                        </restServiceAddress>
+                        <importManagerServiceAddress translate="label comment">
+                            <label>Import Manager Service Address</label>
+                            <comment>Import Manager Service Address</comment>
+                            <depends>
+                                <services>custom</services>
+                                <serviceProtocol>SOAP</serviceProtocol>
+                            </depends>
                             <frontend_type>text</frontend_type>
                             <sort_order>302</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </exportManagerServiceAddress>
-                        <basketManagerServiceAddress>
-                            <label>Basket Manager Service Address</label>
-                            <comment>Basket Manager Service Address</comment>
-                            <depends><services>custom</services></depends>
+                        </importManagerServiceAddress>
+                        <exportManagerServiceAddress translate="label comment">
+                            <label>Export Manager Service Address</label>
+                            <comment>Export Manager Service Address</comment>
+                            <depends>
+                                <services>custom</services>
+                                <serviceProtocol>SOAP</serviceProtocol>
+                            </depends>
                             <frontend_type>text</frontend_type>
                             <sort_order>303</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </exportManagerServiceAddress>
+                        <basketManagerServiceAddress translate="label comment">
+                            <label>Basket Manager Service Address</label>
+                            <comment>Basket Manager Service Address</comment>
+                            <depends>
+                                <services>custom</services>
+                                <serviceProtocol>SOAP</serviceProtocol>
+                            </depends>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>304</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
