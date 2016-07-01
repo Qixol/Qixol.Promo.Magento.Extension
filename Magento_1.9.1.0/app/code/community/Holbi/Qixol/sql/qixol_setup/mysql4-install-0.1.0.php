@@ -16,22 +16,6 @@ SQLTEXT;
 
 $installer->run($sql);
 
-
-$sql=<<<SQLTEXT
-create table {$installer->getTable('qixol_product_export_stat')}(
- export_id int(11) NOT NULL auto_increment,
- start_export timestamp NOT NULL default '0000-00-00 00:00:00',
- finish_export timestamp NOT NULL default '0000-00-00 00:00:00',
- number_of_products int(11) default '0',
- status_export varchar(255) default '',
- export_by ENUM ('MANUAL', 'CRON') DEFAULt NULL ,
- status_export_message text, 
- primary key (export_id)
-);    
-SQLTEXT;
-
-$installer->run($sql);
-
 $sql=<<<SQLTEXT
 create table {$installer->getTable('qixol_process_export_status_table')}(
                         id int(11) NOT NULL auto_increment, 

@@ -103,12 +103,9 @@
         <exprpocessstat>
             <table>qixol_process_export_status_table</table>
         </exprpocessstat>        
-        <exportstat>
-            <table>qixol_product_export_stat</table>
-        </exportstat>        
-			  <deletedproduct>
-				<table>qixol_product_to_delete</table>
-			  </deletedproduct>
+        <deletedproduct>
+            <table>qixol_product_to_delete</table>
+        </deletedproduct>
         <customergrouspmap>
         <table>qixol_customers_groups_name_map</table>
         </customergrouspmap>
