@@ -891,116 +891,94 @@ if ($shipping_price_exists==0){//somethimes returns zero
         $remove_deleted=array();
 
         if (count($products_list)||count($products_deleted)){
-        $data = '<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'"><products>';
-            $attributes=Mage::getStoreConfig('qixol/productattrib/attributes');
+            $data = '<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'"><products>';
 
             //assign deleted product first
-           if (count($products_deleted))
-            foreach ($products_deleted as $products_deleted_data) {
-                      $data .= '<product productcode="'.$products_deleted_data->getData('product_sku').'" variantcode="'.$products_deleted_data->getData('child_sku').'" barcode="" deleted="true"></product>';
-                      $remove_deleted[]=$products_deleted_data->getData('entity_id');                
-            }
+            if (count($products_deleted))
+                foreach ($products_deleted as $products_deleted_data) {
+                    $data .= '<product productcode="'.$products_deleted_data->getData('product_sku').'" variantcode="'.$products_deleted_data->getData('child_sku').'" barcode="" deleted="true"></product>';
+                    $remove_deleted[]=$products_deleted_data->getData('entity_id');                
+                }
 
-           if (count($products_list))
-            foreach ($products_list as $product) {
-                $send_product=true;
-                $imageUrl = $this->CDT($product->getImage() != 'no_selection' ? $product->getImageUrl() : '');
-                if (!$product->isConfigurable()){
-                             $parentId = Mage::getResourceSingleton('catalog/product_type_configurable')->getParentIdsByChild($product->getId());
-                             //sometimes could be grouped if such module installed
-                              /*try {
-                                    if((!$parentId)||(!is_array($parentId)))
-                                    $parentId = Mage::getResourceSingleton('catalog/product_type_grouped')->getParentIdsByChild($product->getId());
-                                }
-                                catch(Exception $e) {
-                                       ; //if object not supported appears exception                                
-                                }*/
-                            if (is_array($parentId)&&count($parentId))
-                            {
+                if (count($products_list))
+                foreach ($products_list as $product) {
+                    $send_product=true;
+                    $imageUrl = $this->CDT($product->getImage() != 'no_selection' ? $product->getImageUrl() : '');
+                    if (!$product->isConfigurable()){
+                        $parentId = Mage::getResourceSingleton('catalog/product_type_configurable')->getParentIdsByChild($product->getId());
+                        //sometimes could be grouped if such module installed
+                         /*try {
+                               if((!$parentId)||(!is_array($parentId)))
+                               $parentId = Mage::getResourceSingleton('catalog/product_type_grouped')->getParentIdsByChild($product->getId());
+                           }
+                           catch(Exception $e) {
+                                  ; //if object not supported appears exception                                
+                           }*/
+                        if (is_array($parentId)&&count($parentId))
+                        {
                             foreach ($parentId as  $parent_product_id){
                                 $prod_parent_obj = Mage::getModel('catalog/product')->load($parent_product_id);
-                                      //do not send if this product exists as child in any active parent product
-                                  if (strtolower($prod_parent_obj->getAttributeText('status'))=='enabled'&&$prod_parent_obj->getVisibility()>1){
+                                //do not send if this product exists as child in any active parent product
+                                if (strtolower($prod_parent_obj->getAttributeText('status'))=='enabled'&&$prod_parent_obj->getVisibility()>1){
                                     $send_product=false;
                                     break;
-                                  }
-                             }
-                             if ($imageUrl == '') {
-                                $parentProduct = Mage::getModel('catalog/product')->load($parentId[0]);
-                                $imageUrl = $parentProduct->getImageUrl();
-                             }
-                            }
-
-                }
-                if  ($product->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) {
-                    $send_product = false;
-                }
-                if ($product->getPrice() == '') {
-                    $send_product = false;
-                }
-                if ($send_product){
-                    $data .= '<product productcode="'.$product->getSku().'" variantcode="" barcode="" price="'.$product->getPrice().'"><description>'.$this->CDT($product->getName()).'</description>';
-                    $data .= '<imageurl>'.$imageUrl.'</imageurl>';
-                    $attributes_arr=explode(",",$attributes);
-                    if (count($attributes_arr)){
-                        $data .= '<attributes>';
-                        foreach ($attributes_arr as $attribute_id){
-                            $attribute = $product->getResource()->getAttribute($attribute_id);
-                            if ($attribute != NULL) {
-                                $is_attribute_text_value = $attribute->getFrontend()->getValue($product);
-                                $data .= '<attribute><name>'.$attribute_id.'</name><value>'.$this->CDT($is_attribute_text_value!=''?$is_attribute_text_value:$product->getData($attribute_id)).'</value></attribute>';
-                            }
-                        }
-                     if (Mage::getStoreConfig('qixol/syhchronized/synchcatproducts')>0){
-                        foreach ($product->getCategoryIds() as $product_category_id){
-                            if ($product_category_id==0) continue;
-                            $current_ctaegory_id=$product_category_id;                     
-                                $category_name_push='';
-                                while($current_ctaegory_id != 0){
-                                  $category = Mage::getModel('catalog/category')->load($current_ctaegory_id);
-                                  $current_ctaegory_id=$category->getParentId();
-                                  if (strtolower($category->getName())!='root catalog')
-                                  $category_name_push=$category->getName().($category_name_push!=''?" / ".$category_name_push:"");
                                 }
-                                $data .= '<attribute><name>categorycode</name><value>'.$this->CDT($category_name_push).'</value></attribute>';
+                            }
+                            $parentProduct = Mage::getModel('catalog/product')->load($parentId[0]);
+                            if ($imageUrl == '') {
+                            $imageUrl = $parentProduct->getImageUrl();
+                            }
                         }
-                      }
-
-                        $data .= '</attributes>';
                     }
-                    $data .= '</product>';
+                    if  ($product->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) {
+                        $send_product = false;
+                    }
+                    if ($product->getPrice() == '') {
+                        $send_product = false;
+                    }
+                    if ($send_product){
+                        $productCategories = $product->getCategoryIds();
+                        if (!$product->isConfigurable()) {
+                            $productCode = $product->getSku();
+                            $variantCode = '';
+                            $price = $product->getPrice();
+                            $description = $this->CDT($product->getName());
 
-                    if ($product->isConfigurable()){ //with variations
+                            $data .= $this->productXmlElement($product, $productCode, $variantCode, $price, $description, $imageUrl, $productCategories);
+                            $number_products_exported++;
+
+                        } else {
                             //$associatedAttributes = $product->getTypeInstance()->getConfigurableAttributesAsArray($product);    
                             $childs_products_list=$product->getTypeInstance()->getUsedProducts();
-                            foreach ($childs_products_list as $childProduct_tmp) {                           
-                                $childProduct = Mage::getModel('catalog/product')->load($childProduct_tmp->getId());
-                                $data .= '<product productcode="'.$product->getSku().'" variantcode="'.$childProduct->getSku().'" barcode="" price="'.$childProduct->getPrice().'"><description>'.$this->CDT($childProduct->getName()).'</description>';
-                                $image = $childProduct->getImage();
-                                if ($image == NULL) {
-                                    $image = 'no_selection';
-                                }
-                                $data .= '<imageurl>'.($image != 'no_selection' ? $childProduct->getImageUrl() : '').'</imageurl>';
-                                  $attributes_arr=explode(",",$attributes);
-                                  if (count($attributes_arr)){
-                                      $data .= '<attributes>';
-                                      foreach ($attributes_arr as $attribute_id){
-                                        $attribute = $childProduct->getResource()->getAttribute($attribute_id);
-                                        if ($attribute != NULL) {
-                                            $is_attribute_text_value = $attribute->getFrontend()->getValue($childProduct);
-                                            $data .= '<attribute><name>'.$attribute_id.'</name><value>'.$this->CDT($is_attribute_text_value!=''?$is_attribute_text_value:$childProduct->getData($attribute_id)).'</value></attribute>';
-                                        }
-                                      }
-                                      $data .= '</attributes>';
-                                  }
-                                  $data .= '</product>';
+                            if (empty($childs_products_list) || (count($childs_products_list) == 0)) {
+                                $productCode = $product->getSku();
+                                $variantCode = '';
+                                $price = $product->getPrice();
+                                $description = $this->CDT($product->getName());
 
-                                $number_products_exported++;//clacualte also childs as in qixol it is separate products
+                                $data .= $this->productXmlElement($product, $productCode, $variantCode, $price, $description, $imageUrl, $productCategories);
+                                $number_products_exported++;
+                            } else {
+                                foreach ($childs_products_list as $childProduct_tmp) {                           
+                                    $childProduct = Mage::getModel('catalog/product')->load($childProduct_tmp->getId());
+                                    $productCode = $product->getSku();
+                                    $variantCode = $childProduct->getSku();
+                                    $price = $childProduct->getPrice();
+                                    $description = $product->getName(); // $this->CDT($childProduct->getName());
+                                    $image = $childProduct->getImage();
+                                    if ($image == NULL) {
+                                        $image = 'no_selection';
+                                    }
+                                    $imageUrl = ($image != 'no_selection' ? $childProduct->getImageUrl() : '');
+
+                                    $data .= $this->productXmlElement($product, $productCode, $variantCode, $price, $description, $imageUrl, $productCategories);
+
+                                    $number_products_exported++;
+                                }
                             }
+                        }
                     }
-                  $number_products_exported++;
-               }
-            }
+                }
 
             $data .= '</products></import>';
             if ($data!=''){
@@ -1024,6 +1002,57 @@ if ($shipping_price_exists==0){//somethimes returns zero
                 $this->addExportStatus("success", 'products', 'no products to send', 1);
             }
         }
+    }
+    
+    function attributeXmlElement($product, $productCategories) {
+        $attributes=Mage::getStoreConfig('qixol/productattrib/attributes');
+        $attributeXmlElement = '';
+        $attributes_arr=explode(",",$attributes);
+        if (count($attributes_arr)){
+            foreach ($attributes_arr as $attribute_id){
+                $attribute = $product->getResource()->getAttribute($attribute_id);
+                if ($attribute != NULL) {
+                    $is_attribute_text_value = $attribute->getFrontend()->getValue($product);
+                    $attributeXmlElement .= '<attribute>';
+                    $attributeXmlElement .= '<name>'.$attribute_id.'</name>';
+                    $attributeXmlElement .= '<value>'.$this->CDT($is_attribute_text_value!=''?$is_attribute_text_value:$product->getData($attribute_id)).'</value>';
+                    $attributeXmlElement .= '</attribute>';
+                }
+            }
+        }
+        if (Mage::getStoreConfig('qixol/syhchronized/synchcatproducts')>0){
+            foreach ($productCategories as $product_category_id){
+                if ($product_category_id==0) continue;
+                $current_ctaegory_id=$product_category_id;                     
+                $category_name_push='';
+                while($current_ctaegory_id != 0){
+                    $category = Mage::getModel('catalog/category')->load($current_ctaegory_id);
+                    $current_ctaegory_id=$category->getParentId();
+                    if (strtolower($category->getName())!='root catalog') {
+                        $category_name_push=$category->getName().($category_name_push!=''?" / ".$category_name_push:"");
+                    }
+                }
+                $attributeXmlElement .= '<attribute>';
+                $attributeXmlElement .= '<name>categorycode</name>';
+                $attributeXmlElement .= '<value>'.$this->CDT($category_name_push).'</value>';
+                $attributeXmlElement .= '</attribute>';
+            }
+        }                
+
+        if (!empty($attributeXmlElement)) {
+            $attributeXmlElement = '<attributes>'.$attributeXmlElement.'</attributes>';
+        }
+        return $attributeXmlElement;
+    }
+    
+    function productXmlElement($product, $productCode, $variantCode, $price, $description, $imageUrl, $productCategories) {
+        $productXmlElement = '<product productcode="'.$productCode.'" variantcode="'.$variantCode.'"';
+        $productXmlElement .= ' barcode="" price="'.$price.'"><description>'.$description.'</description>';
+        $productXmlElement .= '<imageurl>'.$imageUrl.'</imageurl>';
+        $productXmlElement .= $this->attributeXmlElement($product, $productCategories);
+        $productXmlElement .= '</product>';
+        
+        return $productXmlElement;
     }
     
     function run_export_qixolData(){
