@@ -50,7 +50,7 @@ class Holbi_Qixol_Block_Adminhtml_Storesmap_Edit_Tab_Form extends Mage_Adminhtml
             'class' => 'required-entry',
             'required' => true,
             'name' => 'store_name_map',
-            'after_element_html' => Mage::helper('qixol')->__('Name to be send to quxiol.'),
+            'after_element_html' => Mage::helper('qixol')->__('Name to be sent to Promo.'),
         ));
 
 
