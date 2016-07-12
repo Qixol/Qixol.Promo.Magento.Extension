@@ -123,6 +123,7 @@
                     <show_in_website>0</show_in_website>
                     <show_in_store>0</show_in_store>
                     <fields>
+                        <!--
                         <showpromocat translate="label">
                             <label>Show promotion sticker in catalogue</label>
                             <comment>Show promotion stickers on products on catalogue</comment>
@@ -162,7 +163,8 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </showcartpromobox>                       
+                        </showcartpromobox>
+                        -->
                         <onepagejavascr translate="label">
                             <label>Use Javascript onepage update.</label>
                             <comment>One one page chackout use javascript cart update.</comment>
@@ -193,6 +195,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </mcartjavascr>      
+                        <!--
                         <showallpromoprod translate="label">
                             <label>Show available promotions on product page</label>
                             <comment>Show product related promotions on product page</comment>
@@ -202,7 +205,8 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </showallpromoprod>                        
+                        </showallpromoprod>
+                        -->
                       </fields>                      
                   </frontend>  
               <advanced translate="label">
@@ -465,5 +469,57 @@
                </sinch_import_promotion>                  
             </groups>
         </qixol>
+    </sections>
+    <sections>
+        <stickers translate="label">
+            <label>Stickers</label>
+            <tab>qixol</tab>
+            <sort_order>110</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general translate="label">
+                    <label>General</label>
+                    <sort_order>50</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <comment><![CDATA[Stickers configuration]]></comment>
+                    <fields>
+                        <showInCatalogue translate="label">
+                            <label>Show promotion stickers in catalogue</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>qixol/stickers/showInCatalogue</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </showInCatalogue>
+                        <showStickersOnProductPage translate="label">
+                            <label>Show promotion stickers on product page</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>qixol/stickers/showStickersOnProductPage</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </showStickersOnProductPage>      
+                        <showPromoBoxOnProductPage translate="label">
+                            <label>Show available promotions on product page</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>qixol/stickers/showPromoBoxOnProductPage</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </showPromoBoxOnProductPage>      
+                    </fields>                      
+                </general>   
+            </groups>
+        </stickers>
     </sections>
 </config>

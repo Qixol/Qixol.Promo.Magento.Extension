@@ -16,22 +16,6 @@ SQLTEXT;
 
 $installer->run($sql);
 
-
-$sql=<<<SQLTEXT
-create table {$installer->getTable('qixol_product_export_stat')}(
- export_id int(11) NOT NULL auto_increment,
- start_export timestamp NOT NULL default '0000-00-00 00:00:00',
- finish_export timestamp NOT NULL default '0000-00-00 00:00:00',
- number_of_products int(11) default '0',
- status_export varchar(255) default '',
- export_by ENUM ('MANUAL', 'CRON') DEFAULt NULL ,
- status_export_message text, 
- primary key (export_id)
-);    
-SQLTEXT;
-
-$installer->run($sql);
-
 $sql=<<<SQLTEXT
 create table {$installer->getTable('qixol_process_export_status_table')}(
                         id int(11) NOT NULL auto_increment, 
@@ -225,16 +209,11 @@ $installer->run($sql);
 $sql=<<<SQLTEXT
 CREATE TABLE {$installer->getTable('qixol_stickers')}(
   `sticker_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `use_default_sticker` varchar(32) not null default '',
   `filename` varchar(255) NOT NULL DEFAULT '',
-  `use_default_banner_group` tinyint(6) NOT NULL DEFAULT '0',
-  `default_banner_group` varchar(32) not null default '',
-  `unique_banner_group` varchar(32) not null default '',
-  `banner_link_name` varchar(255) NOT NULL DEFAULT '' COMMENT  'promotion reference',
-  `status` smallint(6) NOT NULL DEFAULT '0',
-  `sort_order` int(11) NOT NULL DEFAULT '0',
-  `created_time` datetime DEFAULT NULL,
-  `update_time` datetime DEFAULT NULL,
+  `promo_reference` varchar(255) NOT NULL DEFAULT '',
+  `promo_type_name` varchar(255) NOT NULL DEFAULT '',
+  `is_default_for_type` tinyint not null default '0',
+  `is_system_default_for_type` tinyint not null default '0',
   PRIMARY KEY (`sticker_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQLTEXT;
@@ -268,6 +247,19 @@ $sql=<<<SQLTEXT
 
     ALTER TABLE  {$installer->getTable('sales/invoice')} ADD  `points_amount` DECIMAL( 10, 2 ) NOT NULL;
     ALTER TABLE  {$installer->getTable('sales/invoice')} ADD  `base_points_amount` DECIMAL( 10, 2 ) NOT NULL;
+SQLTEXT;
+$installer->run($sql);
+
+$sql=<<<SQLTEXT
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/bogof.png','','BOGOF',1,1);
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/bogor.png','','BOGOR',1,1);
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/bundle.png','','BUNDLE',1,1);
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/deal.png','','DEAL',1,1);
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/freeproduct.png','','FREEPRODUCT',1,1);
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/issuecoupon.png','','ISSUECOUPON',1,1);
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/issuepoints.png','','ISSUEPOINTS',1,1);
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/offers.png','','MULTIPLE',1,1);
+    INSERT INTO {$installer->getTable(`qixol_stickers`)}(`filename`, `promo_reference`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/productsreduction.png','','PRODUCTSREDUCTION',1,1);
 SQLTEXT;
 $installer->run($sql);
 

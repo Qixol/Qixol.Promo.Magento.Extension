@@ -1,5 +1,5 @@
 <?php
-       if (Mage::getStoreConfig('holbi/qixol/enabled')>0&&Mage::getStoreConfig('qixol/frontend/showpromocat')>0){
+       if (Mage::getStoreConfig('holbi/qixol/enabled')>0&&Mage::getStoreConfig('qixol/stickers/showInCatalogue')>0){
                 $_productCollection=$this->getLoadedProductCollection();
                 $qixol_bannerbox_category_top=Mage::getModel('qixol/bannerboxes')->load('CATEGORY_TOP');
            if ($qixol_bannerbox_category_top->getBannerBoxIsActive()>0){
