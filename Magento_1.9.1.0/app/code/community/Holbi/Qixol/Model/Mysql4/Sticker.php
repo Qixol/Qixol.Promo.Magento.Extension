@@ -29,7 +29,7 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
         $matchedTypes = array();
         $filenames = array();
         foreach ($promotionSpecificStickers as $promotionSpecificSticker) {
-            array_push($matchedTypes, array('promotion_type_name' => $promotionSpecificSticker['promotion_type_name']));
+            array_push($matchedTypes, $promotionSpecificSticker['promotion_type_name']);
             array_push($filenames, array('filename' => $promotionSpecificSticker['filename']));
         }
 
@@ -38,7 +38,7 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
         **************************************************************************/
         $defaultStickers = $this->getPromotionDefaultStickers($promotions, $matchedTypes);        
         foreach ($defaultStickers as $defaultSticker) {
-            array_push($matchedTypes, array('promotion_type_name' => $defaultSticker['promotion_type_name']));
+            array_push($matchedTypes, $defaultSticker['promotion_type_name']);
             array_push($filenames, array('filename' => $defaultSticker['filename']));
         }
         
@@ -47,7 +47,7 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
         **************************************************************************/
         $defaultStickers = $this->getPromotionSystemStickers($promotions, $matchedTypes);        
         foreach ($defaultStickers as $defaultSticker) {
-            array_push($matchedTypes, array('promotion_type_name' => $defaultSticker['promotion_type_name']));
+            array_push($matchedTypes, $defaultSticker['promotion_type_name']);
             array_push($filenames, array('filename' => $defaultSticker['filename']));
         }
 
@@ -104,22 +104,27 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
                 array_push($references, $value[promo_reference]);
             }
         }
+        
+        $join = 'sticker.promo_reference = promo.yourref';
 
         $whereStringReferences = join('\',\'', $references);
         $whereStringReferences = 'promo_reference in (\'' . $whereStringReferences . '\')';
         
         $select = $this->_getReadAdapter()->select()
-                ->from($this->getTable('sticker'))
+                ->from(array('sticker' => $this->getTable('sticker')))
+                ->join(array('promo' => $this->getTable('promotions')), $join)
                 ->where($whereStringReferences)
                 ->reset('columns')
-                ->columns(array('filename' => 'filename', 'promotion_type_name' => 'promo_type_name'));
+                ->columns(array('filename' => 'filename', 'promotion_type_name' => 'promo.promotion_type'));
 
         return $this->_getReadAdapter()->fetchAll($select);
     }
     
     private function getPromotionDefaultStickers($promotions, $matchedTypes) {
         $whereString = '(is_default_for_type = 1) and (is_system_default_for_type = 0)';
-
+        if (is_array($matchedTypes)) {
+            $whereString .= ' and promo_type_name not in (\'' . join('\',\'', $matchedTypes) . '\')';
+        }
         $select = $this->_getReadAdapter()->select()
                 ->from($this->getTable('sticker'))
                 ->where($whereString)
@@ -130,6 +135,25 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
     }
 
     private function getPromotionSystemStickers($promotions, $matchedTypes) {
+        $whereString = '(is_default_for_type = 1) and (is_system_default_for_type = 1)';
+        if (is_array($matchedTypes)) {
+            $whereString .= ' and promo_type_name not in (\'' . join('\',\'', $matchedTypes) . '\')';
+        }
+
+        $unmatchedTypes = array();
+        foreach($promotions as $key => $value) {
+            if ($value[promotion_type] != '') {
+                array_push($unmatchedTypes, $value[promotion_type]);
+            }
+        }
+        $whereString .= ' and promo_type_name in (\'' . join('\',\'', $unmatchedTypes) . '\')';
         
+        $select = $this->_getReadAdapter()->select()
+                ->from($this->getTable('sticker'))
+                ->where($whereString)
+                ->reset('columns')
+                ->columns(array('filename' => 'filename', 'promotion_type_name' => 'promo_type_name'));
+
+        return $this->_getReadAdapter()->fetchAll($select);
     }
 }
