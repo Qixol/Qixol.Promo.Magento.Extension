@@ -13,7 +13,10 @@ if (Mage::getStoreConfig('qixol/stickers/showPromoBoxOnProductPage')>0){
     $qixol_all_promotions_text=$qixol_advertisment->getAllProductAdv($_product);
     if ($qixol_all_promotions_text!=''){
     //    $qixol_product_all_scripts_inside .= '$(".add-to-box").after("<div id=product_advertisment_ class=\'cycle-slideshow\' data-cycle-fx=\'scrollHorz\' data-cycle-timeout=\'1500\' data-cycle-slides=\'> div\'>'.preg_replace("/[\n\r]+/","",$qixol_all_promotions_text).'</div>"); $(\'#product_advertisment_\').cycle();';
-         $qixol_product_all_scripts_inside .= '$(".add-to-box").after("<div class=\'product_all_promotions\'><table style=\'width:100%\'><th>Offers</th><th style=\'width:100px;\'>You Save</th>'.preg_replace("/[\n\r]+/","",$qixol_all_promotions_text).'</div></table>");';
+         $qixol_product_all_scripts_inside .= '$(".add-to-box").after("<div class=\'product_all_promotions\'><table style=\'width:100%\'><th>Offers</th>';
+         $qixol_product_all_scripts_inside .= '<th style=\'width:100px;\'>You Save</th>';
+         $qixol_product_all_scripts_inside .= preg_replace("/[\n\r]+/","",$qixol_all_promotions_text);
+         $qixol_product_all_scripts_inside .= '</div></table>");';
     }
        $qixol_product_top_box=Mage::getModel('qixol/bannerboxes')->load('PRODUCT_TOP');
     if ($qixol_product_top_box->getBannerBoxIsActive()>0){
@@ -37,7 +40,7 @@ if (Mage::getStoreConfig('qixol/stickers/showPromoBoxOnProductPage')>0){
 
 if (Mage::getStoreConfig('qixol/stickers/showStickersOnProductPage')>0) {
 
-    $is_sticker_image = $qixol_advertisment->isSticked($_product,'product');
+    $is_sticker_image = $qixol_advertisment->isSticked($_product);
     
 //    $is_sticker_image = [
 //        1 => 'http://localhost.magento.com/media/custom/stickers/File-1467816895.png',

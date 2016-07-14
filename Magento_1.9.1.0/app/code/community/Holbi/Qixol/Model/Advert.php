@@ -3,10 +3,10 @@ class Holbi_Qixol_Model_Advert extends Mage_Core_Model_Abstract {
     function __construct(){
 
     }
-    function isSticked($product,$type=''){
+    function isSticked($product){
      $image=false;
      $products_has_promotion_image=Mage::getResourceSingleton('qixol/sticker');
-     $product_stick_images=$products_has_promotion_image->getStickerImage($product,$type);
+     $product_stick_images=$products_has_promotion_image->getStickerImage($product);
 
      if (is_array($product_stick_images)&&count($product_stick_images)==1) { //if 1 sticker
       $image=$product_stick_images[0]['filename'];
@@ -35,8 +35,9 @@ class Holbi_Qixol_Model_Advert extends Mage_Core_Model_Abstract {
          foreach($adv_array as $advert){
             if ($advert['filename']!=''&&strlen($advert['filename'])>5){
                 $text_to_return.="<div>".(trim($advert['url'])!=''?"<a href='".$advert['url']."'>":"")."<img title='".$advert['promotion_text']."' src='".Mage::getBaseUrl('media').$advert['filename']."'>".(trim($advert['url'])!=''?"</a>":"")."</div>";
-            }else 
+            }else {
                 $text_to_return.="<div>".(trim($advert['url'])!=''?"<a href='".$advert['url']."'>":"").$advert['promotion_text'].(trim($advert['url'])!=''?"</a>":"")."</div>";
+            }
          }
       }
 

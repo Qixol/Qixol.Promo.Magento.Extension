@@ -268,3 +268,4 @@ $installer->run($sql);
 //demo 
 $installer->endSetup();
 	 
+?>

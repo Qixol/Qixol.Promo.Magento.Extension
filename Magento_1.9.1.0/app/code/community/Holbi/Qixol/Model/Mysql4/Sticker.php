@@ -8,7 +8,7 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
         $this->_init('qixol/sticker', 'sticker_id');
     }
 
-    public function getStickerImage($product,$adv_type='product') {
+    public function getStickerImage($product) {
         
         // How to get the stickers:
         // get promotions that are valid for this product
@@ -21,6 +21,10 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
         **************************************************************************/
         $promotions = $this->getPromotionsForProduct($product);
         
+        if (count($promotions) == 0) {
+            return false;
+        }
+        
         /**************************************************************************
         // get stickers for any promotion references (!= '')
         **************************************************************************/
@@ -28,29 +32,44 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
         
         $matchedTypes = array();
         $filenames = array();
-        foreach ($promotionSpecificStickers as $promotionSpecificSticker) {
-            array_push($matchedTypes, $promotionSpecificSticker['promotion_type_name']);
-            array_push($filenames, array('filename' => $promotionSpecificSticker['filename']));
-        }
 
+        if (is_array($promotionSpecificStickers)) {
+            if (count($promotionSpecificStickers) > 0) {
+                foreach ($promotionSpecificStickers as $promotionSpecificSticker) {
+                    array_push($matchedTypes, $promotionSpecificSticker['promotion_type_name']);
+                    array_push($filenames, array('filename' => $promotionSpecificSticker['filename']));
+                }
+            }
+        }
+        
         /**************************************************************************
         // next get custom stickers for promotion types other than any matched in the second step
         **************************************************************************/
-        $defaultStickers = $this->getPromotionDefaultStickers($promotions, $matchedTypes);        
-        foreach ($defaultStickers as $defaultSticker) {
-            array_push($matchedTypes, $defaultSticker['promotion_type_name']);
-            array_push($filenames, array('filename' => $defaultSticker['filename']));
+        $defaultStickers = $this->getPromotionDefaultStickers($promotions, $matchedTypes);
+        
+        if (is_array($defaultStickers)) {
+            if (count($defaultStickers) > 0) {
+                foreach ($defaultStickers as $defaultSticker) {
+                    array_push($matchedTypes, $defaultSticker['promotion_type_name']);
+                    array_push($filenames, array('filename' => $defaultSticker['filename']));
+                }
+            }
         }
         
         /**************************************************************************
         // next get system stickers for remaining promotion types
         **************************************************************************/
-        $defaultStickers = $this->getPromotionSystemStickers($promotions, $matchedTypes);        
-        foreach ($defaultStickers as $defaultSticker) {
-            array_push($matchedTypes, $defaultSticker['promotion_type_name']);
-            array_push($filenames, array('filename' => $defaultSticker['filename']));
+        $systemStickers = $this->getPromotionSystemStickers($promotions, $matchedTypes);
+        
+        if (is_array($systemStickers)) {
+            if (count($systemStickers) > 0) {
+                foreach ($systemStickers as $systemSticker) {
+                    array_push($matchedTypes, $systemSticker['promotion_type_name']);
+                    array_push($filenames, array('filename' => $systemSticker['filename']));
+                }
+            }
         }
-
+        
         return $filenames;
     }
 
@@ -113,6 +132,10 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
             }
         }
         
+        if (count($references) == 0) {
+            return;
+        }
+        
         $join = 'sticker.promo_reference = promo.yourref';
 
         $whereStringReferences = join('\',\'', $references);
@@ -131,8 +154,19 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
     private function getPromotionDefaultStickers($promotions, $matchedTypes) {
         $whereString = '(is_default_for_type = 1) and (is_system_default_for_type = 0)';
         if (is_array($matchedTypes)) {
-            $whereString .= ' and promo_type_name not in (\'' . join('\',\'', $matchedTypes) . '\')';
+            if (count($matchedTypes) > 0) {
+                $whereString .= ' and promo_type_name not in (\'' . join('\',\'', $matchedTypes) . '\')';
+            }
         }
+
+        $unmatchedTypes = array();
+        foreach($promotions as $key => $value) {
+            if ($value[promotion_type] != '') {
+                array_push($unmatchedTypes, $value[promotion_type]);
+            }
+        }
+        $whereString .= ' and promo_type_name in (\'' . join('\',\'', $unmatchedTypes) . '\')';
+        
         $select = $this->_getReadAdapter()->select()
                 ->from($this->getTable('sticker'))
                 ->where($whereString)
@@ -145,7 +179,9 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
     private function getPromotionSystemStickers($promotions, $matchedTypes) {
         $whereString = '(is_default_for_type = 1) and (is_system_default_for_type = 1)';
         if (is_array($matchedTypes)) {
-            $whereString .= ' and promo_type_name not in (\'' . join('\',\'', $matchedTypes) . '\')';
+            if (count($matchedTypes) > 0) {
+                $whereString .= ' and promo_type_name not in (\'' . join('\',\'', $matchedTypes) . '\')';
+            }
         }
 
         $unmatchedTypes = array();
