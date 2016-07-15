@@ -173,32 +173,6 @@ class Holbi_Qixol_Model_Mysql4_Banner extends Mage_Core_Model_Mysql4_Abstract {
        return false;
     }
 
-    public function getAllProductTextAdv($product,$adv_type='Inline') {
-       //create the list of product->child if parent
-       $product_id=$product->getId();
-       $child_ids=array();
-       if ($product->isConfigurable()){
-           $associatedProducts = $product->getTypeInstance()->getConfigurableAttributesAsArray($product); 
-           foreach ($product->getTypeInstance()->getUsedProducts() as $childProduct) {
-               $child_ids[]=$childProduct->getId();
-           }
-       }
-// 
-       $condition_4 = $this->_getReadAdapter()->quoteInto("qphp.promotion_id=pt.promotion_id ",'');
-       $where=
-                            (count($child_ids)?
-                            " ((qphp.parent_product_id='".(int)$product_id."' and qphp.product_id in (".join(",",$child_ids).")) or (qphp.product_id='".(int)$product_id."' and qphp.parent_product_id=0) )":
-                            " qphp.product_id='".(int)$product_id."' and qphp.parent_product_id=0");
-
-       $select = $this->_getReadAdapter()->select()->from(array('qphp'=>$this->getTable('promotionhasproduct')))
-                ->joinLeft(array('pt'=>$this->getTable('promotions')), $condition_4)
-                ->where($where)->group(array("pt.promotion_id"))->reset('columns')->columns(array('pt.promotion_text','pt.discountpercent','pt.discountamount'));
-
-       $data=$this->_getReadAdapter()->fetchAll($select);
-       if (count($data)) return $data;
-       return false;
-    }
-
     public function getCartInlineAdv(){
       $where = $this->_getReadAdapter()->quoteInto(" is_for_product = ? ",0);
       $condition_1 = $this->_getReadAdapter()->quoteInto('b.banner_group=pt.promotion_type','');

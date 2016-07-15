@@ -27,7 +27,15 @@ if ($bottom_advertisment_text != '') {
     $bottom_advertisment_text .= '</div></div>';
     
     //echo $bottom_advertisment_text;
- ?><script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>lib/jquery/jquery-1.10.2.min.js"></script><script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>/skin/frontend/base/default/js/lib/jquery.cycle2.min.js"></script><script type="text/javascript">$.noConflict();jQuery( document ).ready(function( $ ) { $(".add-to-cart").after('<?php echo addslashes($bottom_advertisment_text)?>'); $('#product_bottom_').cycle();});</script><?php
+ ?><script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>lib/jquery/jquery-1.10.2.min.js"></script>
+ <script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>/skin/frontend/base/default/js/lib/jquery.cycle2.min.js"></script>
+ <script type="text/javascript">
+     $.noConflict();
+     jQuery( document ).ready(function( $ ) {
+         $(".add-to-cart").after('<?php echo addslashes($bottom_advertisment_text)?>');
+         $('#product_bottom_').cycle();
+     });
+</script><?php
 }
 
 

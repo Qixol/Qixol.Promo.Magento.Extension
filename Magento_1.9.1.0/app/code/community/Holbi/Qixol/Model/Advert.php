@@ -3,27 +3,7 @@ class Holbi_Qixol_Model_Advert extends Mage_Core_Model_Abstract {
     function __construct(){
 
     }
-    function isSticked($product){
-     $image=false;
-     $products_has_promotion_image=Mage::getResourceSingleton('qixol/sticker');
-     $product_stick_images=$products_has_promotion_image->getStickerImage($product);
-
-     if (is_array($product_stick_images)&&count($product_stick_images)==1) { //if 1 sticker
-      $image=$product_stick_images[0]['filename'];
-      if (($image!==false)&&strlen($image)>5)
-      $image=Mage::getBaseUrl('media').$image;
-      return $image;
-     }elseif(is_array($product_stick_images)&&count($product_stick_images)>1){
-       foreach ($product_stick_images as $image_array){
-             if (($image_array['filename']!==false)&&strlen($image_array['filename'])>5){
-                 $image[]=Mage::getBaseUrl('media').$image_array['filename'];
-             }
-       }
-      return $image;
-     }
-      return $image;
-    }
-
+    
     function getCategoryTopAdv($_productCollection){
       //replace with promotion text
 
@@ -112,20 +92,58 @@ class Holbi_Qixol_Model_Advert extends Mage_Core_Model_Abstract {
       return $text_to_return!=''?/*"<div><ul>".*/$text_to_return/*."</ul></div>"*/:"";
  }
 
-  function getAllProductAdv($product){
+/* STICKER FUNCTIONS - START */
+ 
+    function isSticked($product){
+     $image=false;
+     $products_has_promotion_image=Mage::getResourceSingleton('qixol/sticker');
+     $product_stick_images=$products_has_promotion_image->getStickerImage($product);
 
-     $text_to_return='';
-
-     $products_has_promotion=Mage::getResourceSingleton('qixol/banner');
-     $product_data=$products_has_promotion->getAllProductTextAdv($product);
-      if ($product_data!==false&&count($product_data)){
-         //$text_to_return.="";
-         //$text_to_return.="";
-         foreach($product_data as $advert) {
-                          $text_to_return.="<tr><td>".(trim($advert['url'])!=''?"<a href='".$advert['url']."'>":"").$advert['promotion_text'].(trim($advert['url'])!=''?"</a>":"")."</td><td style='width:100px;'>".(($advert['discountpercent']>0||$advert['discountamount']>0)?($advert['discountpercent']>0?$advert['discountpercent']."%":$advert['discountamount'])." Off":"&nbsp;")."</td></tr>";
-          }
-         //$text_to_return.="";
+     if (is_array($product_stick_images)&&count($product_stick_images)==1) { //if 1 sticker
+      $image=$product_stick_images[0]['filename'];
+      if (($image!==false)&&strlen($image)>5)
+      $image=Mage::getBaseUrl('media').$image;
+      return $image;
+     }elseif(is_array($product_stick_images)&&count($product_stick_images)>1){
+       foreach ($product_stick_images as $image_array){
+             if (($image_array['filename']!==false)&&strlen($image_array['filename'])>5){
+                 $image[]=Mage::getBaseUrl('media').$image_array['filename'];
+             }
        }
-      return $text_to_return!=''?/*"<div><ul>".*/$text_to_return/*."</ul></div>"*/:"";
-  }
+      return $image;
+     }
+      return $image;
+    }
+
+    function getAllProductAdv($product){
+
+        $text_to_return='';
+
+        $products_has_promotion = Mage::getResourceSingleton('qixol/sticker');
+        $product_data = $products_has_promotion->getAllProductTextAdv($product);
+        if ($product_data !== false && count($product_data)) {
+            //$text_to_return.="";
+            //$text_to_return.="";
+            foreach($product_data as $advert) {
+                $text_to_return .= "<tr><td>";
+                $text_to_return .= (empty($advert['promotion_text']) ? $advert['promotion_name'] : $advert['promotion_text']);
+                $text_to_return .= "</td><td style='width:100px;'>";
+                if ($advert['promotion_type'] == 'BOGOF') {
+                    $text_to_return .= 'Get one free';
+                } else {
+                    if ($advert['discountpercent'] > 0) {
+                        $text_to_return .= number_format($advert['discountpercent']) . "%";
+                    } else {
+                        $text_to_return .= number_format($advert['discountamount'], 2);
+                    }
+                }
+                $text_to_return .= "</td></tr>";
+            }
+            //$text_to_return.="";
+        }
+        return $text_to_return!=''?/*"<div><ul>".*/$text_to_return/*."</ul></div>"*/:"";
+    }
+
+    /* STICKER FUNCTIONS - END */
+
 }

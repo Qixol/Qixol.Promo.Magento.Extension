@@ -73,6 +73,37 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
         return $filenames;
     }
 
+    public function getAllProductTextAdv($product) {
+        /*
+       //create the list of product->child if parent
+       $product_id=$product->getId();
+       $child_ids=array();
+       if ($product->isConfigurable()){
+           $associatedProducts = $product->getTypeInstance()->getConfigurableAttributesAsArray($product); 
+           foreach ($product->getTypeInstance()->getUsedProducts() as $childProduct) {
+               $child_ids[]=$childProduct->getId();
+           }
+       }
+// 
+       $condition_4 = $this->_getReadAdapter()->quoteInto("qphp.promotion_id=pt.promotion_id ",'');
+       $where=
+                            (count($child_ids)?
+                            " ((qphp.parent_product_id='".(int)$product_id."' and qphp.product_id in (".join(",",$child_ids).")) or (qphp.product_id='".(int)$product_id."' and qphp.parent_product_id=0) )":
+                            " qphp.product_id='".(int)$product_id."' and qphp.parent_product_id=0");
+
+       $select = $this->_getReadAdapter()->select()->from(array('qphp'=>$this->getTable('promotionhasproduct')))
+                ->joinLeft(array('pt'=>$this->getTable('promotions')), $condition_4)
+                ->where($where)->group(array("pt.promotion_id"))->reset('columns')
+               ->columns(array('pt.promotion_text','pt.discountpercent','pt.discountamount'));
+
+       $data=$this->_getReadAdapter()->fetchAll($select);
+       */
+       $promotions = $this->getPromotionsForProduct($product);
+       
+       if (count($promotions)) return $promotions;
+       return false;
+    }
+
     private function getPromotionsForProduct($product){
         //create the list of product->child if parent
         $product_id=$product->getId();
@@ -119,7 +150,12 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
             ->join(array('promo' => $this->getTable('promotions')), $join)
             ->where($whereString)
             ->reset('columns')
-            ->columns(array('promotion_type' => 'promo.promotion_type', 'promo_reference' => 'promo.yourref'));
+            ->columns(array('promotion_type' => 'promo.promotion_type',
+                'promotion_name' => 'promo.promotion_name',
+                'promo_reference' => 'promo.yourref',
+                'promotion_text' => 'promo.promotion_text',
+                'discountpercent' => 'promo.discountpercent',
+                'discountamount' => 'promo.discountamount'));
 
         return $this->_getReadAdapter()->fetchAll($select);
     }
