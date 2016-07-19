@@ -4,9 +4,6 @@
 
 
          $cart_advertisment_=Mage::getModel('qixol/advert');
-         $text_to_show_cart_adv='';
-         if ((int)Mage::getStoreConfig('qixol/frontend/showcartpromobox')>0)
-         $text_to_show_cart_adv=$cart_advertisment_->getCartInlineAdv();
 
          $inline_cart_advert='';
          $total_discount_amount=0;
@@ -43,11 +40,6 @@ if ((int)$promotion['basketlevel'] == 0 && isset($_SESSION['qixol_quoted_items']
   $inline_cart_advert .= $item->getId();
   $inline_cart_advert .= "'));";
 }
-
-//basket level promotion
-if ((int)$promotion['basketlevel']==1&&isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]))
-        $text_to_show_cart_adv.='';//should be also added??? $_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['display_text'];
-                     }
 
 //if quantity changed (get one + one free so will be splited to 2 products with 1 free)
 if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')>0  &&$_SESSION['qixol_quoted_items']['items'][$item->getId()]['updated_qty']>0)
@@ -86,12 +78,4 @@ if (isset($_SESSION['qixol_quoted_items']['summary'])){
       }
   }
 }
-if ($text_to_show_cart_adv!==false&&strlen($text_to_show_cart_adv)>5||$inline_cart_advert!=''||$total_discount_amount>0){         
-?><script type="text/javascript" src="<?php echo Mage::getBaseUrl('js'); ?>/lib/jquery/jquery-1.10.2.min.js"></script><script type="text/javascript">$.noConflict();jQuery( document ).ready(function( $ ) { <?php 
-if ($text_to_show_cart_adv!==false&&strlen($text_to_show_cart_adv)>5)
-echo '$("'.$place_box_in_design_after_pattern.'").after("<div class=\'qixolcartpromo\'>'.$text_to_show_cart_adv.'</div>");';
-if ($inline_cart_advert!='')
-echo preg_replace("/[\n\r]+/","",$inline_cart_advert);
-?>});</script><?php
-}
-?>
+          }

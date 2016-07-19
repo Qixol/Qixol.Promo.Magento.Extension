@@ -1,7 +1,6 @@
 <?php
 class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
     private $category_stickers_advertisment_name='CATEGORY_STICKERS';
-    private $product_stickers_advertisment_name='PRODUCT_INFO_STICKERS';
 
     public function _construct() {
         // Note that the banner_id refers to the key field in your database table.

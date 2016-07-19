@@ -102,21 +102,6 @@ class Holbi_Qixol_Model_Advert extends Mage_Core_Model_Abstract {
       return $text_to_return!=''?/*"<div><ul>".*/$text_to_return/*."</ul></div>"*/:"";
   }
 
- function getCartInlineAdv(){
-   $cart_promotion=Mage::getResourceSingleton('qixol/banner');
-
-     $promotion_data=$cart_promotion->getCartInlineAdv();
-      if ($promotion_data!==false&&count($promotion_data)){
-         foreach($promotion_data as $advert){
-            if ($advert['filename']!=''&&strlen($advert['filename'])>5){
-                $text_to_return.="<div>".(trim($advert['url'])!=''?"<a href='".$advert['url']."'>":"")."<img title='".$advert['promotion_text']."' src='".Mage::getBaseUrl('media').$advert['filename']."'>".(trim($advert['url'])!=''?"</a>":"")."</div>";
-            }else 
-                $text_to_return.="<div>".(trim($advert['url'])!=''?"<a href='".$advert['url']."'>":"").$advert['promotion_text'].(trim($advert['url'])!=''?"</a>":"")."</div>";
-         }
-      }
-      return $text_to_return!=''?/*"<div><ul>".*/$text_to_return/*."</ul></div>"*/:"";
- }
-
 /* STICKER FUNCTIONS - START */
  
     function isSticked($product){
