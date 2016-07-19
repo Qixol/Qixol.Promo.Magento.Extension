@@ -222,8 +222,12 @@ if ($shipping_price_exists==0){//somethimes returns zero
 
                 if ($data_products!=''){
 //echo "call promotions";
+                    $basketTotal = $cart->getSubtotal();
+                    if ($shipping_price_exists > 0) {
+                        $basketTotal += (float)$shipping_price_exists;
+                    }
                   $basket='<basket id="'./*Mage::getSingleton("core/session")->getEncryptedSessionId()*/$_SESSION['qixol_quoted_items']['cart_session_id'].'" companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
-                              '" baskettotal="'.$cart->getGrandTotal().
+                              '" baskettotal="' . $basketTotal .
                               '" basketdate="'.date("Y-m-d\TH:i:s",strtotime("+ 1 DAY")).'" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
                               '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.(
                                     (isset($list_store_map_names_exists[Mage::app()->getStore()->getName()])&&trim($list_store_map_names_exists[Mage::app()->getStore()->getName()])!='')?

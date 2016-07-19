@@ -174,7 +174,7 @@ if ((int)Mage::getStoreConfig('qixol/frontend/onepagejavascr')==0&&($_SESSION['q
     <!-- sub total starts here -->
     <?php if ($this->helper('tax')->displayCartPriceExclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
 <?php /*  qixol should be added id */ ?>
-    <td class="a-right" id='qixol_idx_cart_item_price_<?php echo $_item->getId(); ?>'>
+    <td class="a-right" id='a_qixol_idx_cart_item_price_<?php echo $_item->getId(); ?>'>
         <?php if (Mage::helper('weee')->typeOfDisplay($_item, array(1, 4), 'sales') && $_item->getWeeeTaxAppliedAmount()): ?>
             <span class="cart-tax-total" onclick="taxToggle('esubtotal-item-tax-details<?php echo $_item->getId(); ?>', this, 'cart-tax-total-expanded');">
         <?php else: ?>
@@ -219,7 +219,7 @@ if ((int)Mage::getStoreConfig('qixol/frontend/onepagejavascr')==0&&($_SESSION['q
 <?php 
 //{{qixol
 if ((int)Mage::getStoreConfig('qixol/frontend/onepagejavascr')==0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['updated_price']>0){
-  ?><div class="cart_inline_item_new_price">Only for <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalamount']-$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['totaldiscount']); ?></div><?php
+  ?><div class="cart_inline_item_new_price">Only for - 7 <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalamount']-$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['totaldiscount']); ?></div><?php
 }
 if ((int)Mage::getStoreConfig('qixol/frontend/onepagejavascr')==0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['new']>0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['generated']>0){
   ?><div class="cart_inline_item_new_price"><?php echo $this->__('Discount: -').$this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalprice']); ?></div><?php
@@ -231,7 +231,7 @@ if ((int)Mage::getStoreConfig('qixol/frontend/onepagejavascr')==0&&$_SESSION['qi
     </td>
     <?php endif; ?>
     <?php if ($this->helper('tax')->displayCartPriceInclTax() || $this->helper('tax')->displayCartBothPrices()): ?>
-    <td id='qixol_idx_cart_item_price_<?php echo $_item->getId(); ?>'>
+    <td id='b_qixol_idx_cart_item_price_<?php echo $_item->getId(); ?>'>
         <?php $_incl = $this->helper('checkout')->getSubtotalInclTax($_item); ?>
         <?php if (Mage::helper('weee')->typeOfDisplay($_item, array(1, 4), 'sales') && $_item->getWeeeTaxAppliedAmount()): ?>
             <span class="cart-tax-total" onclick="taxToggle('subtotal-item-tax-details<?php echo $_item->getId(); ?>', this, 'cart-tax-total-expanded');">
@@ -279,7 +279,7 @@ if ((int)Mage::getStoreConfig('qixol/frontend/onepagejavascr')==0&&$_SESSION['qi
 <?php 
 //{{qixol
 if ((int)Mage::getStoreConfig('qixol/frontend/onepagejavascr')==0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['updated_price']>0){
-  ?><div class="cart_inline_item_new_price">Only for <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['lineamount']); ?></div><?php
+  ?><div class="cart_inline_item_new_price">Only for - 8 <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['lineamount']); ?></div><?php
 }
 //}}qixol end
 ?>

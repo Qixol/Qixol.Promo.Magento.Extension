@@ -33,7 +33,7 @@ $('<div class=\"cart_inline_item_new_qty\">For&nbsp;promo&nbsp;".addslashes($_SE
 
 if ($_SESSION['qixol_quoted_items']['items'][$item->getId()]['updated_price']>0)
 $inline_cart_advert.="
-$('<div class=\"cart_inline_item_new_price\">Only for ".addslashes($this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['lineamount']))."</div>').appendTo($('#qixol_idx_cart_item_price_".$item->getId()."'));
+$('<div class=\"cart_inline_item_new_price\">Only for - 9 ".addslashes($this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['lineamount']))."</div>').appendTo($('#qixol_idx_cart_item_price_".$item->getId()."'));
 "; 
 
               }

@@ -47,6 +47,7 @@
           <action method="addItemRender">
             <type>configurable</type><block>checkout/cart_item_renderer</block><template>qixol/cart/item/default.phtml</template>
           </action>         
+            <block type="checkout/cart_totals" name="promo.checkout.cart.totals" as="totals" template="qixol/cart/totals.phtml"/>
         </reference>   
         <reference name="checkout.cart.extra"> 
            <block type="core/template" name="bonuspointsbox" as="bonuspointsbox" template="qixol/cart/bonuspointbox.phtml" />

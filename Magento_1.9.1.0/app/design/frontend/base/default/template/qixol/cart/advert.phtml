@@ -19,14 +19,29 @@
                         isset($_SESSION['qixol_quoted_items']['items'][$item->getId()]['promotions']))
                      foreach ($_SESSION['qixol_quoted_items']['items'][$item->getId()]['promotions'] as $promotion){
 //inline level promotion
-if ((int)$promotion['basketlevel']==0&&isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']])&&Mage::getStoreConfig('qixol/advanced/services')=='displaytext'){
-  $inline_cart_advert.="$('<div class=\"cart_inline_item_promo\">".addslashes($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['display_text'])."</div>').appendTo($('#qixol_idx_cart_item_name_".$item->getId()."'));";
-} elseif((int)$promotion['basketlevel']==0&&isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']])&&Mage::getStoreConfig('qixol/advanced/services')=='displayname') {
-  $inline_cart_advert.="$('<div class=\"cart_inline_item_promo\">".addslashes($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['name'])."</div>').appendTo($('#qixol_idx_cart_item_name_".$item->getId()."'));";
+                      $promotionDisplayText = $_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['display_text'];
+                      if (empty($promotionDisplayText)) {
+                          $promotionDisplayText = $_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['name'];
+                      }
+if ((int)$promotion['basketlevel'] == 0 && isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]) && Mage::getStoreConfig('qixol/advanced/services')=='displaytext'){
+  $inline_cart_advert .= "$('<div class=\"cart_inline_item_promo\">";
+  $inline_cart_advert .= addslashes($promotionDisplayText);
+  $inline_cart_advert .= "</div>').appendTo($('#qixol_idx_cart_item_name_";
+  $inline_cart_advert .= $item->getId();
+  $inline_cart_advert .= "'));";
+} elseif((int)$promotion['basketlevel'] == 0 && isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]) && Mage::getStoreConfig('qixol/advanced/services')=='displayname') {
+  $inline_cart_advert .= "$('<div class=\"cart_inline_item_promo\">";
+  $inline_cart_advert .= addslashes($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['name']);
+  $inline_cart_advert .= "</div>').appendTo($('#qixol_idx_cart_item_name_";
+  $inline_cart_advert .= $item->getId();
+  $inline_cart_advert .= "'));";
 
-} elseif((int)$promotion['basketlevel']==0&&isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']])&&Mage::getStoreConfig('qixol/advanced/services')=='displaytype') {
-  $inline_cart_advert.="$('<div class=\"cart_inline_item_promo\">".addslashes($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['display'])."</div>').appendTo($('#qixol_idx_cart_item_name_".$item->getId()."'));";
-
+} elseif((int)$promotion['basketlevel'] == 0 && isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']])&&Mage::getStoreConfig('qixol/advanced/services')=='displaytype') {
+  $inline_cart_advert .= "$('<div class=\"cart_inline_item_promo\">";
+  $inline_cart_advert .= addslashes($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['display']);
+  $inline_cart_advert .= "</div>').appendTo($('#qixol_idx_cart_item_name_";
+  $inline_cart_advert .= $item->getId();
+  $inline_cart_advert .= "'));";
 }
 
 //basket level promotion
@@ -39,7 +54,7 @@ if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')>0  &&$_SESSION['qixo
 $inline_cart_advert.="$('<div class=\"cart_inline_item_new_qty\">For&nbsp;promo&nbsp;".addslashes($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['quantity'])."&nbsp;Qty</div>').appendTo($('#qixol_idx_cart_item_qty_".$item->getId()."'));"; 
 
 if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')>0  &&$_SESSION['qixol_quoted_items']['items'][$item->getId()]['updated_price']>0)
-$inline_cart_advert.="$('<div class=\"cart_inline_item_new_price\">Only for ".addslashes($this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['lineamount']))."</div>').appendTo($('#qixol_idx_cart_item_price_".$item->getId()."'));"; 
+$inline_cart_advert.="$('<div class=\"cart_inline_item_new_price\">Only for - 1 ".addslashes($this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['lineamount']))."</div>').appendTo($('#qixol_idx_cart_item_price_".$item->getId()."'));"; 
 
               }
           }
@@ -77,15 +92,6 @@ if ($text_to_show_cart_adv!==false&&strlen($text_to_show_cart_adv)>5)
 echo '$("'.$place_box_in_design_after_pattern.'").after("<div class=\'qixolcartpromo\'>'.$text_to_show_cart_adv.'</div>");';
 if ($inline_cart_advert!='')
 echo preg_replace("/[\n\r]+/","",$inline_cart_advert);
-if ($total_discount_amount>0||$delivery_discount_amount>0){
-if ($delivery_discount_amount>0){
-   ?>$('<tr class="qixol_discount"><td class="a-right" colspan="1" ><?php echo Mage::helper('qixol')->__("Delivery Discount");?></td><td class="a-right" ><span class="qixol_total_price"><?php echo $this->helper('checkout')->formatPrice($delivery_discount_amount); ?></span></td></tr>').appendTo($('#shopping-cart-totals-table tbody'));<?php
-}
-if ($total_discount_amount>0){
-   ?>$('<tr class="qixol_discount"><td class="a-right" colspan="1" ><?php echo Mage::helper('qixol')->__("Products Discount");?></td><td class="a-right" ><span class="qixol_total_price"><?php echo $this->helper('checkout')->formatPrice($total_discount_amount); ?></span></td></tr>').appendTo($('#shopping-cart-totals-table tbody'));<?php
-}
-?>$('#shopping-cart-totals-table tfoot .price').addClass('qixol_price_cross');$('<span class="qixol_grand_total_price"><?php echo $this->helper('checkout')->formatPrice($cart->getGrandTotal()-$total_discount_amount-$delivery_discount_amount); ?></span>').appendTo($('#shopping-cart-totals-table tfoot .price').parent());<?php
-}
 ?>});</script><?php
 }
 ?>

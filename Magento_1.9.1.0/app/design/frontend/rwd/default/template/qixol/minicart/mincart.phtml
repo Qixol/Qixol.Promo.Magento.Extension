@@ -213,7 +213,7 @@ if ((int)Mage::getStoreConfig('qixol/frontend/mcartjavascr')>0&&$_SESSION['qixol
 $inline_cart_advert.="$('<div class=\"cart_inline_item_new_qty\">For&nbsp;promo&nbsp;".addslashes($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['quantity'])."&nbsp;Qty</div>').appendTo($('#qixol_idx_mcart_item_qty_".$item->getId()."'));"; 
 
 if ((int)Mage::getStoreConfig('qixol/frontend/mcartjavascr')>0&&$_SESSION['qixol_quoted_items']['items'][$item->getId()]['updated_price']>0)
-$inline_cart_advert.="$('<div class=\"cart_inline_item_new_price\">Only for ".addslashes($this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['lineamount']))."</div>').appendTo($('#qixol_idx_mcart_item_price_".$item->getId()."'));"; 
+$inline_cart_advert.="$('<div class=\"cart_inline_item_new_price\">Only for - 12 ".addslashes($this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['lineamount']))."</div>').appendTo($('#qixol_idx_mcart_item_price_".$item->getId()."'));"; 
 
               }
           }

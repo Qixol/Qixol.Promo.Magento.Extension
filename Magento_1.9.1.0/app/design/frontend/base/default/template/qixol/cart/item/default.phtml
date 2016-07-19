@@ -109,9 +109,13 @@ $canApplyMsrp = Mage::helper('catalog')->canApplyMsrp($_item->getProduct(), Mage
 if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')==0&&Mage::getStoreConfig('qixol/advanced/services')!='dontdisplay'):
       foreach ($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['promotions'] as $promotion){ 
 //inline level promotion
+        $promotionDisplayText = $_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['display_text'];
+        if (empty($promotionDisplayText)) {
+            $promotionDisplayText = $_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['name'];
+        }
         $is_generated=($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['generated']>0?$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['generated']:$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['free_added']);
         if (((int)$promotion['basketlevel']==0||$is_generated>0)&&isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']])&&Mage::getStoreConfig('qixol/advanced/services')=='displaytext'){
-         ?><div class="cart_inline_item_promo"><?php echo $_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['display_text']; ?></div><?php 
+         ?><div class="cart_inline_item_promo"><?php echo $promotionDisplayText; ?></div><?php 
         }elseif(((int)$promotion['basketlevel']==0||$is_generated>0)&&isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']])&&Mage::getStoreConfig('qixol/advanced/services')=='displayname'){
          ?><div class="cart_inline_item_promo"><?php echo $_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['name']; ?></div><?php 
         }elseif(((int)$promotion['basketlevel']==0||$is_generated>0)&&isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']])&&Mage::getStoreConfig('qixol/advanced/services')=='displaytype'){
@@ -280,9 +284,9 @@ endif;
                 <span class="cart-msrp-subtotal">--</span>
             <?php else: ?>
                 <?php if (Mage::helper('weee')->typeOfDisplay($_item, array(0, 1, 4), 'sales') && $_item->getWeeeTaxAppliedAmount()): ?>
-                    <?php echo $this->helper('checkout')->formatPrice($_item->getRowTotal()+$_item->getWeeeTaxAppliedRowAmount()+$_item->getWeeeTaxRowDisposition()); ?>
+                    <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['lineamount']+$_item->getWeeeTaxAppliedRowAmount()+$_item->getWeeeTaxRowDisposition()); ?>
                 <?php else: ?>
-                    <?php echo $this->helper('checkout')->formatPrice($_item->getRowTotal()) ?>
+                    <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['lineamount']); ?>
                 <?php endif; ?>
             <?php endif; ?>
 
@@ -307,14 +311,14 @@ endif;
 
             <?php if (Mage::helper('weee')->typeOfDisplay($_item, 2, 'sales') && $_item->getWeeeTaxAppliedAmount()): ?>
                 <div class="cart-tax-total" onclick="taxToggle('esubtotal-item-tax-details<?php echo $_item->getId(); ?>', this, 'cart-tax-total-expanded');">
-                    <span class="weee"><?php echo Mage::helper('weee')->__('Total'); ?>: <?php echo $this->helper('checkout')->formatPrice($_item->getRowTotal()+$_item->getWeeeTaxAppliedRowAmount()+$_item->getWeeeTaxRowDisposition()); ?></span>
+                    <span class="weee"><?php echo Mage::helper('weee')->__('Total'); ?>: <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['lineamount']+$_item->getWeeeTaxAppliedRowAmount()+$_item->getWeeeTaxRowDisposition()); ?></span>
                 </div>
             <?php endif; ?>
         <?php endif; ?>
 <?php 
 //{{qixol
 if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')==0&&($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['updated_price']>0)){
-  ?><div class="cart_inline_item_new_price">Only for <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalamount']-$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['totaldiscount']); ?></div><?php
+  ?><div class="cart_inline_item_new_price">You save&nbsp;<?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['totaldiscount']); ?></div><?php
 }
 if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')==0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['new']>0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['generated']>0){
   ?><div class="cart_inline_item_new_price"><?php echo $this->__('Discount: -').$this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalprice']); ?></div><?php

@@ -143,7 +143,7 @@ endif;
 <?php 
 //{{qixol
 if ((int)Mage::getStoreConfig('qixol/frontend/mcartjavascr')==0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['updated_price']>0){
-  ?><div class="cart_inline_item_new_price">Only for <?php echo $this->helper('checkout')->formatPrice(($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalamount']-$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['totaldiscount'])/$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalquantity']);?></div><?php
+  ?><div class="cart_inline_item_new_price">Only for - 3 <?php echo $this->helper('checkout')->formatPrice(($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalamount']-$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['totaldiscount'])/$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalquantity']);?></div><?php
 }
 //}}qixol end
 ?>
@@ -179,7 +179,7 @@ if ((int)Mage::getStoreConfig('qixol/frontend/mcartjavascr')==0&&$_SESSION['qixo
 <?php 
 //{{qixol
 if ((int)Mage::getStoreConfig('qixol/frontend/mcartjavascr')==0&&($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['updated_price']>0)){
-  ?><div class="cart_inline_item_new_price">Only for <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalamount']-$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['totaldiscount']); ?></div><?php
+  ?><div class="cart_inline_item_new_price">Only for - 4 <?php echo $this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalamount']-$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['totaldiscount']); ?></div><?php
 }
 if ((int)Mage::getStoreConfig('qixol/frontend/mcartjavascr')==0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['new']>0&&$_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['generated']>0){
   ?><div class="cart_inline_item_new_price"><?php echo $this->__('Discount: -').$this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$_item->getId()]['data']['originalprice']); ?></div><?php

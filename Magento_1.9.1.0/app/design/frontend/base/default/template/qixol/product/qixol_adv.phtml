@@ -8,12 +8,17 @@
     
     // banners - start
     
-    $qixol_bannerbox_category_top=Mage::getModel('qixol/bannerboxes')->load('CATEGORY_TOP');
-    if ($qixol_bannerbox_category_top->getBannerBoxIsActive()>0){
+    $qixol_bannerbox_category_top = Mage::getModel('qixol/bannerboxes')->load('CATEGORY_TOP');
+    if ($qixol_bannerbox_category_top->getBannerBoxIsActive() > 0) {
         $qixol_top_advertisment_text=$qixol_advertisment->getCategoryTopAdv($_productCollection);
         $qixol_catalog_all_scripts_inside='';
         if (trim($qixol_top_advertisment_text)!=''){               
-            $qixol_catalog_all_scripts_inside.='$(".category-title").after("<div id=category_top_ class=\'cycle-slideshow\' data-cycle-fx=\''.$qixol_bannerbox_category_top->getBannerBoxTranslationType().'\' data-cycle-timeout=\'1500\' data-cycle-slides=\'> div\'>'.addslashes(preg_replace("/[\n\r]+/","",$qixol_top_advertisment_text)).'</div>");$(\'#category_top_\').cycle();';
+            $qixol_catalog_all_scripts_inside .= '$(".category-title").after("<div id=category_top_ class=\'cycle-slideshow\' ';
+            $qixol_catalog_all_scripts_inside .= 'data-cycle-fx=\'';
+            $qixol_catalog_all_scripts_inside .= $qixol_bannerbox_category_top->getBannerBoxTranslationType();
+            $qixol_catalog_all_scripts_inside .= '\' data-cycle-timeout=\'1500\' data-cycle-slides=\'> div\'>';
+            $qixol_catalog_all_scripts_inside .= addslashes(preg_replace("/[\n\r]+/","",$qixol_top_advertisment_text));
+            $qixol_catalog_all_scripts_inside .= '</div>");$(\'#category_top_\').cycle();';
             ?>
             <?php
         }

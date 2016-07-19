@@ -7,16 +7,41 @@ class Holbi_Qixol_Model_Advert extends Mage_Core_Model_Abstract {
     function getCategoryTopAdv($_productCollection){
       //replace with promotion text
 
-      $text_to_return='';
+      $text_to_return = '';
 
-      $advertisment=Mage::getResourceSingleton('qixol/banner');
-      $adv_array=$advertisment->getCategoryTopAdv($_productCollection);
-      if ($adv_array!==false&&count($adv_array)){
-         foreach($adv_array as $advert){
-            if ($advert['filename']!=''&&strlen($advert['filename'])>5){
-                $text_to_return.="<div>".(trim($advert['url'])!=''?"<a href='".$advert['url']."'>":"")."<img title='".$advert['promotion_text']."' src='".Mage::getBaseUrl('media').$advert['filename']."'>".(trim($advert['url'])!=''?"</a>":"")."</div>";
-            }else {
-                $text_to_return.="<div>".(trim($advert['url'])!=''?"<a href='".$advert['url']."'>":"").$advert['promotion_text'].(trim($advert['url'])!=''?"</a>":"")."</div>";
+      $advertisment = Mage::getResourceSingleton('qixol/banner');
+      $adv_array = $advertisment->getCategoryTopAdv($_productCollection);
+      if ($adv_array !== false && count($adv_array)) {
+         foreach($adv_array as $advert) {
+            if (!empty($advert['filename']) && strlen($advert['filename']) > 5) {
+                $text_to_return .= "<div>";
+                if (!empty($advert['url'])) {
+                    $text_to_return .= "<a href='";
+                    $text_to_return .= $advert['url'];
+                    $text_to_return .= "'>";
+                }
+                $text_to_return .= "<img title='";
+                $text_to_return .= $advert['promotion_text'];
+                $text_to_return .= "' src='";
+                $text_to_return .= Mage::getBaseUrl('media');
+                $text_to_return .= $advert['filename'];
+                $text_to_return .= "'>";
+                if (!empty($advert['url'])) {
+                    $text_to_return .= "</a>";
+                }
+                $text_to_return .= "</div>";
+            } else {
+                $text_to_return .= "<div>";
+                if (!empty($advert['url'])) {
+                    $text_to_return .= "<a href='";
+                    $text_to_return .= $advert['url'];
+                    $text_to_return .= "'>";
+                }
+                $text_to_return .= $advert['promotion_text'];
+                if (!empty($advert['url'])) {
+                    $text_to_return .= "</a>";
+                }
+                $text_to_return .= "</div>";
             }
          }
       }
