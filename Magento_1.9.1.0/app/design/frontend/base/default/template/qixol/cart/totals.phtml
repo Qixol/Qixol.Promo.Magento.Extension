@@ -45,7 +45,7 @@ if (isset($_SESSION['qixol_quoted_items'])) {
     $deliveryDiscount = $_SESSION['qixol_quoted_items']['cart_data']['deliverytotaldiscount'];
 
     $deliverySubtotal = $_SESSION['qixol_quoted_items']['cart_data']['deliveryoriginalprice'];
-    $basketSubtotal = $basketTotal + $basketDiscount;
+    $basketSubtotal = $basketTotal + $basketDiscount - $_SESSION['qixol_quoted_items']['cart_data']['deliveryprice'];
 
     $promotions = $_SESSION['qixol_quoted_items']['summary'];
 
