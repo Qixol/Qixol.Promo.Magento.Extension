@@ -4,7 +4,7 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Form extends Mage_Adminhtml_Block_
   protected function _prepareForm()
   {
       $form = new Varien_Data_Form(array(
-                                      'id' => 'edit_form',
+                                      'id' => 'banner_edit_form',
         
                                       'action' => $this->getUrl('*/*/save', array('id' => $this->getRequest()->getParam('id'))),
                                       'method' => 'post',

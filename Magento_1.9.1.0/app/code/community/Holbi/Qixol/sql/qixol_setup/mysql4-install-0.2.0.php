@@ -35,13 +35,8 @@ $sql=<<<SQLTEXT
 CREATE TABLE {$installer->getTable('qixol_banners')}(
   `banner_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL DEFAULT '',
-  `banner_link_name` varchar(255) NOT NULL DEFAULT '',
+  `display_zone` varchar(255) NOT NULL DEFAULT '',
   `status` smallint(6) NOT NULL DEFAULT '0',
-  `is_default` tinyint(6) NOT NULL DEFAULT '0',
-  `sort_order` int(11) NOT NULL DEFAULT '0',
-  `banner_group` varchar(32) NOT NULL DEFAULT '',
-  `banner_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=>Image, 1=>HTML',
-  `url` varchar(255) NOT NULL DEFAULT '',
   `created_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`banner_id`)
@@ -51,27 +46,19 @@ SQLTEXT;
 $installer->run($sql);
 
 $sql=<<<SQLTEXT
-CREATE TABLE {$installer->getTable('qixol_banner_images')}(
+CREATE TABLE {$installer->getTable('qixol_banner_image')}(
   `banner_image_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `filename` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`banner_image_id`)
+  `banner_id` int(11) NOT NULL, 
+  `sort_order` int(11) NOT NULL DEFAULT '0',
+  `comment` varchar(255),
+  `url` varchar(255),
+  PRIMARY KEY (`banner_image_id`),
+  CONSTRAINT `FK_qixol_banner_image_banner_id` FOREIGN KEY (`banner_id`) REFERENCES `qixol_banners` (`banner_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 SQLTEXT;
 
 $installer->run($sql);
-
-$sql=<<<SQLTEXT
-CREATE TABLE {$installer->getTable('qixol_banner_has_images')}(
-  `banner_image_id` int(11) unsigned NOT NULL default 0,
-  `banner_id` int(11) unsigned NOT NULL default 0,
-  PRIMARY KEY (`banner_image_id`,`banner_id`),
-  CONSTRAINT `FK_qixol_banner_has_images_banner_image_id` FOREIGN KEY (`banner_image_id`) REFERENCES `qixol_banner_images` (`banner_image_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_qixol_banner_has_images_banner_id` FOREIGN KEY (`banner_id`) REFERENCES `qixol_banners` (`banner_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
-SQLTEXT;
-
-$installer->run($sql);
-
 
 $sql=<<<SQLTEXT
 CREATE TABLE {$installer->getTable('qixol_promotions_type')}(

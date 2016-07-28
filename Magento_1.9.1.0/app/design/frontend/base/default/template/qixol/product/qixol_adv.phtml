@@ -73,15 +73,13 @@
         }       
     } 
 
+    // stickers - end
+
     if ($qixol_catalog_all_scripts_inside!=''){
-        echo '<div>stickers found</div>';
      ?><script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>lib/jquery/jquery-1.10.2.min.js"></script>
      <script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>/skin/frontend/base/default/js/lib/jquery.cycle2.min.js"></script>
      <script type="text/javascript">$.noConflict();jQuery( document ).ready(function( $ ) { <?php echo $qixol_catalog_all_scripts_inside;?>});</script><?php
-    } else {
-        echo '<div>no stickers found</div>';
     }
     
-    // stickers - end
 ?>
 

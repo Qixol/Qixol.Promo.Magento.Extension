@@ -27,7 +27,7 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit extends Mage_Adminhtml_Block_Widge
             }*/
 
             function saveAndContinueEdit(){
-                editForm.submit($('edit_form').action+'back/edit/');
+                editForm.submit($('banner_edit_form').action+'back/edit/');
             }
 
             function showTypeContents(){

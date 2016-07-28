@@ -1,0 +1,64 @@
+<?php ?>
+<h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Banner images') ?></h4>
+<?php echo $this->_getGridHtml() ?>
+<?php echo $this->getFormHtml() ?>
+
+<script type="text/javascript">
+    
+    $.noConflict();
+    
+    function saveImage() {
+        alert('saving');
+        $.ajax({
+            cache: false,
+            type: 'POST',
+            url: '<?php echo Mage::getUrl('adminhtml/banner/saveBannerImage') ?>',
+            data: $('#imageEditForm').serialize(),
+            success: function (data) { alert('success'); },
+            error: function() { alert('error'); }
+        });
+    }
+    
+</script>
+
+<form id="imageEditForm" name="imageEditForm"action="<?php echo Mage::getUrl('adminhtml/banner/saveBannerImage') ?>" method="post" enctype="multipart/form-data">
+<!--      http://localhost.magento.com/index.php/qixol_admin/adminhtml_sticker/save/id/19/key/bfcd799bb2a6d808a39de7d0517fdd17/-->
+      
+    <div><input name="form_key" type="hidden" value="GKpAD8X0btLWjCiW"></div>
+    <div id="qixol_tabs_form_section_content">
+        <div class="entry-edit">
+            <div class="entry-edit-head">
+                <h4 class="icon-head head-edit-form fieldset-legend">Add banner image</h4>
+                <div class="form-buttons"></div>
+            </div>
+            <div class="fieldset " id="banner_image_form">
+                <div class="hor-scroll">
+                    <table cellspacing="0" class="form-list">
+                        <tbody>
+                            <tr>
+                                <td class="label"><label for="filename">Upload and use Image <span class="required">*</span></label></td>
+                                <td class="value"><input id="filename" name="filename" value="custom/stickers/bogof.png" type="file" class="input-file"></td>
+                            </tr>
+                            <tr>
+                                <td class="label"><label for="sort_order">Sort order</label></td>
+                                <td class="value"><input type="text" id="sort_order" name="sort_order"></td>
+                            </tr>
+                            <tr>
+                                <td class="label"><label for="comment">Comment</label></td>
+                                <td class="value"><input id="comment" name="comment" value="" type="text" class=" input-text"></td>
+                            </tr>
+                            <tr>
+                                <td class="label"><label for="url">URL</label></td>
+                                <td class="value"><input id="url" name="url" value="" type="text" class=" input-text"></td>
+                            </tr>
+                            <tr>
+                                <td><button title="Save Image" type="button" class="scalable save" onclick="saveImage();" style=""><span><span><span>Save Item</span></span></span></button></td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

@@ -88,12 +88,10 @@
         <banner>
             <table>qixol_banners</table>
         </banner>
-        <bannerimages>
-            <table>qixol_banner_images</table>
-        </bannerimages>
-        <bannertoimage>
-            <table>qixol_banner_has_images</table>
-          </bannertoimage>
+        <bannerimage>
+            <table>qixol_banner_image</table>
+            <!--<table>admin_user</table>-->
+        </bannerimage>
         <sticker>
             <table>qixol_stickers</table>
         </sticker>

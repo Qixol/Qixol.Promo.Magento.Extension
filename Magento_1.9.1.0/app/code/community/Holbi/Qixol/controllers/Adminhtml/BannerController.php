@@ -80,8 +80,8 @@ class Holbi_Qixol_Adminhtml_BannerController extends Mage_Adminhtml_Controller_a
         }
         if ($data = $this->getRequest()->getPost()) {
             $image_saved=false;
-            if (is_array($data['banner_link_name'])){
-              $data['banner_link_name']=join(",",$data['banner_link_name']);
+            if (is_array($data['display_zone'])){
+              $data['display_zone']=join(",",$data['display_zone']);
              }
 
             if (!empty($imagedata['filename'])) {
@@ -221,6 +221,32 @@ class Holbi_Qixol_Adminhtml_BannerController extends Mage_Adminhtml_Controller_a
         $this->_sendUploadResponse($fileName, $content);
     }
 
+    public function saveBannerImageAction()
+    {
+        $imagedata = array();
+        if (!empty($_FILES['filename']['name'])) {
+            try {
+                $ext = substr($_FILES['filename']['name'], strrpos($_FILES['filename']['name'], '.') + 1);
+                $fname = 'File-' . time() . '.' . $ext;
+                $uploader = new Varien_File_Uploader('filename');
+                $uploader->setAllowedExtensions(array('jpg', 'jpeg', 'gif', 'png')); // or pdf or anything
+
+                $uploader->setAllowRenameFiles(true);
+                $uploader->setFilesDispersion(false);
+
+                $path = Mage::getBaseDir('media').DS.'custom'.DS.'banners';
+
+                $uploader->save($path, $fname);
+
+                $imagedata['filename'] = 'custom/banners/'.$fname;
+            } catch (Exception $e) {
+                Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
+                $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));
+                return;
+            }
+        }
+    }
+    
     protected function _sendUploadResponse($fileName, $content, $contentType='application/octet-stream') {
         $response = $this->getResponse();
         $response->setHeader('HTTP/1.1 200 OK', '');
