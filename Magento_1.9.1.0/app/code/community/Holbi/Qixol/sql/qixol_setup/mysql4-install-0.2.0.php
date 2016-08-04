@@ -51,6 +51,7 @@ CREATE TABLE {$installer->getTable('qixol_banner_image')}(
   `filename` varchar(255) NOT NULL DEFAULT '',
   `banner_id` int(11) NOT NULL, 
   `sort_order` int(11) NOT NULL DEFAULT '0',
+  `promotion_reference` varchar(255) not null default '',
   `comment` varchar(255),
   `url` varchar(255),
   PRIMARY KEY (`banner_image_id`),

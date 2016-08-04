@@ -1,10 +1,10 @@
 <?php
-class Holbi_Qixol_Adminhtml_BannerController extends Mage_Adminhtml_Controller_action {
+class Holbi_Qixol_Adminhtml_BannerimageController extends Mage_Adminhtml_Controller_action {
 
     protected function _initAction() {
         $this->loadLayout()
                 ->_setActiveMenu('qixol/items')
-                ->_addBreadcrumb(Mage::helper('qixol')->__('Banner Manager'), Mage::helper('qixol')->__('Banner Manager'));
+                ->_addBreadcrumb(Mage::helper('qixol')->__('Banner Image Manager'), Mage::helper('qixol')->__('Banner Image Manager'));
 
         return $this;
     }
@@ -16,10 +16,7 @@ class Holbi_Qixol_Adminhtml_BannerController extends Mage_Adminhtml_Controller_a
 
     public function editAction() {
         $id = $this->getRequest()->getParam('id');
-        $model = Mage::getModel('qixol/banner')->load($id);
-
-        //$BannerImages = Mage::getModel('qixol/banner')->getBannerImages($id);
-
+        $model = Mage::getModel('qixol/bannerimage')->load($id);
 
         if ($model->getId() || $id == 0) {
             $data = Mage::getSingleton('adminhtml/session')->getFormData(true);
@@ -28,18 +25,18 @@ class Holbi_Qixol_Adminhtml_BannerController extends Mage_Adminhtml_Controller_a
             }
 
 
-            Mage::register('banner_data', $model);
+            Mage::register('bannerimage_data', $model);
 
             $this->loadLayout();
             $this->_setActiveMenu('qixol/items');
 
-            $this->_addBreadcrumb(Mage::helper('qixol')->__('Banner Manager'), Mage::helper('qixol')->__('Banner Manager'));
+            $this->_addBreadcrumb(Mage::helper('qixol')->__('Banner Image Manager'), Mage::helper('qixol')->__('Banner Image Manager'));
             $this->_addBreadcrumb(Mage::helper('qixol')->__('Item Banner'), Mage::helper('qixol')->__('Item Banner'));
 
             $this->getLayout()->getBlock('head')->setCanLoadExtJs(true);
 
-            $this->_addContent($this->getLayout()->createBlock('qixol/adminhtml_banner_edit'))
-                    ->_addLeft($this->getLayout()->createBlock('qixol/adminhtml_banner_edit_tabs'));
+            $this->_addContent($this->getLayout()->createBlock('qixol/adminhtml_bannerimage_edit'))
+                    ->_addLeft($this->getLayout()->createBlock('qixol/adminhtml_bannerimage_edit_tabs'));
             $version = substr(Mage::getVersion(), 0, 3);
             if (($version=='1.4' || $version=='1.5') && Mage::getSingleton('cms/wysiwyg_config')->isEnabled()) {
                 $this->getLayout()->getBlock('head')->setCanLoadTinyMce(true);
@@ -56,29 +53,52 @@ class Holbi_Qixol_Adminhtml_BannerController extends Mage_Adminhtml_Controller_a
     }
 
     public function saveAction() {
-        if ($data = $this->getRequest()->getPost()) {
-            if (is_array($data['display_zone'])){
-              $data['display_zone']=join(",",$data['display_zone']);
-             }
+        $imagedata = array();
+        if (!empty($_FILES['filename']['name'])) {
+            try {
+                $ext = substr($_FILES['filename']['name'], strrpos($_FILES['filename']['name'], '.') + 1);
+                $fname = 'File-' . time() . '.' . $ext;
+                $uploader = new Varien_File_Uploader('filename');
+                $uploader->setAllowedExtensions(array('jpg', 'jpeg', 'gif', 'png')); // or pdf or anything
 
-            $model = Mage::getModel('qixol/banner');
+                $uploader->setAllowRenameFiles(true);
+                $uploader->setFilesDispersion(false);
+
+                $path = Mage::getBaseDir('media').DS.'custom'.DS.'banners';
+
+                $uploader->save($path, $fname);
+
+                $imagedata['filename'] = 'custom/banners/'.$fname;
+            } catch (Exception $e) {
+                Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
+                $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));
+                return;
+            }
+        }
+        if ($data = $this->getRequest()->getPost()) {
+            if (!empty($imagedata['filename'])) {
+                $data['filename'] = $imagedata['filename'];
+            } else {
+                if (isset($data['filename']['delete']) && $data['filename']['delete'] == 1) {
+                    if ($data['filename']['value'] != '') {
+                        $_helper = Mage::helper('qixol');
+                        $this->removeFile(Mage::getBaseDir('media').DS.'custom'.DS.'banners'.DS.$_helper->updateDirSepereator($data['filename']['value']));
+                    }
+                    $data['filename'] = '';
+                } else {
+                    unset($data['filename']);
+                }
+            }
+            $model = Mage::getModel('qixol/bannerimage');
             $model->setData($data)
                     ->setId($this->getRequest()->getParam('id'));
 
             try {
-                if ($model->getCreatedTime == NULL || $model->getUpdateTime() == NULL) {
-                    $model->setCreatedTime(now())
-                            ->setUpdateTime(now());
-                } else {
-                    $model->setUpdateTime(now());
-                }
-
                 $model->save();
-
                 Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('qixol')->__('Item was successfully saved'));
                 Mage::getSingleton('adminhtml/session')->setFormData(false);
 
-                if ($this->getRequest()->getParam('back')||$image_saved) {
+                if ($this->getRequest()->getParam('back')) {
                     $this->_redirect('*/*/edit', array('id' => $model->getId()));
                     return;
                 }
@@ -162,22 +182,6 @@ class Holbi_Qixol_Adminhtml_BannerController extends Mage_Adminhtml_Controller_a
         $this->_redirect('*/*/index');
     }
 
-    public function exportCsvAction() {
-        $fileName = 'banner.csv';
-        $content = $this->getLayout()->createBlock('qixol/adminhtml_banner_grid')
-                        ->getCsv();
-
-        $this->_sendUploadResponse($fileName, $content);
-    }
-
-    public function exportXmlAction() {
-        $fileName = 'banner.xml';
-        $content = $this->getLayout()->createBlock('qixol/adminhtml_banner_grid')
-                        ->getXml();
-
-        $this->_sendUploadResponse($fileName, $content);
-    }
-
     public function uploadAction()
     {
         try {
@@ -227,10 +231,10 @@ class Holbi_Qixol_Adminhtml_BannerController extends Mage_Adminhtml_Controller_a
         $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
     }
     
-//    public function addBannerImageAction() {
-//        $this->_forward('edit/bannerimage_edit');
-//    }
-//    
+    public function addBannerImageAction() {
+        $this->_forward('edit');
+    }
+    
 //    protected function _sendUploadResponse($fileName, $content, $contentType='application/octet-stream') {
 //        $response = $this->getResponse();
 //        $response->setHeader('HTTP/1.1 200 OK', '');

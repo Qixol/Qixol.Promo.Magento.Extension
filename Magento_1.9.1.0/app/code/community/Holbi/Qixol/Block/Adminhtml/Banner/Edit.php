@@ -10,12 +10,18 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit extends Mage_Adminhtml_Block_Widge
 
         $this->_updateButton('save', 'label', Mage::helper('qixol')->__('Save Item'));
         $this->_updateButton('delete', 'label', Mage::helper('qixol')->__('Delete Item'));
-
+        
         $this->_addButton('saveandcontinue', array(
             'label' => Mage::helper('adminhtml')->__('Save And Continue Edit'),
             'onclick' => 'saveAndContinueEdit()',
             'class' => 'save',
                 ), -100);
+
+        $this->_addButton('addImage', array(
+            'label' => Mage::helper('qixol')->__('Add Image'),
+            'onclick' => 'addImage()',
+            'class' => 'save',
+        ), -100);
 
         $this->_formScripts[] = "
             /*function toggleEditor() {
@@ -27,9 +33,13 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit extends Mage_Adminhtml_Block_Widge
             }*/
 
             function saveAndContinueEdit(){
-                editForm.submit($('banner_edit_form').action+'back/edit/');
+                editForm.submit($('edit_form').action+'back/edit/');
             }
 
+            function addImage() {
+                window.location.href='" . $this->getUrl("*/adminhtml_bannerimage/addBannerImage") . "';
+            }
+            
             function showTypeContents(){
                 var typeId=$('banner_type').value;
                 var show = ((typeId==0)?'block':'none');

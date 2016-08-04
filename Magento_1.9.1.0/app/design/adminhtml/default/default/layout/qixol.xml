@@ -7,9 +7,6 @@
   </qixol_admin_adminhtml_qixolbackend_index>
     <qixol_admin_adminhtml_banner_edit>
         <update handle="editor"/>
-        <reference name="head">
-            <action method="addJs"><script>lib/jquery/jquery-1.10.2.min.js</script></action>
-        </reference>
     </qixol_admin_adminhtml_banner_edit>  
     <qixol_admin_adminhtml_banner_index>
         <reference name="content">

@@ -1,5 +1,5 @@
 <?php
-class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Bannerimages_Grid extends Mage_Adminhtml_Block_Widget_Grid
+class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Bannerimage_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
 
     public function __construct()
@@ -72,6 +72,12 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Bannerimages_Grid extends Mage_Adm
             'header'    =>Mage::helper('qixol')->__('Sort order'),
             'name'      => 'sort_order',
             'index'     => 'sort_order'
+        ));
+
+        $this->addColumn('promotion_reference', array(
+            'header'    =>Mage::helper('qixol')->__('Promotion reference'),
+            'name'      => 'promotion_reference',
+            'index'     => 'promotion_reference'
         ));
 
         $this->addColumn('comment', array(

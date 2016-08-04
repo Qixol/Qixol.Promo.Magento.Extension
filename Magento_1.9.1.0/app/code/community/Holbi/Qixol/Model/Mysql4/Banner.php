@@ -34,16 +34,19 @@ class Holbi_Qixol_Model_Mysql4_Banner extends Mage_Core_Model_Mysql4_Abstract
       }
 
        $condition_2 = $this->_getReadAdapter()->quoteInto('bi.banner_id=b.banner_id','');
-       $condition_3 = $this->_getReadAdapter()->quoteInto('b.banner_group=pt.promotion_type','');
+       $condition_3 = $this->_getReadAdapter()->quoteInto('bi.promotion_reference=pt.yourref',''); // and bi.promotion_reference != \'\','');
        $condition_4 = $this->_getReadAdapter()->quoteInto("qphp.promotion_id=pt.promotion_id ",'');
 
        $where=" b.status>0 and (pt.promotion_text!='' or pt.promotion_text is null or bi.filename!='') and b.display_zone like '%".$this->category_top_advertisment_name."%' and (qphp.promotion_id is null or (".$where."))";
 
        $select = $this->_getReadAdapter()->select()->from(array('b'=>$this->getTable('qixol/banner')))
-                ->join(array('bi'=>$this->getTable('qixol/bannerimages')), $condition_2)
+                ->join(array('bi'=>$this->getTable('qixol/bannerimage')), $condition_2)
                 ->joinLeft(array('pt'=>$this->getTable('promotions')), $condition_3)
                 ->joinLeft(array('qphp'=>$this->getTable('promotionhasproduct')), $condition_4)
-                ->where($where)->group(array("b.banner_id","bi.banner_image_id"))->order('b.sort_order')->reset('columns')->columns(array('pt.promotion_text','bi.filename',"b.url"));
+                ->where($where)->group(array("b.banner_id","bi.banner_image_id"))
+                ->order('bi.sort_order')
+                ->reset('columns')
+                ->columns(array('bi.comment','bi.filename',"bi.url"));
 
 
        $data=$this->_getReadAdapter()->fetchAll($select);
@@ -77,7 +80,8 @@ class Holbi_Qixol_Model_Mysql4_Banner extends Mage_Core_Model_Mysql4_Abstract
        }
 
        $condition_2 = $this->_getReadAdapter()->quoteInto('bi.banner_id=b.banner_id','');
-       $condition_3 = $this->_getReadAdapter()->quoteInto('b.banner_group=pt.promotion_type','');
+       $condition_3 = ''; // TODO: promotion reference != '' and = yourref
+       $condition_3 = $this->_getReadAdapter()->quoteInto('bi.promotion_reference=pt.yourref'); // and bi.promotion_reference != \'\','');
        $condition_4 = $this->_getReadAdapter()->quoteInto("qphp.promotion_id=pt.promotion_id ",'');
 
        $where=" b.status>0 and (pt.promotion_text is null or pt.promotion_text!='' or bi.filename!='') and b.display_zone like '%".$display_zone."%' and (qphp.promotion_id is null or (".
@@ -87,10 +91,10 @@ class Holbi_Qixol_Model_Mysql4_Banner extends Mage_Core_Model_Mysql4_Abstract
                             ."))";
 
        $select = $this->_getReadAdapter()->select()->from(array('b'=>$this->getTable('qixol/banner')))
-                ->join(array('bi'=>$this->getTable('qixol/bannerimages')), $condition_2)
+                ->join(array('bi'=>$this->getTable('qixol/bannerimage')), $condition_2)
                 ->joinLeft(array('pt'=>$this->getTable('promotions')), $condition_3)
                 ->joinLeft(array('qphp'=>$this->getTable('promotionhasproduct')), $condition_4)
-                ->where($where)->group(array("b.banner_id","bi.banner_image_id"))->order('b.sort_order')->reset('columns')->columns(array('pt.promotion_text','bi.filename',"b.url"));
+                ->where($where)->group(array("b.banner_id","bi.banner_image_id"))->order('bi.sort_order')->reset('columns')->columns(array('pt.promotion_text','bi.filename',"bi.url"));
 
        $data=$this->_getReadAdapter()->fetchAll($select);
 

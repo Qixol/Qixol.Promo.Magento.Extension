@@ -1,5 +1,5 @@
 <?php
-class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
+class Holbi_Qixol_Block_Adminhtml_Bannerimage_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
 {
   protected function _prepareForm()
   {

@@ -1,5 +1,5 @@
 <?php
-class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Tab_Bannerimages extends Mage_Adminhtml_Block_Widget_Tabs {
+class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Tab_Bannerimage extends Mage_Adminhtml_Block_Widget_Tabs {
 
     public function __construct()
     {
@@ -8,14 +8,14 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Tab_Bannerimages extends Mage_Admi
         $bannerId = $this->getRequest()->getParam('id', false);
 
         $bannerImages = Mage::getModel("qixol/bannerimage")->getCollection()->load();
-        $this->setTemplate('qixol/bannerimages.phtml')
+        $this->setTemplate('qixol/bannerimage.phtml')
             ->assign('bannerImages', $bannerImages->getItems())
             ->assign('bannerId', $bannerId);
     }
 
     protected function _prepareLayout()
     {
-        $this->setChild('bannerImageGrid', $this->getLayout()->createBlock('qixol/adminhtml_banner_edit_bannerimages_grid', 'bannerImageGrid'));
+        $this->setChild('bannerImageGrid', $this->getLayout()->createBlock('qixol/adminhtml_banner_edit_bannerimage_grid', 'bannerImageGrid'));
         return parent::_prepareLayout();
     }
 
@@ -28,5 +28,4 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit_Tab_Bannerimages extends Mage_Admi
     {
         return $this->getChild('bannerImageGrid')->getJsObjectName();
     }
-
 }
