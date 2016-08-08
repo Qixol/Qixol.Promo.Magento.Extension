@@ -8,9 +8,10 @@ class Holbi_Qixol_Block_Adminhtml_Bannerimage_Edit_Tab_Form extends Mage_Adminht
         $version = substr(Mage::getVersion(), 0, 3);
         //$config = (($version == '1.4' || $version == '1.5') ? "'config' => Mage::getSingleton('sticker/wysiwyg_config')->getConfig()" : "'class'=>''");
 
-        $field_last = $fieldset->addField('banner_id', 'text', array(
+        $field_last = $fieldset->addField('banner_id', 'hidden', array(
             'label' => Mage::helper('qixol')->__('Banner id'),
             'name' => 'banner_id',
+            'value' => $this->getRequest()->getParam('id', false)
         ));
 
         $fieldset->addField('filename', 'image', array(
@@ -34,12 +35,6 @@ class Holbi_Qixol_Block_Adminhtml_Bannerimage_Edit_Tab_Form extends Mage_Adminht
             'name' => 'url',
         ));
 
-//        if (Mage::getSingleton('adminhtml/session')->getStickerData()) {
-//            $form->setValues(Mage::getSingleton('adminhtml/session')->getStickerData());
-//            Mage::getSingleton('adminhtml/session')->setStickerData(null);
-//        } elseif (Mage::registry('sticker_data')) {
-//            $form->setValues(Mage::registry('sticker_data')->getData());
-//        }
         return parent::_prepareForm();
     }
 

@@ -38,7 +38,7 @@ class Holbi_Qixol_Block_Adminhtml_Customergrouspmap_Edit_Tab_Form extends Mage_A
 
 
         $fieldset->addField('customer_group_name', 'select', array(
-            'label' => Mage::helper('qixol')->__('Customer Group Magento:'),
+            'label' => Mage::helper('qixol')->__('Customer Group:'),
             'class' => 'required-entry',
             'required' => true,
             'name' => 'customer_group_name',
@@ -46,7 +46,7 @@ class Holbi_Qixol_Block_Adminhtml_Customergrouspmap_Edit_Tab_Form extends Mage_A
         ));
 
         $fieldset->addField('customer_group_name_map', 'text', array(
-            'label' => Mage::helper('qixol')->__('Customer Group Name'),
+            'label' => Mage::helper('qixol')->__('Integration Code'),
             'class' => 'required-entry',
             'required' => true,
             'name' => 'customer_group_name_map',

@@ -98,21 +98,17 @@ class Holbi_Qixol_Adminhtml_BannerimageController extends Mage_Adminhtml_Control
                 Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('qixol')->__('Item was successfully saved'));
                 Mage::getSingleton('adminhtml/session')->setFormData(false);
 
-                if ($this->getRequest()->getParam('back')) {
-                    $this->_redirect('*/*/edit', array('id' => $model->getId()));
-                    return;
-                }
-                $this->_redirect('*/*/');
+                $this->_redirect('*/adminhtml_banner/edit', array('id' => 6));
                 return;
             } catch (Exception $e) {
                 Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
                 Mage::getSingleton('adminhtml/session')->setFormData($data);
-                $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));
+                $this->_redirect('*/adminhtml_banner/edit', array('id' => $this->getRequest()->getParam('id')));
                 return;
             }
         }
         Mage::getSingleton('adminhtml/session')->addError(Mage::helper('qixol')->__('Unable to find item to save'));
-        $this->_redirect('*/*/');
+        $this->_redirect('*/adminhtml_banner/');
     }
 
     public function deleteAction() {
