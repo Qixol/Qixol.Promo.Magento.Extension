@@ -98,12 +98,12 @@ class Holbi_Qixol_Adminhtml_BannerimageController extends Mage_Adminhtml_Control
                 Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('qixol')->__('Item was successfully saved'));
                 Mage::getSingleton('adminhtml/session')->setFormData(false);
 
-                $this->_redirect('*/adminhtml_banner/edit', array('id' => 6));
+                $this->_redirect('*/adminhtml_banner/edit', array('id' => $this->getRequest()->getParam('banner_id')));
                 return;
             } catch (Exception $e) {
                 Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
                 Mage::getSingleton('adminhtml/session')->setFormData($data);
-                $this->_redirect('*/adminhtml_banner/edit', array('id' => $this->getRequest()->getParam('id')));
+                $this->_redirect('*/adminhtml_banner/edit', array('id' => $this->getRequest()->getParam('banner_id')));
                 return;
             }
         }

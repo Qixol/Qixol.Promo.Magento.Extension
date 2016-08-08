@@ -11,14 +11,21 @@ $qixol_product_all_scripts_inside='';
 
 /* BANNER - START */
 
-    $qixol_product_top_box=Mage::getModel('qixol/bannerboxes')->load('PRODUCT_TOP');
-    if ($qixol_product_top_box->getBannerBoxIsActive()>0){
-        $qixol_top_advertisment_text=$qixol_advertisment->getProductInfoTopAdv($_product);
+    $qixol_product_top_box = Mage::getModel('qixol/bannerboxes')->load('PRODUCT_TOP');
+    
+    //if ($qixol_product_top_box->getBannerBoxIsActive()>0){
+        $qixol_top_advertisment_text = $qixol_advertisment->getProductInfoTopAdv($_product);
 
+        echo "<!-- PRODUCT BANNER: " . $qixol_top_advertisment_text . " -->";
+        
         if ($qixol_top_advertisment_text!=''){
-        $qixol_product_all_scripts_inside .= '$("#messages_product_view").after("<div id=product_top_ class=\'cycle-slideshow\' data-cycle-fx=\''.$qixol_product_top_box->getBannerBoxTranslationType().'\' data-cycle-timeout=\'1500\' data-cycle-slides=\'> div\'>'.preg_replace("/[\n\r]+/","",$qixol_top_advertisment_text).'</div>"); $(\'#product_top_\').cycle();';
+        $qixol_product_all_scripts_inside .= '$("#messages_product_view").after("<div id=product_top_ class=\'cycle-slideshow\' data-cycle-fx=\'';
+        $qixol_product_all_scripts_inside .= $qixol_product_top_box->getBannerBoxTranslationType();
+        $qixol_product_all_scripts_inside .= '\' data-cycle-timeout=\'1500\' data-cycle-slides=\'> div\'>';
+        $qixol_product_all_scripts_inside .= preg_replace("/[\n\r]+/","",$qixol_top_advertisment_text);
+        $qixol_product_all_scripts_inside .= '</div>"); $(\'#product_top_\').cycle();';
         }
-    }
+    //}
 
     $qixol_product_inline_box=Mage::getModel('qixol/bannerboxes')->load('PRODUCT_INLINE');
 
@@ -31,9 +38,9 @@ $qixol_product_all_scripts_inside='';
     }
 
     /* BANNER - END */
-    
-    /* STICKERS - START */
-    
+
+    /* Promotion box on product page - START */
+        
     if (Mage::getStoreConfig('qixol/stickers/showPromoBoxOnProductPage')>0){
     $qixol_all_promotions_text = $qixol_advertisment->getAllProductAdv($_product);
     if ($qixol_all_promotions_text!=''){
@@ -45,6 +52,10 @@ $qixol_product_all_scripts_inside='';
     }
 }
 
+    /* Promotion box on product page - END */
+        
+    /* STICKERS - START */
+    
     if (Mage::getStoreConfig('qixol/stickers/showStickersOnProductPage')>0) {
 
         $is_sticker_image = $qixol_advertisment->isSticked($_product);

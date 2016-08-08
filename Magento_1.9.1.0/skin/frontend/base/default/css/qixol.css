@@ -97,7 +97,8 @@ margin-right: 10px;
 line-height:32px;
 }
 .cycle-slideshow{
-  height:100px;
+  /*height:100px;*/
+  display: inline-block;
 }
 .product_all_promotions{
   width:100%;

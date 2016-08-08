@@ -11,7 +11,7 @@ class Holbi_Qixol_Block_Adminhtml_Bannerimage_Edit_Tab_Form extends Mage_Adminht
         $field_last = $fieldset->addField('banner_id', 'hidden', array(
             'label' => Mage::helper('qixol')->__('Banner id'),
             'name' => 'banner_id',
-            'value' => $this->getRequest()->getParam('id', false)
+            'value' => $this->getRequest()->getParam('bannerid', false)
         ));
 
         $fieldset->addField('filename', 'image', array(

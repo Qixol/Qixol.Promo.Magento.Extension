@@ -48,7 +48,6 @@ class Holbi_Qixol_Model_Mysql4_Banner extends Mage_Core_Model_Mysql4_Abstract
                 ->reset('columns')
                 ->columns(array('bi.comment','bi.filename',"bi.url"));
 
-
        $data=$this->_getReadAdapter()->fetchAll($select);
 
        if (count($data)) return $data;
@@ -80,21 +79,35 @@ class Holbi_Qixol_Model_Mysql4_Banner extends Mage_Core_Model_Mysql4_Abstract
        }
 
        $condition_2 = $this->_getReadAdapter()->quoteInto('bi.banner_id=b.banner_id','');
-       $condition_3 = ''; // TODO: promotion reference != '' and = yourref
        $condition_3 = $this->_getReadAdapter()->quoteInto('bi.promotion_reference=pt.yourref'); // and bi.promotion_reference != \'\','');
        $condition_4 = $this->_getReadAdapter()->quoteInto("qphp.promotion_id=pt.promotion_id ",'');
 
-       $where=" b.status>0 and (pt.promotion_text is null or pt.promotion_text!='' or bi.filename!='') and b.display_zone like '%".$display_zone."%' and (qphp.promotion_id is null or (".
-                            (count($child_ids)?
-                            " ((qphp.parent_product_id='".(int)$product_id."' and qphp.product_id in (".join(",",$child_ids).")) or (qphp.product_id='".(int)$product_id."' and qphp.parent_product_id=0) )":
-                            " qphp.product_id='".(int)$product_id."' and qphp.parent_product_id=0")
-                            ."))";
-
+       $where = "b.status > 0 and ";
+       $where .= "(pt.promotion_text is null or pt.promotion_text!='' or bi.filename!='') and ";
+       $where .= "b.display_zone like '%" . $display_zone . "%' and ";
+       $where .= "(qphp.promotion_id is null or (";
+        if (count($child_ids))
+        {
+            $where .= " ((qphp.parent_product_id='" . (int)$product_id . "' and ";
+            $where .= "qphp.product_id in (" . join(",",$child_ids) . ")) or ";
+            $where .= "(qphp.product_id='" . (int)$product_id."' and ";
+            $where .= "qphp.parent_product_id=0) )";
+        }
+        else
+        {
+            $where .= " qphp.product_id='" . (int)$product_id . "' and qphp.parent_product_id=0";
+        }
+        $where .= "))";
+                            
        $select = $this->_getReadAdapter()->select()->from(array('b'=>$this->getTable('qixol/banner')))
                 ->join(array('bi'=>$this->getTable('qixol/bannerimage')), $condition_2)
                 ->joinLeft(array('pt'=>$this->getTable('promotions')), $condition_3)
                 ->joinLeft(array('qphp'=>$this->getTable('promotionhasproduct')), $condition_4)
-                ->where($where)->group(array("b.banner_id","bi.banner_image_id"))->order('bi.sort_order')->reset('columns')->columns(array('pt.promotion_text','bi.filename',"bi.url"));
+                ->where($where)
+                ->group(array("bi.banner_id","bi.banner_image_id"))
+                ->order('bi.sort_order')
+                ->reset('columns')
+                ->columns(array('bi.comment','bi.filename',"bi.url"));
 
        $data=$this->_getReadAdapter()->fetchAll($select);
 

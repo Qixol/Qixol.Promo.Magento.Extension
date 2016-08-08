@@ -23,6 +23,8 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit extends Mage_Adminhtml_Block_Widge
             'class' => 'save',
         ), -100);
 
+        $addImageUrl = $this->getUrl('*/adminhtml_bannerimage/addBannerImage', array('bannerid' => $this->getRequest()->getParam('id')));
+        
         $this->_formScripts[] = "
             /*function toggleEditor() {
                 if (tinyMCE.getInstanceById('banner_content') == null) {
@@ -37,7 +39,7 @@ class Holbi_Qixol_Block_Adminhtml_Banner_Edit extends Mage_Adminhtml_Block_Widge
             }
 
             function addImage() {
-                window.location.href='" . $this->getUrl("*/adminhtml_bannerimage/addBannerImage") . "';
+                window.location.href='" . $addImageUrl . "';
             }
             
             function showTypeContents(){

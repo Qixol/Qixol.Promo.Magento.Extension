@@ -6,7 +6,7 @@ class Holbi_Qixol_Block_Adminhtml_Bannerimage_Edit_Form extends Mage_Adminhtml_B
       $form = new Varien_Data_Form(array(
                                       'id' => 'edit_form',
         
-                                      'action' => $this->getUrl('*/*/save', array('id' => $this->getRequest()->getParam('id'))),
+                                      'action' => $this->getUrl('*/*/save'),
                                       'method' => 'post',
         							  'enctype' => 'multipart/form-data'
                                    )
