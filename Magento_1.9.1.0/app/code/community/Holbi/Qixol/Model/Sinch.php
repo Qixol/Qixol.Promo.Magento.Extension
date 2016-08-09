@@ -714,10 +714,14 @@ if ($shipping_price_exists==0){//somethimes returns zero
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           // $only_active=1;
             if ($only_active>0)
+            {
               $methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
+            }
             else 
+            {
               $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
-
+            }
+            
             $selectedgroups=Mage::getStoreConfig('qixol/shippings/list');
 
           unset($selectedgroups_array);

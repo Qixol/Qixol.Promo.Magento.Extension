@@ -27,11 +27,15 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Grid extends Mage_Adminhtml_Block_
           }
           //returns only active list
           $only_active=Mage::getStoreConfig('qixol/shippings/onlyactive');
-          /*if ($only_active>0)
+          if ($only_active>0)
+          {
              $methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
-          else */
-          $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
-
+          }
+          else
+          {
+            $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
+          }
+          
           //$options = array();
 
           foreach($methods as $_ccode => $_carrier)
@@ -68,7 +72,7 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Grid extends Mage_Adminhtml_Block_
 
         
         $this->addColumn('shipping_name', array(
-            'header'        => $hlp->__('Shipping Name Magento:'),
+            'header'        => $hlp->__('Shipping Method'),
             'type'          => 'shipping',
             'align'         => 'left',
             'width' => '250px',
@@ -80,7 +84,7 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Grid extends Mage_Adminhtml_Block_
 
 
         $this->addColumn('shipping_name_map', array(
-            'header' => $hlp->__('Shipping Name To'),
+            'header' => $hlp->__('Integration Code'),
             'width' => '350px',
             'index' => 'shipping_name_map'
         ));

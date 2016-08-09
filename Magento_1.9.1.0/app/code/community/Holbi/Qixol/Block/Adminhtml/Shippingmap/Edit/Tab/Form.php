@@ -22,58 +22,83 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Edit_Tab_Form extends Mage_Adminht
           }
           //returns only active list
           $only_active=Mage::getStoreConfig('qixol/shippings/onlyactive');
-          /*if ($only_active>0)
-             $methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
-          else */
-          $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
-
-          //$options = array();
-
-          foreach($methods as $_ccode => $_carrier)
+          if ($only_active>0)
           {
-              $_methodOptions = array();
+             $carriers = Mage::getSingleton('shipping/config')->getActiveCarriers();
+          }
+          else
+          {   
+            $carriers = Mage::getSingleton('shipping/config')->getAllCarriers();
+          }
+
+          $shippingMethodDropDownValues = array();
+          
+          foreach($carriers as $_ccode => $_carrier)
+          {
+              $carrierMethods = array();
+              
            try{ //some methods not allowed getAllowedMethods
               if($_methods = $_carrier->getAllowedMethods())
               {
                   foreach($_methods as $_mcode => $_method)
                   {
                       $_code = $_ccode . '_' . $_mcode;
-                      $shipping_name_array_list[] = array('value'=>$_code ,'label'=>$hlp->__(trim($_method)==''?$_code:$_method));
-                      if (isset($list_map_names_exists[$_code])) unset($_code);
+                      $carrierMethods[] = array(
+                          'value' => $_code,
+                          'label' => $hlp->__(trim($_method) == '' ? $_code : $_method)
+                        );
+                      if (isset($list_map_names_exists[$_code]))
+                      {
+                          unset($_code);
+                      }
                   }
 
-                 /* if(!$_title = Mage::getStoreConfig("carriers/$_ccode/title"))
-                      $_title = $_ccode;
+                if(!$_title = Mage::getStoreConfig("carriers/$_ccode/title"))
+                {
+                        $_title = $_ccode;
+                }
 
-                  $options[] = array('value' => $_methodOptions, 'label' => $hlp->__($_title));*/
+                $shippingMethodDropDownValues[] = array('label' => $_title, 'value' => $carrierMethods);
               }
             }
             catch(Exception $e) {
             continue;
             }
+              
           }
-          if (count($list_map_names_exists)){
-              foreach ($list_map_names_exists as $exists_old_code)
-                      $shipping_name_array_list[] = array('value'=>$exists_old_code,'label'=>$hlp->__($exists_old_code));
 
-           }
-
-
+//$shipping_name_array_list = array(
+//    array(
+//        'label' => 'Flatrate',
+//        'value' =>  array(array('label' => 'Fixed', 'value' => 'flatrate_flatrate'))
+//    ),
+//    array(
+//        'label' => 'Free Shipping',
+//        'value' => array(array('label' => 'Free', 'value' => 'freeshipping_freeshipping'))
+//    ),
+//    array(
+//        'label' => 'Federal Express',
+//        'value' => array(
+//                        array('label' => '2 Day', 'value' => 'fedex_FEDEX_2_DAY'),
+//                        array('label' => 'Ground', 'value' => 'fedex_FEDEX_GROUND'),
+//                        array('label' => 'First Overnight', 'value' => 'fedex_FIRST_OVERNIGHT')
+//    ))
+//);
 
         $fieldset->addField('shipping_name', 'select', array(
-            'label' => Mage::helper('qixol')->__('Shipping Name Magento:'),
+            'label' => Mage::helper('qixol')->__('Shipping Method'),
             'class' => 'required-entry',
             'required' => true,
             'name' => 'shipping_name',
-            'values' => $shipping_name_array_list
+            'values' => $shippingMethodDropDownValues
         ));
 
         $fieldset->addField('shipping_name_map', 'text', array(
-            'label' => Mage::helper('qixol')->__('Shipping Name'),
+            'label' => Mage::helper('qixol')->__('Integration Code'),
             'class' => 'required-entry',
             'required' => true,
             'name' => 'shipping_name_map',
-            'after_element_html' => Mage::helper('qixol')->__('Name to be send to quxion.'),
+            'after_element_html' => Mage::helper('qixol')->__('Code to be synchronised to Promo'),
         ));
 
 

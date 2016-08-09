@@ -7,9 +7,13 @@ class Holbi_Qixol_Model_System_Config_Source_Shippings_List
           //returns only active list
           $only_active=Mage::getStoreConfig('qixol/shippings/onlyactive');
           if ($only_active>0)
+          {
              $methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
+          }
           else 
+          {
              $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
+          }
 
           $options = array();
 
