@@ -37,26 +37,27 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Edit_Tab_Form extends Mage_Adminht
           {
               $carrierMethods = array();
               
+                if(!$_title = Mage::getStoreConfig("carriers/$_ccode/title"))
+                {
+                        $_title = $_ccode;
+                }
+
            try{ //some methods not allowed getAllowedMethods
               if($_methods = $_carrier->getAllowedMethods())
               {
                   foreach($_methods as $_mcode => $_method)
                   {
                       $_code = $_ccode . '_' . $_mcode;
+                      $shippingMethod = $hlp->__(trim($_method) == '' ? $_code : $_method);
                       $carrierMethods[] = array(
-                          'value' => $_code,
-                          'label' => $hlp->__(trim($_method) == '' ? $_code : $_method)
+                          'value' => $_code . '::' . $_title . '::' . $shippingMethod,
+                          'label' => $shippingMethod
                         );
                       if (isset($list_map_names_exists[$_code]))
                       {
                           unset($_code);
                       }
                   }
-
-                if(!$_title = Mage::getStoreConfig("carriers/$_ccode/title"))
-                {
-                        $_title = $_ccode;
-                }
 
                 $shippingMethodDropDownValues[] = array('label' => $_title, 'value' => $carrierMethods);
               }
@@ -85,11 +86,11 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Edit_Tab_Form extends Mage_Adminht
 //    ))
 //);
 
-        $fieldset->addField('shipping_name', 'select', array(
+        $fieldset->addField('shipping_method', 'select', array(
             'label' => Mage::helper('qixol')->__('Shipping Method'),
             'class' => 'required-entry',
             'required' => true,
-            'name' => 'shipping_name',
+            'name' => 'shipping_method',
             'values' => $shippingMethodDropDownValues
         ));
 
@@ -101,6 +102,20 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Edit_Tab_Form extends Mage_Adminht
             'after_element_html' => Mage::helper('qixol')->__('Code to be synchronised to Promo'),
         ));
 
+        $fieldset->addField('shipping_name', 'hidden', array(
+            'name' => 'shipping_name'
+        ));
+        
+        $fieldset->addField('carrier_title', 'hidden', array(
+            'name' => 'carrier_title'
+        ));
+
+        $lastField = $fieldset->addField('carrier_method', 'hidden', array(
+            'name' => 'carrier_method'
+        ));
+
+                
+        $lastField->setAfterElementHtml($this->prepareScript());
 
         if (Mage::getSingleton('adminhtml/session')->getShippingmapData()) {
             $form->setValues(Mage::getSingleton('adminhtml/session')->getShippingmapData());
@@ -111,4 +126,33 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Edit_Tab_Form extends Mage_Adminht
         return parent::_prepareForm();
     }
 
+    private function prepareScript()
+    {
+        return '<script>
+          //< ![C
+            function shipping_method_onChange(){
+                setDataFields();
+            }
+
+            function setDataFields() {
+                var shippingMethodDetails = $("shipping_method").value.split(\'::\');
+                $("shipping_name").value = shippingMethodDetails[0];
+                $("carrier_title").value = shippingMethodDetails[1];
+                $("carrier_method").value = shippingMethodDetails[2];
+            }
+            
+            document.observe("dom:loaded", function() {
+
+                $("shipping_method").observe("change",function(e){
+                       shipping_method_onChange();
+                });
+
+                setDataFields();
+
+            });
+
+
+          //]]>
+          </script>';
+    }
 }

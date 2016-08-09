@@ -21,6 +21,14 @@ SQLTEXT;
 $installer->run($sql);
 
 $sql=<<<SQLTEXT
+ALTER TABLE {$installer->getTable(`qixol_shipping_name_map`)}
+  ADD 'carrier_title' varchar(255),
+  ADD 'carrier_method' varchar(255),
+SQLTEXT;
+
+$installer->run($sql);
+
+$sql=<<<SQLTEXT
 RENAME TABLE  `magento`.`qixol_banner_images` TO  `magento`.`qixol_banner_image` ;
 SQLTEXT;
 

@@ -78,10 +78,23 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Grid extends Mage_Adminhtml_Block_
             'width' => '250px',
             'index'         => 'shipping_name',
             'type' => 'options',
-            'options' => $shipping_name_array_list
+            'options' => $shipping_name_array_list,
+            'column_css_class'  => 'no-display',
+            'header_css_class'  => 'no-display'
+
         ));
 
+        $this->addColumn('carrier_title', array(
+            'header'        => $hlp->__('Carrier'),
+            'align'         => 'left',
+            'index'         => 'carrier_title'
+        ));
 
+        $this->addColumn('carrier_method', array(
+            'header'        => $hlp->__('Method'),
+            'align'         => 'left',
+            'index'         => 'carrier_method'
+        ));
 
         $this->addColumn('shipping_name_map', array(
             'header' => $hlp->__('Integration Code'),

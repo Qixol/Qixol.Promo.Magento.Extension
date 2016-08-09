@@ -121,6 +121,8 @@ $installer->run($sql);
 $sql=<<<SQLTEXT
 CREATE TABLE {$installer->getTable('qixol_shipping_name_map')}(
   shipping_name varchar(255) not null default '',
+  carrier_title varchar(255) not null default '',
+  carrier_method varchar(255) not null default '',
   shipping_name_map varchar(255) not null default '',
   `created_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
