@@ -38,7 +38,7 @@ class Holbi_Qixol_Block_Adminhtml_Storesmap_Edit_Tab_Form extends Mage_Adminhtml
 
 
         $fieldset->addField('store_name', 'select', array(
-            'label' => Mage::helper('qixol')->__('Store Name Magento:'),
+            'label' => Mage::helper('qixol')->__('Store Name'),
             'class' => 'required-entry',
             'required' => true,
             'name' => 'store_name',
@@ -46,11 +46,11 @@ class Holbi_Qixol_Block_Adminhtml_Storesmap_Edit_Tab_Form extends Mage_Adminhtml
         ));
 
         $fieldset->addField('store_name_map', 'text', array(
-            'label' => Mage::helper('qixol')->__('Store Name To'),
+            'label' => Mage::helper('qixol')->__('Integration Code'),
             'class' => 'required-entry',
             'required' => true,
             'name' => 'store_name_map',
-            'after_element_html' => Mage::helper('qixol')->__('Name to be sent to Promo.'),
+            'after_element_html' => Mage::helper('qixol')->__('Code to be sent to Promo.'),
         ));
 
 

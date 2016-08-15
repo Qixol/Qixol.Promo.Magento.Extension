@@ -24,6 +24,7 @@ $sql=<<<SQLTEXT
 ALTER TABLE {$installer->getTable(`qixol_shipping_name_map`)}
   ADD 'carrier_title' varchar(255),
   ADD 'carrier_method' varchar(255),
+  RENAME 'shipping_name_map', 'integration_code'
 SQLTEXT;
 
 $installer->run($sql);

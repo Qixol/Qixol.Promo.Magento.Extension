@@ -123,11 +123,11 @@ CREATE TABLE {$installer->getTable('qixol_shipping_name_map')}(
   shipping_name varchar(255) not null default '',
   carrier_title varchar(255) not null default '',
   carrier_method varchar(255) not null default '',
-  shipping_name_map varchar(255) not null default '',
+  integration_code varchar(255) not null default '',
   `created_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`shipping_name`),
-  UNIQUE KEY `shipping_name_to_shipping_name_map` (`shipping_name`,`shipping_name_map`)
+  UNIQUE KEY `shipping_name_to_shipping_name_map` (`shipping_name`,`integration_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQLTEXT;
 

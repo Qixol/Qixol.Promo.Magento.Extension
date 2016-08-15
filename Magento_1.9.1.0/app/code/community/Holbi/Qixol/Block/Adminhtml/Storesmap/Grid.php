@@ -46,7 +46,7 @@ class Holbi_Qixol_Block_Adminhtml_Storesmap_Grid extends Mage_Adminhtml_Block_Wi
 
         
         $this->addColumn('store_name', array(
-            'header'        => $hlp->__('Store Name Magento:'),
+            'header'        => $hlp->__('Store Name'),
             'type'          => 'stores',
             'align'         => 'left',
             'width' => '250px',
@@ -58,7 +58,7 @@ class Holbi_Qixol_Block_Adminhtml_Storesmap_Grid extends Mage_Adminhtml_Block_Wi
 
 
         $this->addColumn('store_name_map', array(
-            'header' => $hlp->__('Store Name To'),
+            'header' => $hlp->__('Integration Code'),
             'width' => '350px',
             'index' => 'store_name_map'
         ));

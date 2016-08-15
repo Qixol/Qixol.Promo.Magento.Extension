@@ -206,6 +206,9 @@
                         </synchproducts> 
                         <synchcatproducts translate="label">
                             <label>Synchronise category with product</label>
+                            <depends>
+                                <synchproducts>1</synchproducts>
+                            </depends>
                             <comment>Send product categories in  attribute categorycode</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>                            
@@ -288,7 +291,7 @@
                         </synchonsaving>                        
                     </fields>                      
                  </syhchronized>
-                 
+                 <!--
                   <customers translate="label">
                     <label>Customers</label>
                     <sort_order>77</sort_order>
@@ -308,7 +311,7 @@
                         </list>                       
                     </fields>                      
                  </customers>
-
+                
                   <shippings translate="label">
                     <label>Shipping Methods</label>
                     <sort_order>77</sort_order>
@@ -337,6 +340,7 @@
                         </list>                       
                     </fields>                      
                  </shippings>
+                 -->
                  
                   <productattrib translate="label">
                     <label>Product Attributes</label>
@@ -381,9 +385,9 @@
                  </issuedpoints>
                  -->
                 <sinch_explort_products translate="label">
-                    <label>Run export products</label>
+                    <label>Synchronise items to Promo</label>
                     <frontend_type>text</frontend_type>
-                    <comment>Export products to qixol.</comment>
+                    <comment>Export items to Promo</comment>
                     <sort_order>150</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>

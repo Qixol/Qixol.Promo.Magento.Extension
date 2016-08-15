@@ -20,16 +20,9 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Edit_Tab_Form extends Mage_Adminht
           foreach ($list_map_names as $list_map){
               $list_map_names_exists[$list_map->getShippingName()]=$list_map->getShippingName();
           }
-          //returns only active list
-          $only_active=Mage::getStoreConfig('qixol/shippings/onlyactive');
-          if ($only_active>0)
-          {
-             $carriers = Mage::getSingleton('shipping/config')->getActiveCarriers();
-          }
-          else
-          {   
-            $carriers = Mage::getSingleton('shipping/config')->getAllCarriers();
-          }
+          
+          //$carriers = Mage::getSingleton('shipping/config')->getActiveCarriers();
+          $carriers = Mage::getSingleton('shipping/config')->getAllCarriers();
 
           $shippingMethodDropDownValues = array();
           
@@ -94,11 +87,11 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Edit_Tab_Form extends Mage_Adminht
             'values' => $shippingMethodDropDownValues
         ));
 
-        $fieldset->addField('shipping_name_map', 'text', array(
+        $fieldset->addField('integration_code', 'text', array(
             'label' => Mage::helper('qixol')->__('Integration Code'),
             'class' => 'required-entry',
             'required' => true,
-            'name' => 'shipping_name_map',
+            'name' => 'integration_code',
             'after_element_html' => Mage::helper('qixol')->__('Code to be synchronised to Promo'),
         ));
 

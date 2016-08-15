@@ -637,121 +637,100 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
         
-         $current_state=$this->getExportStatus('customers');
-        //do not run again if in process
-        if ($current_state['id']==0||$current_state['finished']==1||strtotime($current_state['last_updated'])<strtotime("-1 hour")){
+        if ($this->isRunning('customers'))
+        {
+            return;
+        }
 
+        $this->addExportStatus("process", 'customers' ,'',0);
 
-          //get mapping    
-          $list_map_names=Mage::getModel('qixol/Customergrouspmap')->getCollection();
+        $list_map_names = Mage::getModel('qixol/Customergrouspmap')->getCollection();
 
-          $list_map_names_exists=array();
+        $list_map_names_exists=array();
 
-          foreach ($list_map_names as $list_map){
-              $list_map_names_exists[$list_map->getCustomerGroupName()]=$list_map->getCustomerGroupNameMap();
+        foreach ($list_map_names as $list_map){
+            $list_map_names_exists[$list_map->getCustomerGroupName()]=$list_map->getCustomerGroupNameMap();
+        }
+
+        $customerGroupModel = new Mage_Customer_Model_Group();
+        $customerGroups = array();
+        $allCustomerGroups  = $customerGroupModel->getCollection()->toOptionHash();
+        $selectedgroups=Mage::getStoreConfig('qixol/customers/list');
+        if(trim($selectedgroups)!='')
+          $selectedgroups_array=explode(",",$selectedgroups);
+
+        $group_to_send='';
+        foreach($allCustomerGroups as $key => $group){          
+          if (trim($selectedgroups)==''||in_array($key,$selectedgroups_array)){
+              $displayName = ((isset($list_map_names_exists[$group])&&trim($list_map_names_exists[$group])!='')?$list_map_names_exists[$group]:$group);
+            $group_to_send.='<item display="'.$displayName.'">'.$group.'</item>';  
           }
-          // end mapping array
-
-            $this->addExportStatus("process", 'customers' ,'',0);
-            $customerGroupModel = new Mage_Customer_Model_Group();
-            $customerGroups = array();
-            $allCustomerGroups  = $customerGroupModel->getCollection()->toOptionHash();
-            $selectedgroups=Mage::getStoreConfig('qixol/customers/list');
-            if(trim($selectedgroups)!='')
-              $selectedgroups_array=explode(",",$selectedgroups);
-
-            $group_to_send='';
-            foreach($allCustomerGroups as $key => $group){          
-              if (trim($selectedgroups)==''||in_array($key,$selectedgroups_array)){
-                  $displayName = ((isset($list_map_names_exists[$group])&&trim($list_map_names_exists[$group])!='')?$list_map_names_exists[$group]:$group);
-                $group_to_send.='<item display="'.$displayName.'">'.$group.'</item>';  
-              }
-            }
-            if ($group_to_send!='')
-            {//entity="basket" 
-              $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="customergroup"><items>'.$group_to_send.'</items></import>';
-              $result = $this->promoService->CustomerGroupExport($data);
-              if ($result->success)
-              {
-                   $this->addExportStatus("success", 'customers', addslashes($result->message),1);
-              }
-                else {
-                    $this->addExportStatus("error", 'customers', addslashes($result->message),1);
-                }
+        }
+        if ($group_to_send!='')
+        {
+          $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="customergroup"><items>'.$group_to_send.'</items></import>';
+          $result = $this->promoService->CustomerGroupExport($data);
+          if ($result->success)
+          {
+               $this->addExportStatus("success", 'customers', addslashes($result->message),1);
+          }
+            else {
+                $this->addExportStatus("error", 'customers', addslashes($result->message),1);
             }
         }
     }
 
     function run_export_shippingMethods() {
 
-        if (Mage::getStoreConfig('holbi/qixol/enabled') == 0){
+        if (Mage::getStoreConfig('holbi/qixol/enabled') == 0)
+        {
             return;
         }
 
-        //shippings attributes
-        //{{
-        if (Mage::getStoreConfig('qixol/syhchronized/synchship') == 0){
+        if (Mage::getStoreConfig('qixol/syhchronized/synchship') == 0)
+        {
             return;
         }
         
-         $current_state=$this->getExportStatus('delivery');
-        //do not run again if in process
-        if ($current_state['id']==0||$current_state['finished']==1||strtotime($current_state['last_updated'])<strtotime("-1 hour")){
-          $this->addExportStatus("process", 'delivery' ,'',0);
-       
-          //get mapping    
-          $list_map_names=Mage::getModel('qixol/Shippingmap')->getCollection();
+        if ($this->isRunning('delivery'))
+        {
+            return;
+        }
+        
+        $this->addExportStatus("process", 'delivery' ,'',0);
 
-          $list_map_names_exists=array();
+        $list_map_names = Mage::getModel('qixol/Shippingmap')->getCollection();
 
-          foreach ($list_map_names as $list_map){
-              $list_map_names_exists[$list_map->getShippingName()]=$list_map->getShippingNameMap();
-          }
-          // end mapping array
+        $list_map_names_exists=array();
 
-            //returns only active list
-            $only_active=Mage::getStoreConfig('qixol/shippings/onlyactive');
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-          // $only_active=1;
-            if ($only_active>0)
-            {
-              $methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
-            }
-            else 
-            {
-              $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
-            }
+        foreach ($list_map_names as $list_map){
+            $list_map_names_exists[$list_map->getShippingName()] = $list_map->getShippingNameMap();
+        }
+
+        //$methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
+        $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
             
-            $selectedgroups=Mage::getStoreConfig('qixol/shippings/list');
+        $selectedgroups = Mage::getStoreConfig('qixol/shippings/list');
 
-          unset($selectedgroups_array);
-          if(trim($selectedgroups)!='')
+        unset($selectedgroups_array);
+        
+        if(trim($selectedgroups)!='')
+        {
             $selectedgroups_array=explode(",",$selectedgroups);
-          $shipping_to_send='';
-            foreach($methods as $_ccode => $_carrier)
-            {
-                $_methodOptions = array();
-            try{ //some methods not allowed getAllowedMethods
-                if($_methods = $_carrier->getAllowedMethods())
-                {
-                    foreach($_methods as $_mcode => $_method)
-                    {
-                        $_code = $_ccode . '_' . $_mcode;
-                        if (trim($selectedgroups)==''||in_array($_code,$selectedgroups_array)){
-                          $shipping_to_send.='<item display="'.((isset($list_map_names_exists[$_code])&&trim($list_map_names_exists[$_code])!='')?$list_map_names_exists[$_code]:(trim($_method)==''?$_code:$_method)).'">'.$_code.'</item>';  
-                        }
-                    }
-                }
-              }
-              catch(Exception $e) {
-              continue;
-              }
-            }
+        }
 
-          if ($shipping_to_send!='')
-          {
+        foreach($list_map_names as $list_map)
+        {
+            $shipping_to_send .= '<item display="';
+            $shipping_to_send .= $list_map->getCarrierTitle() . ': ' . $list_map->getCarrierMethod();
+            $shipping_to_send .= '">';
+            $shipping_to_send .= $list_map->getIntegrationCode();
+            $shipping_to_send .= '</item>';  
+        }
+
+        if ($shipping_to_send!='')
+        {
             $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="deliverymethod"><items>'.$shipping_to_send.'</items></import>';
-            //$this->soapCallShippingMethodsExport($data);
             $result = $this->promoService->ShippingMethodsExport($data);
             if ($result->success)
             {
@@ -761,12 +740,11 @@ if ($shipping_price_exists==0){//somethimes returns zero
             {
               $this->addExportStatus("error", 'delivery' ,addslashes($result->message),1);
             }
-          }
-          else
-          {
+        }
+        else
+        {
             $this->addExportStatus("success", 'delivery', 'There are no shipping methods to send', 1);
-          }
-      }
+        }
     }    
 
     function run_export_currencies() {
@@ -779,10 +757,12 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
         
-         $current_state=$this->getExportStatus('currency');
-        //do not run again if in process
-        if ($current_state['id']==0||$current_state['finished']==1||strtotime($current_state['last_updated'])<strtotime("-1 hour")){
-          $this->addExportStatus("process", 'currency' ,'',0);
+        if ($this->isRunning('currency'))
+        {
+            return;
+        }
+
+        $this->addExportStatus("process", 'currency' ,'',0);
            $currency_to_send='';
            $only_active_currency=Mage::getStoreConfig('currency/options/allow');
            $currencies_array = explode(',',$only_active_currency);
@@ -806,7 +786,6 @@ if ($shipping_price_exists==0){//somethimes returns zero
           } else {
               $this->addExportStatus("success", 'currency', 'No currencies to send', 1);
           }
-      }
     }
 
     function run_export_stores() {
@@ -819,10 +798,12 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
 
-         $current_state=$this->getExportStatus('store');
-        //do not run again if in process
-        if ($current_state['id']==0||$current_state['finished']==1||strtotime($current_state['last_updated'])<strtotime("-1 hour")){
-          $this->addExportStatus("process", 'store' ,'',0);
+        if ($this->isRunning('store'))
+        {
+            return;
+        }
+
+        $this->addExportStatus("process", 'store' ,'',0);
            $store_to_send='';
 
           //get mapping    
@@ -863,7 +844,6 @@ if ($shipping_price_exists==0){//somethimes returns zero
         {
           $this->addExportStatus("success", 'store', 'There are no stores to send', 1);
         }
-      }
     }
 
     function run_export_products() {
@@ -876,11 +856,8 @@ if ($shipping_price_exists==0){//somethimes returns zero
             return;
         }
       
-        $current_state = $this->getExportStatus('products');
-        // prevent double run script
-        if ($current_state['id'] != 0 &&
-                $current_state['finished'] != 1 &&
-                strtotime($current_state['last_updated']) < strtotime("-1 hour")) {
+        if ($this->isRunning('products'))
+        {
             return;
         }
       
@@ -1155,5 +1132,16 @@ if ($shipping_price_exists==0){//somethimes returns zero
             $write_data->query($query);
         }*/
    return ;
+    }
+
+    function isRunning($exportType)
+    {
+        $current_state=$this->getExportStatus($exportType);
+        
+        if ($current_state['id']==0) return false;
+        if ($current_state['finished'] == 1) return false;
+        if (strtotime($current_state['last_updated'])<strtotime("-1 hour")) return false;
+
+        return true;
     }
 }

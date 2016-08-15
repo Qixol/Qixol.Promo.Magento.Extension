@@ -4,7 +4,7 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Grid extends Mage_Adminhtml_Block_
     public function __construct() {
         parent::__construct();
         $this->setId('shippingmapGrid');
-        $this->setDefaultSort('shipping_name_map');
+        $this->setDefaultSort('integration_code');
         $this->setDefaultDir('ASC');
         $this->setSaveParametersInSession(true);
     }
@@ -25,16 +25,9 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Grid extends Mage_Adminhtml_Block_
           foreach ($list_map_names as $list_map){
               $list_map_names_exists[$list_map->getShippingName()]=$list_map->getShippingName();
           }
-          //returns only active list
-          $only_active=Mage::getStoreConfig('qixol/shippings/onlyactive');
-          if ($only_active>0)
-          {
-             $methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
-          }
-          else
-          {
-            $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
-          }
+
+          //$methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
+          $methods = Mage::getSingleton('shipping/config')->getAllCarriers();
           
           //$options = array();
 
@@ -96,10 +89,10 @@ class Holbi_Qixol_Block_Adminhtml_Shippingmap_Grid extends Mage_Adminhtml_Block_
             'index'         => 'carrier_method'
         ));
 
-        $this->addColumn('shipping_name_map', array(
+        $this->addColumn('integration_code', array(
             'header' => $hlp->__('Integration Code'),
             'width' => '350px',
-            'index' => 'shipping_name_map'
+            'index' => 'integration_code'
         ));
 
         $this->addColumn('action',

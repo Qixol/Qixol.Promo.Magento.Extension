@@ -80,8 +80,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
             
-            $returnValue->message = $result;
-            $returnValue->success = true;
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }
             
             return $returnValue;
         }
@@ -101,8 +109,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
 
-            $returnValue->message = $result;
-            $returnValue->success = true;
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }
             
             return $returnValue;
         }
@@ -122,8 +138,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
 
-            $returnValue->message = $result;
-            $returnValue->success = true;
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }
             
             return $returnValue;
         }
@@ -144,9 +168,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
 
-            $returnValue->message = $result;
-            $returnValue->success = true;
-            
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }          
             return $returnValue;
         }
         catch(Exception $e)
@@ -165,8 +196,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
 
-            $returnValue->message = $result;
-            $returnValue->success = true;
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }
             
             return $returnValue;
         }
@@ -186,8 +225,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
 
-            $returnValue->message = $result;
-            $returnValue->success = true;
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }
             
             return $returnValue;
         }
@@ -207,8 +254,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
 
-            $returnValue->message = $result;
-            $returnValue->success = true;
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }
             
             return $returnValue;
         }
@@ -235,8 +290,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
 
-            $returnValue->message = $result;
-            $returnValue->success = true;
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }
             
             return $returnValue;
         }
@@ -256,8 +319,16 @@ class RESTPromoService extends PromoService implements iPromoService
         {
             $result = $this->callQixolPromoRestService('POST', $url, $couponCode);
 
-            $returnValue->message = $result;
-            $returnValue->success = true;
+            if (empty($result))
+            {
+                $returnValue->messsage = 'Stores - no response';
+                $returnValue->success = false;
+            }
+            else
+            {
+                $returnValue->message = $result;
+                $returnValue->success = true;
+            }
             
             return $returnValue;
         }
