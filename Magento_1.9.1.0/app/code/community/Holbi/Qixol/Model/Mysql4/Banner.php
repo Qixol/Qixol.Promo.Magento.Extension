@@ -79,7 +79,7 @@ class Holbi_Qixol_Model_Mysql4_Banner extends Mage_Core_Model_Mysql4_Abstract
        }
 
        $condition_2 = $this->_getReadAdapter()->quoteInto('bi.banner_id=b.banner_id','');
-       $condition_3 = $this->_getReadAdapter()->quoteInto('bi.promotion_reference=pt.yourref'); // and bi.promotion_reference != \'\','');
+       $condition_3 = $this->_getReadAdapter()->quoteInto('bi.promotion_reference=pt.yourref', ''); // and bi.promotion_reference != \'\','');
        $condition_4 = $this->_getReadAdapter()->quoteInto("qphp.promotion_id=pt.promotion_id ",'');
 
        $where = "b.status > 0 and ";
