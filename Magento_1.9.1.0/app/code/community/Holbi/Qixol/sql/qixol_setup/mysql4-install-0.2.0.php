@@ -152,11 +152,11 @@ SQLTEXT;
 $sql=<<<SQLTEXT
 CREATE TABLE {$installer->getTable('qixol_customers_groups_name_map')}(
   customer_group_name varchar(255) not null default '',
-  customer_group_name_map varchar(255) not null default '',
+  integration_code varchar(255) not null default '',
   `created_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`customer_group_name`),
-  UNIQUE KEY `customer_group_name_to_customer_group_name_map` (`customer_group_name`,`customer_group_name_map`)
+  UNIQUE KEY `customer_group_name_to_integration_code` (`customer_group_name`,`integration_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQLTEXT;
 
@@ -166,12 +166,14 @@ $installer->run($sql);
 
 $sql=<<<SQLTEXT
 CREATE TABLE {$installer->getTable('qixol_stores_name_map')}(
+  `website` VARCHAR( 255 ) NOT NULL DEFAULT  '',
+  `store_group` VARCHAR( 255 ) NOT NULL DEFAULT  '',
   store_name varchar(255) not null default '',
-  store_name_map varchar(255) not null default '',
+  integration_code varchar(255) not null default '',
   `created_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`store_name`),
-  UNIQUE KEY `store_name_to_store_name_map` (`store_name`,`store_name_map`)
+  UNIQUE KEY `store_name_to_integration_code` (`store_name`,`integration_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQLTEXT;
 

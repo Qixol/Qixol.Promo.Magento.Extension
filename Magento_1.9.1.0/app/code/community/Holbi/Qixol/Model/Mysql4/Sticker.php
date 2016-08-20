@@ -144,7 +144,7 @@ class Holbi_Qixol_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
             $whereString .= "product.product_id = '".(int)$product_id."' and product.parent_product_id = 0";
         }
        
-        $select = $this->_getReadAdapter()->select()
+        $select = $this->_getReadAdapter()->select()->distinct()
             ->from(array('product' => $this->getTable('promotionhasproduct')))
             ->join(array('promo' => $this->getTable('promotions')), $join)
             ->where($whereString)

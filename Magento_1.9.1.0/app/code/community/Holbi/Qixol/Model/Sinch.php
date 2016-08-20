@@ -201,12 +201,12 @@ if ($shipping_price_exists==0){//somethimes returns zero
           }
 
           //get mapping    
-          $list_store_map_names=Mage::getModel('qixol/Storesmap')->getCollection();
+          $list_store_integration_codes=Mage::getModel('qixol/Storesmap')->getCollection();
 
-          $list_store_map_names_exists=array();
+          $list_store_integration_codes_exists=array();
 
-          foreach ($list_store_map_names as $list_map){
-              $list_store_map_names_exists[$list_map->getCustomerGroupName()]=$list_map->getCustomerGroupNameMap();
+          foreach ($list_store_integration_codes as $list_map){
+              $list_store_integration_codes_exists[$list_map->getCustomerGroupName()]=$list_map->getCustomerGroupNameMap();
           }
           // end mapping array
 
@@ -230,8 +230,8 @@ if ($shipping_price_exists==0){//somethimes returns zero
                               '" baskettotal="' . $basketTotal .
                               '" basketdate="'.date("Y-m-d\TH:i:s",strtotime("+ 1 DAY")).'" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
                               '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.(
-                                    (isset($list_store_map_names_exists[Mage::app()->getStore()->getName()])&&trim($list_store_map_names_exists[Mage::app()->getStore()->getName()])!='')?
-                                                            $list_store_map_names_exists[Mage::app()->getStore()->getName()]:
+                                    (isset($list_store_integration_codes_exists[Mage::app()->getStore()->getName()])&&trim($list_store_integration_codes_exists[Mage::app()->getStore()->getName()])!='')?
+                                                            $list_store_integration_codes_exists[Mage::app()->getStore()->getName()]:
                                                              Mage::app()->getStore()->getName())/*Mage::getStoreConfig('qixol/syhchronized/channel')*/.
 
                               ($shipping_method_exists!=''?'" deliverymethod="'.$shipping_method_exists:"").
@@ -646,35 +646,30 @@ if ($shipping_price_exists==0){//somethimes returns zero
 
         $list_map_names = Mage::getModel('qixol/Customergrouspmap')->getCollection();
 
-        $list_map_names_exists=array();
-
-        foreach ($list_map_names as $list_map){
-            $list_map_names_exists[$list_map->getCustomerGroupName()]=$list_map->getCustomerGroupNameMap();
-        }
-
-        $customerGroupModel = new Mage_Customer_Model_Group();
-        $customerGroups = array();
-        $allCustomerGroups  = $customerGroupModel->getCollection()->toOptionHash();
-        $selectedgroups=Mage::getStoreConfig('qixol/customers/list');
-        if(trim($selectedgroups)!='')
-          $selectedgroups_array=explode(",",$selectedgroups);
-
         $group_to_send='';
-        foreach($allCustomerGroups as $key => $group){          
-          if (trim($selectedgroups)==''||in_array($key,$selectedgroups_array)){
-              $displayName = ((isset($list_map_names_exists[$group])&&trim($list_map_names_exists[$group])!='')?$list_map_names_exists[$group]:$group);
-            $group_to_send.='<item display="'.$displayName.'">'.$group.'</item>';  
-          }
+        foreach ($list_map_names as $list_map){
+            $group_to_send .= '<item display="';
+            $group_to_send .= $list_map->getCustomerGroupName();
+            $group_to_send .= '">';
+            $group_to_send .= $list_map->getIntegrationCode();
+            $group_to_send .= '</item>';  
         }
-        if ($group_to_send!='')
+
+        if ($group_to_send != '')
         {
-          $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="customergroup"><items>'.$group_to_send.'</items></import>';
-          $result = $this->promoService->CustomerGroupExport($data);
-          if ($result->success)
-          {
-               $this->addExportStatus("success", 'customers', addslashes($result->message),1);
-          }
-            else {
+            $data = '<import companykey="';
+            $data .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $data .= '" attributetoken="customergroup"><items>';
+            $data .= $group_to_send;
+            $data .= '</items></import>';
+          
+            $result = $this->promoService->CustomerGroupExport($data);
+            if ($result->success)
+            {
+                $this->addExportStatus("success", 'customers', addslashes($result->message),1);
+            }
+            else
+            {
                 $this->addExportStatus("error", 'customers', addslashes($result->message),1);
             }
         }
@@ -768,13 +763,21 @@ if ($shipping_price_exists==0){//somethimes returns zero
            $currencies_array = explode(',',$only_active_currency);
             foreach($currencies_array as $code_curr)
             {
-                          $currency_to_send.='<item display="'.$code_curr.'">'. Mage::app()->getLocale()->currency( $code_curr )->getName().'</item>';  
+                $currency_to_send .= '<item display="';
+                $currency_to_send .= Mage::app()->getLocale()->currency( $code_curr )->getName();
+                $currency_to_send .= '">';
+                $currency_to_send .= $code_curr;
+                $currency_to_send .= '</item>';  
             }
 
           if ($currency_to_send != '')
-          {//entity="basket" 
-            $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="currencycode"><items>'.$currency_to_send.'</items></import>';
-            //$this->soapCallCurrenciesExport($data);
+          {
+            $data = '<import companykey="';
+            $data .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $data .= '" attributetoken="currencycode"><items>';
+            $data .= $currency_to_send;
+            $data .= '</items></import>';
+            
             $result = $this->promoService->CurrenciesExport($data);
             if ($result->success)
             {
@@ -804,32 +807,74 @@ if ($shipping_price_exists==0){//somethimes returns zero
         }
 
         $this->addExportStatus("process", 'store' ,'',0);
-           $store_to_send='';
 
-          //get mapping    
-          $list_store_map_names=Mage::getModel('qixol/Storesmap')->getCollection();
+        $list_store_integration_codes = Mage::getModel('qixol/Storesmap')->getCollection();
 
-          $list_store_map_names_exists=array();
+        foreach ($list_store_integration_codes as $list_map)
+        {
+            $list_store_integration_codes_exists[$list_map->getWebsite()][$list_map->getStoreGroup()][$list_map->getStoreName()]=$list_map->getIntegrationCode();
+        }
 
-          foreach ($list_store_map_names as $list_map){
-              $list_store_map_names_exists[$list_map->getCustomerGroupName()]=$list_map->getCustomerGroupNameMap();
-          }
-          // end mapping array
+        $xmlToSend = '';
+        
+        foreach (Mage::app()->getWebsites() as $website)
+        {
+            $xmlChannel = '<channel display="';
+            $xmlChannel .= $website->getName();
+            $xmlChannel .= '" value="';
+            $xmlChannel .= $website->getName();
+            $xmlChannel .= '">';
+            
+            $hasStoreGroups = false;
+            foreach ($website->getGroups() as $group) {
+                $xmlStoreGroup = '<storegroup display="';
+                $xmlStoreGroup .= $group->getName();
+                $xmlStoreGroup .= '" value="';
+                $xmlStoreGroup .= $group->getName();
+                $xmlStoreGroup .= '">';
+                
+                $stores = $group->getStores();
 
-            foreach (Mage::app()->getWebsites() as $website) {
-                foreach ($website->getGroups() as $group) {
-                    $stores = $group->getStores();
-                    foreach ($stores as $store) {
-                        $store_to_send.='<item display="'.((isset($list_store_map_names_exists[$store->getName()])&&trim($list_store_map_names_exists[$store->getName()])!='')?$list_store_map_names_exists[$store->getName()]:$store->getName()).'">'. $store->getName().'</item>';  
-                        //$store is a store object
+                $hasStores = false;
+                foreach ($stores as $store) {
+                    $integrationCode = $list_store_integration_codes_exists[$website->getName()][$group->getName()][$store->getName()];
+                    if (!empty($integrationCode))
+                    {
+                        $hasStores = true;
+                        $xmlStore .= '<store display="';
+                        $xmlStore .= $store->getName();
+                        $xmlStore .= '" value="';
+                        $xmlStore .= $integrationCode;
+                        $xmlStore .= '" />';  
                     }
                 }
+                if ($hasStores)
+                {
+                    $hasStoreGroups = true;
+                    $xmlStoreGroup .= $xmlStore;
+                }
+                
+                $xmlStoreGroup .= '</storegroup>';
             }
+            
+            if ($hasStoreGroups)
+            {
+                $xmlChannel .= $xmlStoreGroup;
+                $xmlChannel .= '</channel>';
+                
+                $xmlToSend .= $xmlChannel;
+            }
+        }
+    
 
-          if ($store_to_send != '')
-          {
-            $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="store"><items>'.$store_to_send.'</items></import>';
-            //$this->soapCallStoresExport($data);
+        if ($xmlToSend != '')
+        {
+            $data = '<import companykey="';
+            $data .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $data .= '" hierarchytoken="store">';
+            $data .= $xmlToSend;
+            $data .= '</import>';
+            
             $result =$this->promoService->StoresExport($data);
             if ($result->success)
             {
@@ -839,10 +884,10 @@ if ($shipping_price_exists==0){//somethimes returns zero
             {
                 $this->addExportStatus("error", 'store', addslashes($result->message), 1);
             }
-          }
+        }
         else
         {
-          $this->addExportStatus("success", 'store', 'There are no stores to send', 1);
+            $this->addExportStatus("success", 'store', 'There are no stores to send', 1);
         }
     }
 

@@ -263,6 +263,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </synchstores>
+<!--
                         <channel translate="label">
                             <label>Channel</label>
                             <frontend_type>text</frontend_type>
@@ -280,6 +281,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </storegroup> 
+-->
                         <synchonsaving translate="label">
                             <label>Synchronise on Saving</label>
                             <frontend_type>select</frontend_type>

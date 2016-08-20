@@ -53,13 +53,20 @@ $installer->run($sql);
 
 $sql=<<<SQLTEXT
 ALTER TABLE qixol_shipping_name_map
-  ADD `carrier_title` varchar(255),
-  ADD `carrier_method` varchar(255),
+  ADD `carrier_title` varchar(255) FIRST,
+  ADD `carrier_method` varchar(255) AFTER `carrier_title`,
   CHANGE `shipping_name_map` `integration_code` varchar(255) not null default ''
 SQLTEXT;
 
 $installer->run($sql);
 
+$sql=<<<SQLTEXT
+ALTER TABLE  `qixol_customers_groups_name_map`
+    CHANGE  `customer_group_name_map`  `integration_code` VARCHAR( 255 ) NOT NULL DEFAULT  '';
+SQLTEXT;
+
+$installer->run($sql);
+    
 $sql=<<<SQLTEXT
 	DELETE FROM qixol_stickers;
 SQLTEXT;
@@ -97,6 +104,16 @@ $sql=<<<SQLTEXT
     INSERT INTO qixol_stickers (`filename`, `promo_type_name`, `is_default_for_type`, `is_system_default_for_type`) VALUES ('custom/stickers/productsreduction.png','PRODUCTSREDUCTION',1,1);
 SQLTEXT;
 $installer->run($sql);
+
+$sql=<<<SQLTEXT
+ALTER TABLE  `qixol_stores_name_map`
+    ADD `website` VARCHAR( 255 ) NOT NULL DEFAULT  '' FIRST,
+    ADD `store_group` VARCHAR( 255 ) NOT NULL DEFAULT  '' AFTER `website`,
+    CHANGE  `store_name_map`  `integration_code` VARCHAR( 255 ) NOT NULL DEFAULT  '';
+SQLTEXT;
+
+$installer->run($sql);
+    
 
 //demo 
 //Mage::getModel('core/url_rewrite')->setId(null);

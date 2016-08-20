@@ -163,7 +163,7 @@ class RESTPromoService extends PromoService implements iPromoService
     public function StoresExport($data)
     {
         // TODO: /import/entityvalues
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/import/entityvalues';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/import/hierarchyvalues';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
