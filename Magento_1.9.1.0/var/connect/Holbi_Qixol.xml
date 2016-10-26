@@ -1,5 +1,5 @@
 <_>
-   <form_key>jWsBCFNBZDAs3BGX</form_key>
+   <form_key>STYnaXyciFJN3Uak</form_key>
    <name>Holbi_Qixol</name>
    <channel>community</channel>
    <version_ids>
@@ -9,7 +9,7 @@
    <description>Qixol Promo extension</description>
    <license>GNU General Public License (GPL)</license>
    <license_uri/>
-   <version>0.2.0</version>
+   <version>0.2.1</version>
    <stability>stable</stability>
    <notes>1. REST service consumer added
 2. other minor improvements</notes>
@@ -44,7 +44,7 @@
             <max/>
          </max>
          <files>
-            <files>           </files>
+            <files>             </files>
          </files>
       </package>
       <extension>
@@ -85,7 +85,6 @@
          <path>adminhtml/default/default/images/_yes.gif</path>
          <path>adminhtml/default/default/images/_error.png</path>
          <path>frontend/base/default/css/qixol.css</path>
-         <path>frontend/base/default/js/lib</path>
       </path>
       <type>
          <type>file</type>
