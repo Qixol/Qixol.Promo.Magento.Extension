@@ -28,7 +28,7 @@
       </email>
    </authors>
    <depends_php_min>5.3.0</depends_php_min>
-   <depends_php_max>6.0.0</depends_php_max>
+   <depends_php_max>7.0.0</depends_php_max>
    <depends>
       <package>
          <name>
@@ -83,6 +83,7 @@
          <path>custom/stickers</path>
          <path>adminhtml/default/default/images/_run.gif</path>
          <path>adminhtml/default/default/images/_yes.gif</path>
+         <path>adminhtml/default/default/images/_error.png</path>
          <path>frontend/base/default/css/qixol.css</path>
          <path>frontend/base/default/js/lib</path>
       </path>
