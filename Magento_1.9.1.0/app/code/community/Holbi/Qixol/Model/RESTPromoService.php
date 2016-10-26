@@ -198,7 +198,7 @@ class RESTPromoService extends PromoService implements iPromoService
 
             if (empty($result))
             {
-                $returnValue->messsage = 'Stores - no response';
+                $returnValue->messsage = 'Products - no response';
                 $returnValue->success = false;
             }
             else

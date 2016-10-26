@@ -19,6 +19,7 @@ rm -rf $magentoPath/media/custom
 # skin directories and files
 unlink $magentoPath/skin/adminhtml/default/default/images/_run.gif
 unlink $magentoPath/skin/adminhtml/default/default/images/_yes.gif
+unlink $magentoPath/skin/adminhtml/default/default/images/_error.png
 unlink $magentoPath/skin/frontend/base/default/css/qixol.css
 rm -rf $magentoPath/skin/frontend/base/default/qixol
 rm -rf $magentoPath/skin/frontend/base/default/media
@@ -26,4 +27,5 @@ rm -rf $magentoPath/skin/frontend/base/default/js/lib
 
 # var directories and files
 rm -rf $magentoPath/var/logs_qixol
+unlink $magentoPath/var/connect/Holbi_Qixol.xml
 

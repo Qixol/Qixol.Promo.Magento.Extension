@@ -29,6 +29,7 @@ ln -s $1/media/custom $2/media/
 # skin directories and files
 ln -s $1/skin/adminhtml/default/default/images/_run.gif $2/skin/adminhtml/default/default/images/_run.gif
 ln -s $1/skin/adminhtml/default/default/images/_yes.gif $2/skin/adminhtml/default/default/images/_yes.gif
+ln -s $1/skin/adminhtml/default/default/images/_error.png $2/skin/adminhtml/default/default/images/_error.png
 ln -s $1/skin/frontend/base/default/css/qixol.css $2/skin/frontend/base/default/css/qixol.css
 ln -s $1/skin/frontend/base/default/images/qixol $2/skin/frontend/base/default/
 ln -s $1/skin/frontend/base/default/images/media $2/skin/frontend/base/default/
@@ -36,6 +37,7 @@ ln -s $1/skin/frontend/base/default/js/lib $2/skin/frontend/base/default/js/
 
 # var directories and files
 ln -s $1/var/logs_qixol $2/var/
+ln -s $1/var/connect/Holbi_Qixol.xml $2/var/connect/Holbi_Qixol.xml
 
 echo "Links set up"
 echo "Now check Magento allows Symlinks:"

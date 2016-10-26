@@ -54,46 +54,267 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
 
     function getDataOfLatestExport(){
         $_status=array();
-        //return only first erroror or all success, or notjhing
-        $tmp_data=$this->getExportStatus('customers');
-        if ($tmp_data['id']>0&&$tmp_data['message']=='error'){
-          $_status=array('last_message'=>'error','export_what'=>'Customers','status_export_message'=>$tmp_data['extended_message']);
-          return $_status;
-        }
-        elseif($tmp_data['id']>0) $_status=array('last_message'=>'success','export_what'=>'Customers');
 
-        $tmp_data=$this->getExportStatus('delivery');
-        if ($tmp_data['id']>0&&$tmp_data['message']=='error'){
-         $_status=array('last_message'=>'error','export_what'=>'Delivery','status_export_message'=>$tmp_data['extended_message']);
+        $tmp_data=$this->getExportStatus('customers');
+        $customerGroupsStatus = array();
+        if ($tmp_data['id'] > 0)
+        {
+            switch ($tmp_data['message'])
+            {
+                case 'error':
+                    $customerGroupsStatus = array('last_message'=>'error',
+                        'export_what'=>'Customers',
+                        'status_export_message'=>$tmp_data['extended_message'],
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'process':
+                    $customerGroupsStatus = array('last_message'=>'process',
+                        'export_what'=>'Customers',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'success':
+                    $customerGroupsStatus = array('last_message'=>'success',
+                        'export_what'=>'Customers',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+            }
         }
-        elseif ($tmp_data['id']>0) $_status=array('last_message'=>'success','export_what'=>'Delivery');
+        else
+        {
+                $customerGroupsStatus = array('last_message'=>'not started',
+                    'export_what'=>'Customers',
+                    'exports_start'=>'',
+                    'is_finished'=>true);
+        }
+        
+        $tmp_data=$this->getExportStatus('delivery');
+        $deliveryMethodsStatus = array();
+        if ($tmp_data['id'] > 0)
+        {
+            switch ($tmp_data['message'])
+            {
+                case 'error':
+                    $deliveryMethodsStatus = array('last_message'=>'error',
+                        'export_what'=>'Delivery',
+                        'status_export_message'=>$tmp_data['extended_message'],
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'process':
+                    $deliveryMethodsStatus = array('last_message'=>'process',
+                        'export_what'=>'Delivery',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'success':
+                    $deliveryMethodsStatus = array('last_message'=>'success',
+                        'export_what'=>'Delivery',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+            }
+        }
+        else
+        {
+                $customerGroupsStatus = array('last_message'=>'not started',
+                    'export_what'=>'Delivery',
+                    'exports_start'=>'',
+                    'is_finished'=>true);
+        }
 
         $tmp_data=$this->getExportStatus('products');
-        if ($tmp_data['id']>0&&$tmp_data['message']=='error'){
-         $_status=array('last_message'=>'error','export_what'=>'Products','status_export_message'=>$tmp_data['extended_message']);
+        $productsStatus = array();
+        if ($tmp_data['id'] > 0)
+        {
+            switch ($tmp_data['message'])
+            {
+                case 'error':
+                    $productsStatus = array('last_message'=>'error',
+                        'export_what'=>'Products',
+                        'status_export_message'=>$tmp_data['extended_message'],
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'process':
+                    $productsStatus = array('last_message'=>'process',
+                        'export_what'=>'Products',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'success':
+                    $productsStatus = array('last_message'=>'success',
+                        'export_what'=>'Products',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+            }
         }
-        elseif ($tmp_data['id']>0) $_status=array('last_message'=>'success','export_what'=>'Customers');
+        else
+        {
+                $customerGroupsStatus = array('last_message'=>'not started',
+                    'export_what'=>'Products',
+                    'exports_start'=>'',
+                    'is_finished'=>true);
+        }
+
 
         $tmp_data=$this->getExportStatus('currency');
-        if ($tmp_data['id']>0&&$tmp_data['message']=='error'){
-         $_status=array('last_message'=>'error','export_what'=>'Currency','status_export_message'=>$tmp_data['extended_message']);
+        $currencyStatus = array();
+        if ($tmp_data['id'] > 0)
+        {
+            switch ($tmp_data['message'])
+            {
+                case 'error':
+                    $currencyStatus = array('last_message'=>'error',
+                        'export_what'=>'Currency',
+                        'status_export_message'=>$tmp_data['extended_message'],
+                        'exports_start'=>$tmp_data['exports_start'],
+                            'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'process':
+                    $currencyStatus = array('last_message'=>'process',
+                        'export_what'=>'Currency',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'success':
+                    $currencyStatus = array('last_message'=>'success',
+                        'export_what'=>'Currency',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+            }
         }
-        elseif ($tmp_data['id']>0) $_status=array('last_message'=>'success','export_what'=>'Currency');
+        else
+        {
+                $customerGroupsStatus = array('last_message'=>'not started',
+                    'export_what'=>'Currency',
+                    'exports_start'=>'',
+                    'is_finished'=>true);
+        }
+
         
         $tmp_data=$this->getExportStatus('store');
-        if ($tmp_data['id']>0&&$tmp_data['message']=='error'){
-         $_status=array('last_message'=>'error','export_what'=>'Store','status_export_message'=>$tmp_data['extended_message']);
+        $storeStatus = array();
+        if ($tmp_data['id'] > 0)
+        {
+            switch ($tmp_data['message'])
+            {
+                case 'error':
+                    $storeStatus = array('last_message'=>'error',
+                        'export_what'=>'Store',
+                        'status_export_message'=>$tmp_data['extended_message'],
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'process':
+                    $storeStatus = array('last_message'=>'process',
+                        'export_what'=>'Store',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'success':
+                    $storeStatus = array('last_message'=>'success',
+                        'export_what'=>'Store',
+                        'exports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+            }
         }
-        elseif ($tmp_data['id']>0) $_status=array('last_message'=>'success','export_what'=>'Store');
-        //disabled ad duplicate now functionality of satat
-        /*$query="SELECT 
-                   *
-            FROM ".$this->export_poducts_statistic_table." 
-            ORDER BY export_id DESC LIMIT 1";
-          $read_data = Mage::getSingleton('core/resource')->getConnection('core_read');
-          // now $write is an instance of Zend_Db_Adapter_Abstract
-          $readresult=$read_data->query($query);
-          $_status = $readresult->fetch();*/
+        else
+        {
+                $customerGroupsStatus = array('last_message'=>'not started',
+                    'export_what'=>'Store',
+                    'exports_start'=>'',
+                    'is_finished'=>true);
+        }
+
+
+        $_status = array($productsStatus, $customerGroupsStatus, $storeStatus, $currencyStatus, $deliveryMethodsStatus);
+        
+        return $_status;
+    }
+    
+    function getDataOfLatestImport()
+    {
+        $_status=array();
+
+        $tmp_data = $this->getExportStatus('promotions');
+        $promotionsStatus = array();
+        if ($tmp_data['id'] > 0)
+        {
+            switch ($tmp_data['message'])
+            {
+                case 'error':
+                    $promotionsStatus = array('last_message'=>'error',
+                        'import_what'=>'Promotions',
+                        'status_import_message'=>$tmp_data['extended_message'],
+                        'imports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'process':
+                    $promotionsStatus = array('last_message'=>'process',
+                        'import_what'=>'Promotions',
+                        'imports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'success':
+                    $promotionsStatus = array('last_message'=>'success',
+                        'import_what'=>'Promotions',
+                        'imports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+            }
+        }
+        else
+        {
+                $promotionsStatus = array('last_message'=>'not started',
+                    'import_what'=>'Promotions',
+                    'imports_start'=>'',
+                    'is_finished'=>true);
+        }
+
+        $tmp_data = $this->getExportStatus('basketpromotions');
+        $basketPromotionsStatus = array();
+        if ($tmp_data['id'] > 0)
+        {
+            switch ($tmp_data['message'])
+            {
+                case 'error':
+                    $basketPromotionsStatus = array('last_message'=>'error',
+                        'import_what'=>'Basket Promotions',
+                        'status_import_message'=>$tmp_data['extended_message'],
+                        'imports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'process':
+                    $basketPromotionsStatus = array('last_message'=>'process',
+                        'import_what'=>'Basket Promotions',
+                        'imports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+                case 'success':
+                    $basketPromotionsStatus = array('last_message'=>'success',
+                        'import_what'=>'Basket Promotions',
+                        'imports_start'=>$tmp_data['exports_start'],
+                        'is_finished'=>$tmp_data['is_finished']);
+                    break;
+            }
+        }
+        else
+        {
+                $basketPromotionsStatus = array('last_message'=>'not started',
+                    'import_what'=>'Basket Promotions',
+                    'imports_start'=>'',
+                    'is_finished'=>true);
+        }
+
+         
+        $_status = array($promotionsStatus, $basketPromotionsStatus);
+        
         return $_status;
     }
     
@@ -785,7 +1006,9 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
             $result = $this->promoService->CustomerGroupExport($data);
             if ($result->success)
             {
-                $this->addExportStatus("success", 'customers', addslashes($result->message),1);
+                $message = $result->message;
+                $promoResult = $this->getPromoResult($message);
+                $this->addExportStatus($promoResult, 'customers', addslashes($result->message),1);
             }
             else
             {
@@ -848,7 +1071,9 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
             $result = $this->promoService->ShippingMethodsExport($data);
             if ($result->success)
             {
-                $this->addExportStatus("success", 'delivery' ,addslashes($result->message),1);
+                $message = $result->message;
+                $promoResult = $this->getPromoResult($message);
+                $this->addExportStatus($promoResult, 'delivery' ,addslashes($result->message),1);
             }
             else
             {
@@ -861,7 +1086,8 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
         }
     }    
 
-    function run_export_currencies() {
+    function run_export_currencies()
+    {
 
         if (Mage::getStoreConfig('holbi/qixol/enabled') == 0){
             return;
@@ -877,20 +1103,20 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
         }
 
         $this->addExportStatus("process", 'currency' ,'',0);
-           $currency_to_send='';
-           $only_active_currency=Mage::getStoreConfig('currency/options/allow');
-           $currencies_array = explode(',',$only_active_currency);
-            foreach($currencies_array as $code_curr)
-            {
-                $currency_to_send .= '<item display="';
-                $currency_to_send .= Mage::app()->getLocale()->currency( $code_curr )->getName();
-                $currency_to_send .= '">';
-                $currency_to_send .= $code_curr;
-                $currency_to_send .= '</item>';  
-            }
+        $currency_to_send='';
+        $only_active_currency=Mage::getStoreConfig('currency/options/allow');
+        $currencies_array = explode(',',$only_active_currency);
+        foreach($currencies_array as $code_curr)
+        {
+            $currency_to_send .= '<item display="';
+            $currency_to_send .= Mage::app()->getLocale()->currency( $code_curr )->getName();
+            $currency_to_send .= '">';
+            $currency_to_send .= $code_curr;
+            $currency_to_send .= '</item>';  
+        }
 
-          if ($currency_to_send != '')
-          {
+        if ($currency_to_send != '')
+        {
             $data = '<import companykey="';
             $data .= Mage::getStoreConfig('qixol/integraion/companykey');
             $data .= '" attributetoken="currencycode"><items>';
@@ -900,14 +1126,19 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
             $result = $this->promoService->CurrenciesExport($data);
             if ($result->success)
             {
-              $this->addExportStatus("success", 'currency', addslashes($result->message), 1);
+                $message = $result->message;
+                $promoResult = $this->getPromoResult($message);
+                $this->addExportStatus($promoResult, 'currency', addslashes($result->message), 1);
             }
-            else {
-              $this->addExportStatus("error", 'currency', addslashes($result->message), 1);
+            else
+            {
+                $this->addExportStatus("error", 'currency', addslashes($result->message), 1);
             }
-          } else {
+        }
+        else
+        {
               $this->addExportStatus("success", 'currency', 'No currencies to send', 1);
-          }
+        }
     }
 
     function run_export_stores() {
@@ -997,7 +1228,9 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
             $result =$this->promoService->StoresExport($data);
             if ($result->success)
             {
-                $this->addExportStatus("success", 'store', addslashes($result->message), 1);
+                $message = $result->message;
+                $promoResult = $this->getPromoResult($message);
+                $this->addExportStatus($promoResult, 'store', addslashes($result->message), 1);
             }
             else
             {
@@ -1135,7 +1368,9 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
                 
                 if ($result->success)
                 {
-                    $this->addExportStatus("success", 'products', addslashes($result->message), 1);
+                    $message = $result->message;
+                    $promoResult = $this->getPromoResult($message);
+                    $this->addExportStatus($promoResult, 'products', addslashes($message), 1);
                     if (is_array($remove_deleted)&&count($remove_deleted)>0)
                     {
                         $write_data = Mage::getSingleton('core/resource')->getConnection('core_write');
@@ -1223,31 +1458,43 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
     }   
 
     public function getExportStatus($for='products'){
-            //should get ststus here
-            //id ->database log, message=>last message in log, error - on error =1; finished->on script finished =1
-        $query="SELECT 
-                   *
-            FROM ".$this->process_export_status_table." 
-            where 
-                export_what ='".$for."'
-            ORDER BY id DESC LIMIT 1";
-              //             where export_what='".$for."'   //for future should be spleted by each export type
-          $read_data = Mage::getSingleton('core/resource')->getConnection('core_read');
 
-          if ($readresult=$read_data->query($query)){
-              $_status = $readresult->fetch();
-          }else {
-               $_status=array();
-          }
-          if($_status['id']>0){
-            //if finished<0 - error appeared
-            $messages=array('id'=>$_status['id'],'message'=>$_status['last_message'],'extended_message'=>$_status['extended_message'], 'error'=>((int)$_status['is_finished']<0?1:0), 'finished'=>((int)$_status['is_finished']>0?1:0),'last_updated'=>$_status['exports_last_updated']);
-          } else {
-            $messages=array('id'=>'0','message'=>'inactive', 'error'=>0, 'finished'=>0);
-          }
+        $query = "SELECT * FROM ";
+        $query .= $this->process_export_status_table;
+        $query .= " where export_what ='";
+        $query .= $for;
+        $query .= "' ORDER BY id DESC LIMIT 1";
+
+        $read_data = Mage::getSingleton('core/resource')->getConnection('core_read');
+
+        if ($readresult=$read_data->query($query))
+        {
+            $_status = $readresult->fetch();
+        }
+        else
+        {
+            $_status=array();
+        }
+        
+        if ($_status['id'] > 0)
+        {
+              // small fudge to cope with single quotes in XML failing the evalJSON function later on
+            $last_message = str_replace("'", '"', $_status['last_message']);
+            $extended_message = str_replace("'", '"', $_status['extended_message']);
+            $messages=array('id'=>$_status['id'],
+                'message'=>$last_message,
+                'extended_message'=>$extended_message,
+                'error'=>((int)$_status['is_finished']<0?1:0),
+                'finished'=>((int)$_status['is_finished'] > 0 ? true : false),
+                'last_updated'=>$_status['exports_last_updated'],
+                'exports_start'=>$_status['exports_start']);
+        }
+        else
+        {
+            $messages=array('id'=>'0','message'=>'inactive', 'error'=>0, 'finished'=>true);
+        }
 
         return $messages;
-
    }
 
     public function addExportStatus($message, $for ,$extended_message='',$finished=0){
@@ -1303,9 +1550,45 @@ class Holbi_Qixol_Model_Sinch extends Mage_Core_Model_Abstract
         $current_state=$this->getExportStatus($exportType);
         
         if ($current_state['id']==0) return false;
-        if ($current_state['finished'] == 1) return false;
+        if ($current_state['finished']) return false;
         if (strtotime($current_state['last_updated'])<strtotime("-1 hour")) return false;
 
         return true;
+    }
+    
+    function getPromoResult($message)
+    {
+	libxml_use_internal_errors(true);
+        $xml_message = simplexml_load_string($message);
+        if (!$xml_message)
+        {
+            return "error";
+        }
+        if (!($xml_message instanceof SimpleXMLElement))
+        {
+            return "error";
+        }
+
+        $promoResult = "error";
+        foreach ($xml_message as $xml_root_key=>$xml_object_sub)
+        {
+            switch ($xml_root_key)
+            {
+                case "summary":
+                    $attributes = $xml_object_sub->attributes();
+                    if ($attributes['result']=="true")
+                    {
+                        $promoResult = "success";
+                    }
+                    else
+                    {
+                        $promoResult = "error";
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return $promoResult;
     }
 }
