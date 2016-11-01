@@ -28,7 +28,7 @@
       </email>
    </authors>
    <depends_php_min>5.3.0</depends_php_min>
-   <depends_php_max>7.0.0</depends_php_max>
+   <depends_php_max>7.0.12</depends_php_max>
    <depends>
       <package>
          <name>
@@ -44,7 +44,7 @@
             <max/>
          </max>
          <files>
-            <files>                 </files>
+            <files>                  </files>
          </files>
       </package>
       <extension>
