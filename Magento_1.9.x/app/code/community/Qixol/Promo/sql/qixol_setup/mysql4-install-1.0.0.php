@@ -73,7 +73,7 @@ CREATE TABLE {$installer->getTable('qixol_promotions_type')}(
   `discountamount` decimal(10,2) NOT NULL DEFAULT '0.00',
   `hascouponrestrictions` tinyint not null default 0,
   `is_everyday` tinyint not null default 0,
-  `till_date` datetime not null default '9999-12-31 00:00:00',
+  `till_date` datetime not null default '9999-12-31 23:59:59',
   `from_date` datetime not null default '1000-01-01 00:00:00',
   `created_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
