@@ -1,5 +1,5 @@
 <_>
-   <form_key>STYnaXyciFJN3Uak</form_key>
+   <form_key>eRw2PuQAGGiSiwgg</form_key>
    <name>Holbi_Qixol</name>
    <channel>community</channel>
    <version_ids>
@@ -44,7 +44,7 @@
             <max/>
          </max>
          <files>
-            <files>             </files>
+            <files>                 </files>
          </files>
       </package>
       <extension>
@@ -66,35 +66,56 @@
          <target>magedesign</target>
          <target>magedesign</target>
          <target>magedesign</target>
+         <target>magedesign</target>
+         <target>magedesign</target>
          <target>magelocale</target>
+         <target>mageetc</target>
          <target>magemedia</target>
          <target>mageskin</target>
          <target>mageskin</target>
          <target>mageskin</target>
          <target>mageskin</target>
+         <target>mageskin</target>
+         <target>mageskin</target>
+         <target>mageskin</target>
+         <target>mage</target>
       </target>
       <path>
          <path/>
-         <path>Holbi</path>
-         <path>base/default/layout/qixol.xml</path>
-         <path>base/default/template/qixol</path>
-         <path>rwd/default/template/qixol</path>
-         <path>Holbi_Qixol.xml</path>
+         <path>Holbi/Qixol</path>
+         <path>frontend/base/default/layout/qixol.xml</path>
+         <path>frontend/base/default/template/qixol</path>
+         <path>adminhtml/default/default/layout/qixol.xml</path>
+         <path>adminhtml/default/default/template/qixol</path>
+         <path>frontend/rwd/default/template/qixol</path>
+         <path>en_US/Holbi_Qixol.csv</path>
+         <path>modules/Holbi_Qixol.xml</path>
          <path>custom/stickers</path>
          <path>adminhtml/default/default/images/_run.gif</path>
          <path>adminhtml/default/default/images/_yes.gif</path>
          <path>adminhtml/default/default/images/_error.png</path>
          <path>frontend/base/default/css/qixol.css</path>
+         <path>frontend/base/default/images/qixol/</path>
+         <path>frontend/base/default/js/lib/jquery.cycle2.min.js</path>
+         <path>frontend/base/default/js/lib/jquery.cycle2.swipe.min.js</path>
+         <path>var/logs_qixol</path>
       </path>
       <type>
          <type>file</type>
          <type>dir</type>
          <type>file</type>
          <type>dir</type>
+         <type>file</type>
          <type>dir</type>
+         <type>dir</type>
+         <type>file</type>
          <type>file</type>
          <type>dir</type>
          <type>file</type>
+         <type>file</type>
+         <type>file</type>
+         <type>file</type>
+         <type>dir</type>
          <type>file</type>
          <type>file</type>
          <type>dir</type>
@@ -111,8 +132,22 @@
          <include/>
          <include/>
          <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
       </include>
       <ignore>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
          <ignore/>
          <ignore/>
          <ignore/>
