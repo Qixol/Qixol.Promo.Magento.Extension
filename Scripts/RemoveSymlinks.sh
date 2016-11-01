@@ -3,14 +3,14 @@
 magentoPath="/var/www/magento"
 
 # app directories and files
-unlink $magentoPath/app/etc/modules/Holbi_Qixol.xml
-rm -rf $magentoPath/app/code/community/Holbi
+unlink $magentoPath/app/etc/modules/Qixol_Promo.xml
+rm -rf $magentoPath/app/code/community/Qixol
 unlink $magentoPath/app/design/adminhtml/default/default/layout/qixol.xml
 rm -rf $magentoPath/app/design/adminhtml/default/default/template/qixol
 unlink $magentoPath/app/design/frontend/base/default/layout/qixol.xml
 rm -rf $magentoPath/app/design/frontend/base/default/template/qixol
 rm -rf $magentoPath/app/design/frontend/rwd/default/template/qixol
-unlink $magentoPath/app/locale/en_US/Holbi_Qixol.csv
+unlink $magentoPath/app/locale/en_US/Qixol_Promo.csv
 
 # media directories and files
 # TODO: should this directory be renamed to qixol_promo?
@@ -27,5 +27,5 @@ rm -rf $magentoPath/skin/frontend/base/default/js/lib
 
 # var directories and files
 rm -rf $magentoPath/var/logs_qixol
-unlink $magentoPath/var/connect/Holbi_Qixol.xml
+unlink $magentoPath/var/connect/Qixol_Promo.xml
 

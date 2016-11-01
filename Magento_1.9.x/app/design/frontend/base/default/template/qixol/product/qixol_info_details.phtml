@@ -1,0 +1,42 @@
+<?php
+if (Mage::getStoreConfig('qixol/promo/enabled') == 0) {
+    return;
+}
+
+if (Mage::getStoreConfig('qixol/stickers/showPromoBoxOnProductPage') == 0) {
+    return;
+}
+?>
+<?php $_helper = $this->helper('catalog/output'); ?>
+<?php $_product = $this->getProduct(); ?>
+<?php
+
+$qixol_product_bottom_box=Mage::getModel('qixol/bannerboxes')->load('PRODUCT_BOTTOM');
+if ($qixol_product_bottom_box->getBannerBoxIsActive()>0){
+
+    $bottom_advertisment_=Mage::getModel('qixol/advert');
+    $bottom_advertisment_text=$bottom_advertisment_->getProductBottmAdv($_product);
+
+}
+
+if ($bottom_advertisment_text != '') {
+    $bottom_advertisment_text = '<div style="display:block;"><div id=product_bottom_ class="cycle-slideshow" data-cycle-fx="';
+    $bottom_advertisment_text .= $qixol_product_bottom_box->getBannerBoxTranslationType();
+    $bottom_advertisment_text .= '" data-cycle-timeout="1500" data-cycle-slides="> div">';
+    $bottom_advertisment_text .= preg_replace("/[\n\r]+/","",$bottom_advertisment_text);
+    $bottom_advertisment_text .= '</div></div>';
+    
+    //echo $bottom_advertisment_text;
+ ?><script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>lib/jquery/jquery-1.10.2.min.js"></script>
+ <script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>/skin/frontend/base/default/js/lib/jquery.cycle2.min.js"></script>
+ <script type="text/javascript">
+     $.noConflict();
+     jQuery( document ).ready(function( $ ) {
+         $(".add-to-cart").after('<?php echo addslashes($bottom_advertisment_text)?>');
+         $('#product_bottom_').cycle();
+     });
+</script><?php
+}
+
+
+?>

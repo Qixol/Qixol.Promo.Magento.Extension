@@ -1,0 +1,85 @@
+<?php
+    if (Mage::getStoreConfig('qixol/promo/enabled') == 0) {
+        return;
+    }
+
+    $_productCollection=$this->getLoadedProductCollection();
+    $qixol_advertisment=Mage::getModel('qixol/advert');
+    
+    // banners - start
+    
+    $qixol_bannerbox_category_top = Mage::getModel('qixol/bannerboxes')->load('CATEGORY_TOP');
+    if ($qixol_bannerbox_category_top->getBannerBoxIsActive() > 0) {
+        $qixol_top_advertisment_text=$qixol_advertisment->getCategoryTopAdv($_productCollection);
+        $qixol_catalog_all_scripts_inside='';
+        if (trim($qixol_top_advertisment_text)!=''){               
+            $qixol_catalog_all_scripts_inside .= '$(".category-title").after("<div id=category_top_ class=\'cycle-slideshow\' ';
+            $qixol_catalog_all_scripts_inside .= 'data-cycle-fx=\'';
+            $qixol_catalog_all_scripts_inside .= $qixol_bannerbox_category_top->getBannerBoxTranslationType();
+            $qixol_catalog_all_scripts_inside .= '\' data-cycle-timeout=\'1500\' data-cycle-slides=\'> div\'>';
+            $qixol_catalog_all_scripts_inside .= addslashes(preg_replace("/[\n\r]+/","",$qixol_top_advertisment_text));
+            $qixol_catalog_all_scripts_inside .= '</div>");$(\'#category_top_\').cycle();';
+            ?>
+            <?php
+        }
+    }
+
+    // banners - end
+
+    // stickers - start
+    
+    if (Mage::getStoreConfig('qixol/stickers/showStickersOnCataloguePage') == 0) {
+        return;
+    }
+
+    $_helper = $this->helper('catalog/output');
+    $style = 'position: absolute; right: 65; top: 0; width: 44px; height: 44px; display: block; z-index: 2;';
+    foreach ($_productCollection as $_product) {
+        $is_sticker_image = $qixol_advertisment->isSticked($_product);
+        //$is_sticker_image = 'http://localhost.magento.com/media/custom/stickers/File-1467816895.png';
+
+        if ($is_sticker_image !== false) {
+            if (is_array($is_sticker_image)) {
+                $images_list = '';
+                foreach ($is_sticker_image as $image_add) {
+                    $images_list .= '<div style=\'width: 44px; height: 44px; display: block; z-index: 2; background:url(\"';
+                    $images_list .= $image_add;
+                    $images_list .= '\") 0 0 no-repeat;background-size:contain;\'></div>';
+                }
+                if ($images_list!='') {
+                    $qixol_catalog_all_scripts_inside .= '$("#product-collection-image-';
+                    $qixol_catalog_all_scripts_inside .= $_product->getId();
+                    $qixol_catalog_all_scripts_inside .= '").after("<div style=\'';
+                    $qixol_catalog_all_scripts_inside .= $style;
+                    $qixol_catalog_all_scripts_inside .= '\' id=stickers_';
+                    $qixol_catalog_all_scripts_inside .= $_product->getId();
+                    $qixol_catalog_all_scripts_inside .= ' class=\'cycle-slideshow\' data-cycle-fx=\'';
+                    $qixol_catalog_all_scripts_inside .= 'fadeout';
+                    $qixol_catalog_all_scripts_inside .= '\' data-cycle-timeout=\'555\' data-cycle-slides=\'> div\'>';
+                    $qixol_catalog_all_scripts_inside .= $images_list;
+                    $qixol_catalog_all_scripts_inside .= '</div>");$(\'#stickers_';
+                    $qixol_catalog_all_scripts_inside .= $_product->getId();
+                    $qixol_catalog_all_scripts_inside .= '\').cycle();';
+                }
+            } else {
+                $qixol_catalog_all_scripts_inside .= '$("#product-collection-image-';
+                $qixol_catalog_all_scripts_inside .= $_product->getId();
+                $qixol_catalog_all_scripts_inside .= '").after("<div style=\'';
+                $qixol_catalog_all_scripts_inside .= $style;
+                $qixol_catalog_all_scripts_inside .= 'background:url(\"';
+                $qixol_catalog_all_scripts_inside .= $is_sticker_image;
+                $qixol_catalog_all_scripts_inside .= '\") 0 0 no-repeat;background-size:contain;\'></div>");';
+            }
+        }       
+    } 
+
+    // stickers - end
+
+    if ($qixol_catalog_all_scripts_inside!=''){
+     ?><script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>lib/jquery/jquery-1.10.2.min.js"></script>
+     <script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>/skin/frontend/base/default/js/lib/jquery.cycle2.min.js"></script>
+     <script type="text/javascript">$.noConflict();jQuery( document ).ready(function( $ ) { <?php echo $qixol_catalog_all_scripts_inside;?>});</script><?php
+    }
+    
+?>
+

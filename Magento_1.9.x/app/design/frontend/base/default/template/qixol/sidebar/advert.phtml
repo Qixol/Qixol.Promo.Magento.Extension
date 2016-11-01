@@ -1,0 +1,40 @@
+<?php
+         //$place_box_in_design_after_pattern=Mage::getStoreConfig('qixol/integraion/boxcartpromotion')
+         $place_box_in_design_after_pattern='.cart';
+
+         $inline_cart_advert='';
+
+         //for cart items
+          $cart = Mage::getModel('checkout/cart')->getQuote();
+          foreach ($cart->getAllItems() as $item) {
+              if (isset($_SESSION['qixol_quoted_items'])&&isset($_SESSION['qixol_quoted_items']['items'][$item->getId()])){
+                  if (isset($_SESSION['qixol_quoted_items']['items'][$item->getId()]['promotions']))
+                     foreach ($_SESSION['qixol_quoted_items']['items'][$item->getId()]['promotions'] as $promotion){
+//inline level promotion
+if ((int)$promotion['basketlevel']==0&&isset($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]))
+                       $inline_cart_advert.="
+$('<div class=\"cart_inline_item_promo\">".addslashes($_SESSION['qixol_quoted_items']['summary'][$promotion['id']]['data']['display_text'])."</div>').appendTo($('#qixol_idx_cart_item_name_".$item->getId()."'));
+";
+                     }
+
+//if quantity changed (get one + one free so will be splited to 2 products with 1 free)
+if ($_SESSION['qixol_quoted_items']['items'][$item->getId()]['updated_qty']>0)
+$inline_cart_advert.="
+$('<div class=\"cart_inline_item_new_qty\">For&nbsp;promo&nbsp;".addslashes($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['quantity'])."&nbsp;Qty</div>').appendTo($('#qixol_idx_cart_item_qty_".$item->getId()."'));
+"; 
+
+if ($_SESSION['qixol_quoted_items']['items'][$item->getId()]['updated_price']>0)
+$inline_cart_advert.="
+$('<div class=\"cart_inline_item_new_price\">Only for - 9 ".addslashes($this->helper('checkout')->formatPrice($_SESSION['qixol_quoted_items']['items'][$item->getId()]['data']['lineamount']))."</div>').appendTo($('#qixol_idx_cart_item_price_".$item->getId()."'));
+"; 
+
+              }
+          }
+$total_discount_amount=0;
+if (isset($_SESSION['qixol_quoted_items']['items'])){
+   foreach ($_SESSION['qixol_quoted_items']['items'] as $cart_item_process){
+      if ($cart_item_process['data']['totaldiscount']>0){
+            $total_discount_amount+=$cart_item_process['data']['totaldiscount'];
+     }
+  }
+}

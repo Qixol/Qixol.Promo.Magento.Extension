@@ -13,14 +13,14 @@ then
 fi
 
 # app directories and files
-ln -s $1/app/etc/modules/Holbi_Qixol.xml $2/app/etc/modules/Holbi_Qixol.xml
-ln -s $1/app/code/community/Holbi $2/app/code/community/
+ln -s $1/app/etc/modules/Qixol_Promo.xml $2/app/etc/modules/Qixol_Promo.xml
+ln -s $1/app/code/community/Qixol $2/app/code/community/
 ln -s $1/app/design/adminhtml/default/default/layout/qixol.xml $2/app/design/adminhtml/default/default/layout/qixol.xml
 ln -s $1/app/design/adminhtml/default/default/template/qixol $2/app/design/adminhtml/default/default/template/
 ln -s $1/app/design/frontend/base/default/layout/qixol.xml $2/app/design/frontend/base/default/layout/qixol.xml
 ln -s $1/app/design/frontend/base/default/template/qixol $2/app/design/frontend/base/default/template/
 ln -s $1/app/design/frontend/rwd/default/template/qixol $2/app/design/frontend/rwd/default/template/
-ln -s $1/app/locale/en_US/Holbi_Qixol.csv $2/app/locale/en_US/Holbi_Qixol.csv
+ln -s $1/app/locale/en_US/Qixol_Promo.csv $2/app/locale/en_US/Qixol_Promo.csv
 
 # media directories and files
 # TODO: should this directory be renamed to qixol_promo?
@@ -37,7 +37,7 @@ ln -s $1/skin/frontend/base/default/js/lib $2/skin/frontend/base/default/js/
 
 # var directories and files
 ln -s $1/var/logs_qixol $2/var/
-ln -s $1/var/connect/Holbi_Qixol.xml $2/var/connect/Holbi_Qixol.xml
+ln -s $1/var/connect/Qixol_Promo.xml $2/var/connect/Qixol_Promo.xml
 
 echo "Links set up"
 echo "Now check Magento allows Symlinks:"
