@@ -9,10 +9,9 @@
    <description>Qixol Promo extension</description>
    <license>GNU General Public License (GPL)</license>
    <license_uri/>
-   <version>0.2.1</version>
+   <version>1.0.0</version>
    <stability>stable</stability>
-   <notes>1. REST service consumer added
-2. other minor improvements</notes>
+   <notes>Version 1.0.0 release</notes>
    <authors>
       <name>
          <name>Qixol</name>
