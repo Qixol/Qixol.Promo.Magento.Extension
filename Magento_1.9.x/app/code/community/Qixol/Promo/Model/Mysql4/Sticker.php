@@ -118,30 +118,29 @@ class Qixol_Promo_Model_Mysql4_Sticker extends Mage_Core_Model_Mysql4_Abstract {
         $whereString = '';
         $whereString = '(';
 
-        $whereString .= "(";
-        $whereString .= "(promo.is_everyday=0) and ";
-        $whereString .= "((promo.from_date='0000-00-00 00:00:00') or (TIME(promo.from_date) < CURTIME())) and ";
-        $whereString .= "((promo.till_date='0000-00-00 00:00:00') or (TIME(promo.till_date) > CURTIME()))";
-        $whereString .= ")";
-        
-        $whereString .= " or ";
-        
-        $whereString .= "(";
-        $whereString .= "(promo.is_everyday=1) and ";
-        $whereString .= "(TIME(promo.from_date) < CURTIME()) and ";
-        $whereString .= "(TIME(promo.till_date) > CURTIME())";
-        $whereString .= ")";
+        $whereString .= "(IFNULL(TIME(promo.from_date), CURTIME()) <= CURTIME()) and ";
+        $whereString .= "(IFNULL(TIME(promo.till_date), CURTIME()) >= CURTIME())";
         
         $whereString .= ")";
         
         $whereString .= " and ";
             
         if (count($child_ids)) {
-            $whereString .= "((product.parent_product_id = '".(int)$product_id."' and "
-                             ."product.product_id in (".join(",",$child_ids).")) or "
-                                     ."(product.product_id = '".(int)$product_id."' and product.parent_product_id = 0) )";
-        } else {
-            $whereString .= "product.product_id = '".(int)$product_id."' and product.parent_product_id = 0";
+            $whereString .= "((product.parent_product_id = '";
+            $whereString .= (int)$product_id;
+            $whereString .= "' and ";
+            $whereString .= "product.product_id in (";
+            $whereString .= join(",",$child_ids);
+            $whereString .= ")) or ";
+            $whereString .= "(product.product_id = '";
+            $whereString .= (int)$product_id;
+            $whereString .= "' and product.parent_product_id = 0) )";
+        }
+        else
+        {
+            $whereString .= "product.product_id = '";
+            $whereString .= (int)$product_id;
+            $whereString .= "' and product.parent_product_id = 0";
         }
        
         $select = $this->_getReadAdapter()->select()->distinct()

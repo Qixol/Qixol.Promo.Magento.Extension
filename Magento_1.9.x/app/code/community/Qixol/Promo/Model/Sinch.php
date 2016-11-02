@@ -242,7 +242,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
     {
         $_status=array();
 
-        $tmp_data = $this->getExportStatus('promotions');
+        $tmp_data = $this->getExportStatus('productpromotions');
         $promotionsStatus = array();
         if ($tmp_data['id'] > 0)
         {
@@ -250,20 +250,20 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
             {
                 case 'error':
                     $promotionsStatus = array('last_message'=>'error',
-                        'import_what'=>'Promotions',
+                        'import_what'=>'Product Promotions',
                         'status_import_message'=>$tmp_data['extended_message'],
                         'imports_start'=>$tmp_data['exports_start'],
                         'is_finished'=>$tmp_data['is_finished']);
                     break;
                 case 'process':
                     $promotionsStatus = array('last_message'=>'process',
-                        'import_what'=>'Promotions',
+                        'import_what'=>'Product Promotions',
                         'imports_start'=>$tmp_data['exports_start'],
                         'is_finished'=>$tmp_data['is_finished']);
                     break;
                 case 'success':
                     $promotionsStatus = array('last_message'=>'success',
-                        'import_what'=>'Promotions',
+                        'import_what'=>'Product Promotions',
                         'imports_start'=>$tmp_data['exports_start'],
                         'is_finished'=>$tmp_data['is_finished']);
                     break;
@@ -272,7 +272,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
         else
         {
                 $promotionsStatus = array('last_message'=>'not started',
-                    'import_what'=>'Promotions',
+                    'import_what'=>'Product Promotions',
                     'imports_start'=>'',
                     'is_finished'=>true);
         }
@@ -900,7 +900,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
             return;
         }
         
-        $this->addExportStatus("process", 'promotions', '', 0);
+        $this->addExportStatus("process", 'productpromotions', '', 0);
 
         $products_list = Mage::getModel('catalog/product')->getCollection()
                                   ->addAttributeToSelect('*')->addAttributeToFilter('visibility', array('neq'=>1))
@@ -922,40 +922,53 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
         
         if ($products_data!=''){
 
-            $promotions='<request companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
-                                  '" validationdate="'.date("Y-m-d",strtotime("+ 1 DAY")).'T00:00:00" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
-                                  '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.Mage::getStoreConfig('qixol/syhchronized/channel').
-                                  '" validatefortime="false"><products>'.$products_data.'</products></request>';
+            $promotionsXml = '<request companykey="';
+            $promotionsXml .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $promotionsXml .= '" validationdate="';
+            $promotionsXml .= date("Y-m-d"); //date("Y-m-d",strtotime("+ 1 DAY"))
+            $promotionsXml .= 'T00:00:00" channel="';
+            $promotionsXml .= Mage::getStoreConfig('qixol/syhchronized/channel');
+            $promotionsXml .= '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup');
+            $promotionsXml .= '" store="';
+            $promotionsXml .= Mage::getStoreConfig('qixol/syhchronized/channel');
+            $promotionsXml .= '" validatefortime="false"><products>';
+            $promotionsXml .= $products_data;
+            $promotionsXml .= '</products></request>';
 
-            $result = $this->promoService->PromotionsForProducts($promotions);
+            $result = $this->promoService->PromotionsForProducts($promotionsXml);
 
             if ($result->success) {                  
                 if ($result->message != ''){
                     $this->promoService->parsePromotionsForProducts($result->message);
-                    $this->addExportStatus("success", 'promotions', 'imported', 1);
+                    $this->addExportStatus("success", 'productpromotions', 'imported', 1);
                 } else {
-                    $this->addExportStatus("success", 'promotions', 'imported - no promotions', 1);
+                    $this->addExportStatus("success", 'productpromotions', 'imported - no promotions', 1);
                 }
             } else {
-                $this->addExportStatus("error", 'promotions', addslashes($result->message), 1);
+                $this->addExportStatus("error", 'productpromotions', addslashes($result->message), 1);
                 $this->pushLog("Finish import promotions error ".$result->message);
             }
         } else {
-            $this->addExportStatus("process", 'promotions', 'no products found for promotion retrieval', 1);
+            $this->addExportStatus("process", 'productpromotions', 'no products found for promotion retrieval', 1);
         }
         return;
     }
 
     function run_import_promotionsForBaskets(){
 
-        $this->addExportStatus("process", 'basketpromotions' ,'',0);
-        $promotions='<request companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').
-                    '" validationdate="'.date("Y-m-d",strtotime("+ 1 DAY")).'T00:00:00" channel="'.Mage::getStoreConfig('qixol/syhchronized/channel').
-                    '" storegroup="'.Mage::getStoreConfig('qixol/syhchronized/storegroup').'" store="'.Mage::getStoreConfig('qixol/syhchronized/channel').
-                    '" validatefortime="false"></request>';
+        $this->addExportStatus("process", 'basketpromotions', '', 0);
+        $promotionsXml = '<request companykey="';
+        $promotionsXml .= Mage::getStoreConfig('qixol/integraion/companykey');
+        $promotionsXml .= '" validationdate="';
+        $promotionsXml .= date("Y-m-d"); //date("Y-m-d", strtotime("+ 1 DAY"));
+        $promotionsXml .= 'T00:00:00" channel="';
+        $promotionsXml .= Mage::getStoreConfig('qixol/syhchronized/channel');
+        $promotionsXml .= '" storegroup="';
+        $promotionsXml .= Mage::getStoreConfig('qixol/syhchronized/storegroup');
+        $promotionsXml .= '" store="'.Mage::getStoreConfig('qixol/syhchronized/channel');
+        $promotionsXml .= '" validatefortime="false"></request>';
 
-        $result = $this->promoService->PromotionsForBaskets($promotions);
-
+        $result = $this->promoService->PromotionsForBaskets($promotionsXml);
         if ($result->success)
         {
             $this->promoService->parsePromotionsForBaskets($result->message);
