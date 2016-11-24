@@ -2,9 +2,9 @@
 <config>
   <default>
     <qixol>
-        <integraion>
+        <integration>
             <dropdown>evaluation</dropdown>
-        </integraion>
+        </integration>
     </qixol>
   </default>
   <modules>

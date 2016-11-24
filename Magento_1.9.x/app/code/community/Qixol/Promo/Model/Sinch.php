@@ -20,7 +20,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
         $this->_logFile=LOG_FILE;  
         $this->pushLog("constructor");
 
-        if (Mage::getStoreConfig('qixol/integraion/serviceProtocol') == 'REST') {
+        if (Mage::getStoreConfig('qixol/integration/serviceProtocol') == 'REST') {
             $this->promoService = new RESTPromoService();
         } else {
             $this->promoService = new SOAPPromoService();
@@ -468,7 +468,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
             //$basket .= /*Mage::getSingleton("core/session")->getEncryptedSessionId();*/
             $basket .= $_SESSION['qixol_quoted_items']['cart_session_id'];
             $basket .= '" companykey="';
-            $basket .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $basket .= Mage::getStoreConfig('qixol/integration/companykey');
             $basket .= '" baskettotal="';
             $basket .= $basketTotal;
             $basket .= '" basketdate="';
@@ -923,7 +923,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
         if ($products_data!=''){
 
             $promotionsXml = '<request companykey="';
-            $promotionsXml .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $promotionsXml .= Mage::getStoreConfig('qixol/integration/companykey');
             $promotionsXml .= '" validationdate="';
             $promotionsXml .= date("Y-m-d"); //date("Y-m-d",strtotime("+ 1 DAY"))
             $promotionsXml .= 'T00:00:00" channel="';
@@ -958,7 +958,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
 
         $this->addExportStatus("process", 'basketpromotions', '', 0);
         $promotionsXml = '<request companykey="';
-        $promotionsXml .= Mage::getStoreConfig('qixol/integraion/companykey');
+        $promotionsXml .= Mage::getStoreConfig('qixol/integration/companykey');
         $promotionsXml .= '" validationdate="';
         $promotionsXml .= date("Y-m-d"); //date("Y-m-d", strtotime("+ 1 DAY"));
         $promotionsXml .= 'T00:00:00" channel="';
@@ -1011,7 +1011,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
         if ($group_to_send != '')
         {
             $data = '<import companykey="';
-            $data .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $data .= Mage::getStoreConfig('qixol/integration/companykey');
             $data .= '" attributetoken="customergroup"><items>';
             $data .= $group_to_send;
             $data .= '</items></import>';
@@ -1080,7 +1080,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
 
         if ($shipping_to_send!='')
         {
-            $data='<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'" attributetoken="deliverymethod"><items>'.$shipping_to_send.'</items></import>';
+            $data='<import companykey="'.Mage::getStoreConfig('qixol/integration/companykey').'" attributetoken="deliverymethod"><items>'.$shipping_to_send.'</items></import>';
             $result = $this->promoService->ShippingMethodsExport($data);
             if ($result->success)
             {
@@ -1131,7 +1131,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
         if ($currency_to_send != '')
         {
             $data = '<import companykey="';
-            $data .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $data .= Mage::getStoreConfig('qixol/integration/companykey');
             $data .= '" attributetoken="currencycode"><items>';
             $data .= $currency_to_send;
             $data .= '</items></import>';
@@ -1233,7 +1233,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
         if ($xmlToSend != '')
         {
             $data = '<import companykey="';
-            $data .= Mage::getStoreConfig('qixol/integraion/companykey');
+            $data .= Mage::getStoreConfig('qixol/integration/companykey');
             $data .= '" hierarchytoken="store">';
             $data .= $xmlToSend;
             $data .= '</import>';
@@ -1286,7 +1286,7 @@ class Qixol_Promo_Model_Sinch extends Mage_Core_Model_Abstract
         $remove_deleted=array();
 
         if (count($products_list)||count($products_deleted)){
-            $data = '<import companykey="'.Mage::getStoreConfig('qixol/integraion/companykey').'"><products>';
+            $data = '<import companykey="'.Mage::getStoreConfig('qixol/integration/companykey').'"><products>';
 
             //assign deleted product first
             if (count($products_deleted))

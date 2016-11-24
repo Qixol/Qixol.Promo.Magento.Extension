@@ -10,7 +10,7 @@ class SOAPPromoService extends PromoService implements iPromoService
         $evaluationImportServicesUrl = 'http://evaluation.qixolpromo.com/ImportService.svc';
         $liveImportServicesUrl = 'http://evaluation.qixolpromo.com/ImportService.svc';
 
-        switch (Mage::getStoreConfig('qixol/integraion/services')) {
+        switch (Mage::getStoreConfig('qixol/integration/services')) {
               case 'evaluation':
                 $importServiceUrl = $evaluationImportServicesUrl;
                   break;
@@ -18,7 +18,7 @@ class SOAPPromoService extends PromoService implements iPromoService
                 $importServiceUrl = $liveImportServicesUrl;
                   break;
               case 'custom':
-                  $importServiceUrl = Mage::getStoreConfig('qixol/integraion/importManagerServiceAddress');
+                  $importServiceUrl = Mage::getStoreConfig('qixol/integration/importManagerServiceAddress');
                   break;
               default:
                 $importServiceUrl = $evaluationImportServicesUrl;
@@ -31,7 +31,7 @@ class SOAPPromoService extends PromoService implements iPromoService
         $evaluationExportServicesUrl = 'http://evaluation.qixolpromo.com/ExportService.svc';
         $liveExportServicesUrl = 'http://evaluation.qixolpromo.com/ExportService.svc';
 
-        switch (Mage::getStoreConfig('qixol/integraion/services')) {
+        switch (Mage::getStoreConfig('qixol/integration/services')) {
               case 'evaluation':
                 $exportServiceUrl = $evaluationExportServicesUrl;
                   break;
@@ -39,7 +39,7 @@ class SOAPPromoService extends PromoService implements iPromoService
                 $exportServiceUrl = $liveExportServicesUrl;
                   break;
               case 'custom':
-                  $exportServiceUrl = Mage::getStoreConfig('qixol/integraion/exportManagerServiceAddress');
+                  $exportServiceUrl = Mage::getStoreConfig('qixol/integration/exportManagerServiceAddress');
                   break;
               default:
                 $exportServiceUrl = $evaluationExportServicesUrl;
@@ -53,7 +53,7 @@ class SOAPPromoService extends PromoService implements iPromoService
         $evaluationBasketServicesUrl = 'http://evaluation.qixolpromo.com/BasketService.svc';
         $liveBasketServicesUrl = 'http://evaluation.qixolpromo.com/BaskettService.svc';
 
-        switch (Mage::getStoreConfig('qixol/integraion/services')) {
+        switch (Mage::getStoreConfig('qixol/integration/services')) {
           case 'evaluation':
             $basketServiceUrl = $evaluationBasketServicesUrl;
               break;
@@ -61,7 +61,7 @@ class SOAPPromoService extends PromoService implements iPromoService
             $basketServiceUrl = $liveBasketServicesUrl;
               break;
           case 'custom':
-              $basketServiceUrl = Mage::getStoreConfig('qixol/integraion/basketManagerServiceAddress');
+              $basketServiceUrl = Mage::getStoreConfig('qixol/integration/basketManagerServiceAddress');
               break;
           default:
             $basketServiceUrl = $evaluationBasketServicesUrl;
@@ -238,7 +238,7 @@ class SOAPPromoService extends PromoService implements iPromoService
         {
             $soapclient_coupon->__soapCall('ValidateCouponCode', array('ValidateCouponCode' =>
                                                                 array('companyKey' =>
-                                                                    Mage::getStoreConfig('qixol/integraion/companykey'),
+                                                                    Mage::getStoreConfig('qixol/integration/companykey'),
                                                                 'couponCode' => $couponCode)));
             $returnValue->message = $result->ValidateCouponCodeResult;
             $returnValue->success = true;

@@ -31,7 +31,7 @@
           $soapclient_coupon = new soapclient('http://evaluation.qixolpromo.com/BasketService.svc?singleWsdl', array('trace' => 1));                                           
             try {
                 $update_item=false;
-                $result_coupon = $soapclient_coupon->__soapCall('ValidateCouponCode', array('ValidateCouponCode' => array('companyKey' => Mage::getStoreConfig('qixol/integraion/companykey'),'couponCode' => $item->getCouponCodeValue())));
+                $result_coupon = $soapclient_coupon->__soapCall('ValidateCouponCode', array('ValidateCouponCode' => array('companyKey' => Mage::getStoreConfig('qixol/integration/companykey'),'couponCode' => $item->getCouponCodeValue())));
                 $xml_coupon_code_validated=$result_coupon->ValidateCouponCodeResult;
                 if (strlen($xml_coupon_code_validated)>10){
                       $xml_coupon_object = simplexml_load_string($xml_coupon_code_validated);

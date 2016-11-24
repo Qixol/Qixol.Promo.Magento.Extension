@@ -51,7 +51,7 @@ class RESTPromoService extends PromoService implements iPromoService
         $evaluationServicesUrl = 'http://evaluation.qixolpromo.com/';
         $liveServicesUrl = 'http://evaluation.qixolpromo.com/';
 
-        switch (Mage::getStoreConfig('qixol/integraion/services')) {
+        switch (Mage::getStoreConfig('qixol/integration/services')) {
           case 'evaluation':
             $restServiceUrl = $evaluationServicesUrl;
               break;
@@ -59,7 +59,7 @@ class RESTPromoService extends PromoService implements iPromoService
             $restServiceUrl = $liveServicesUrl;
               break;
           case 'custom':
-              $restServiceUrl = Mage::getStoreConfig('qixol/integraion/restServiceAddress');
+              $restServiceUrl = Mage::getStoreConfig('qixol/integration/restServiceAddress');
               // TODO: check a string exists and is a valid URL?
               if (substr_compare(substr($restServiceUrl, -1), '/', 0) != 0)
               {
@@ -75,7 +75,7 @@ class RESTPromoService extends PromoService implements iPromoService
     
     public function CustomerGroupExport($data)
     {
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/import/entityvalues';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/import/entityvalues';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
@@ -104,7 +104,7 @@ class RESTPromoService extends PromoService implements iPromoService
     
     public function ShippingMethodsExport($data)
     {
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/import/entityvalues';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/import/entityvalues';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
@@ -133,7 +133,7 @@ class RESTPromoService extends PromoService implements iPromoService
     
     public function CurrenciesExport($data)
     {
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/import/entityvalues';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/import/entityvalues';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
@@ -163,7 +163,7 @@ class RESTPromoService extends PromoService implements iPromoService
     public function StoresExport($data)
     {
         // TODO: /import/entityvalues
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/import/hierarchyvalues';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/import/hierarchyvalues';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
@@ -191,7 +191,7 @@ class RESTPromoService extends PromoService implements iPromoService
     
     public function ProductsExport($data)
     {
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/import/products';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/import/products';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
@@ -220,7 +220,7 @@ class RESTPromoService extends PromoService implements iPromoService
 
     public function PromotionsForProducts($data)
     {
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/export/promotionsforproducts';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/export/promotionsforproducts';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
@@ -249,7 +249,7 @@ class RESTPromoService extends PromoService implements iPromoService
 
     public function PromotionsForBaskets($data)
     {
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/export/promotionsforbaskets';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/export/promotionsforbaskets';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
@@ -285,7 +285,7 @@ class RESTPromoService extends PromoService implements iPromoService
     
     public function BasketValidate($data)
     {
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/basket/validate';
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/basket/validate';
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $data);
@@ -314,7 +314,7 @@ class RESTPromoService extends PromoService implements iPromoService
 
     public function CouponCodeValidate($couponCode)
     {
-        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integraion/companykey').'/basket/validatecouponcode/'.$couponCode;
+        $url = $this->restServiceUrl().'api/'.Mage::getStoreConfig('qixol/integration/companykey').'/basket/validatecouponcode/'.$couponCode;
         try
         {
             $result = $this->callQixolPromoRestService('POST', $url, $couponCode);
