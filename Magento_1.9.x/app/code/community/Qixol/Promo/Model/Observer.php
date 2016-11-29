@@ -318,10 +318,11 @@ class Qixol_Promo_Model_Observer
               //$this->__('Coupon code "%s" was applied.', Mage::helper('core')->escapeHtml($couponCode))
              $session = Mage::getSingleton('checkout/session');
              $quote = $session->getQuote();
-              $getSinch=Mage::getModel('qixol/sinch');
-              if ($qixol_quoted_items_new=$getSinch->run_ImportCart($quote)){
-                  $qixol_quoted_items=$qixol_quoted_items_new; //if returned new structure
-                  $qixol_quoted_items['cart_session_id']=$_SESSION['qixol_quoted_items']['cart_session_id'];
+              $basketService = Mage::getModel('qixol/basketservice');
+              if ($qixol_quoted_items_new = $basketService->run_ValidateBasket($quote))
+              {
+                  $qixol_quoted_items = $qixol_quoted_items_new; //if returned new structure
+                  $qixol_quoted_items['cart_session_id'] = $_SESSION['qixol_quoted_items']['cart_session_id'];
               }
               $qixol_quoted_items['time_checked']=time();
               $_SESSION['qixol_quoted_items']=$qixol_quoted_items;
@@ -690,10 +691,10 @@ class Qixol_Promo_Model_Observer
 
             $_SESSION['inside_request']=time();
             
-            $getSinch=Mage::getModel('qixol/sinch');
-            $cart=$observer->getEvent()->getQuote();
-            if ($qixol_quoted_items_new=$getSinch->run_ImportCart($cart)){
-                $qixol_quoted_items=$qixol_quoted_items_new; //if returned new structure
+            $basketService = Mage::getModel('qixol/basketservice');
+            $cart = $observer->getEvent()->getQuote();
+            if ($qixol_quoted_items_new = $basketService->run_ValidateBasket($cart)){
+                $qixol_quoted_items = $qixol_quoted_items_new; //if returned new structure
             }
             $qixol_quoted_items['time_checked']=time();
             $qixol_quoted_items['short_data']=$_SESSION['qixol_quoted_items']['short_data'];
@@ -785,8 +786,8 @@ class Qixol_Promo_Model_Observer
             //!!!!!!!!!!!!!!!!!!!!!!!
             if ($make_request_again){
 //echo "make_new_request<br>";
-                $getSinch=Mage::getModel('qixol/sinch');
-                if ($qixol_quoted_items_new=$getSinch->run_ImportCart($cart)){
+                $basketService = Mage::getModel('qixol/basketservice');
+                if ($qixol_quoted_items_new = $basketService->run_ValidateBasket($cart)){
                     $qixol_quoted_items=$qixol_quoted_items_new; //if returned new structure
                 }
                 $qixol_quoted_items['time_checked']=time();
