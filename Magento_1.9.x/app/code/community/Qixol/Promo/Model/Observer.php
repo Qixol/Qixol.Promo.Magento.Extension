@@ -382,7 +382,6 @@ class Qixol_Promo_Model_Observer
                 
             $promotions_data_hash=array();
             
-            $getSinch=Mage::getModel('qixol/sinch');
             $unlink_coupon_codes=array();
             foreach ($_SESSION['qixol_quoted_items']['coupons'] as $coupon_id=>$coupon_stored_data){
                 if ((bool)$coupon_stored_data['issued']==true)
@@ -395,8 +394,9 @@ class Qixol_Promo_Model_Observer
             }
             unset($unlink_coupon_codes);
 
-            $qixol_quoted_items=$getSinch->run_processOrder($quote);
-            $_SESSION['qixol_quoted_items']=$qixol_quoted_items;
+            $basketService = Mage::getModel('qixol/basketservice');
+            $qixol_quoted_items = $basketService->run_processOrder($quote);
+            $_SESSION['qixol_quoted_items'] = $qixol_quoted_items;
 
             $delivery_discount_amount=0;
             $recalcualte_totals=false;
