@@ -5,83 +5,83 @@
             <action method="addItem"><type>skin_css</type><name>css/qixol.css</name></action>
         </reference>
         <reference name="minicart_content">
-                <action method="setTemplate"><template>qixol/minicart/mincart.phtml</template></action>
-                <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>qixol/minicart/default.phtml</template></action>
-                <action method="addItemRender"><type>simple</type><block>checkout/cart_item_renderer</block><template>qixol/minicart/default.phtml</template></action>
-                <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>qixol/minicart/default.phtml</template></action>
-                <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>qixol/minicart/default.phtml</template></action>
-                <block type="checkout/onepage_link" name="qixolmincartwrap" as="qixolmincartwrap"  template="qixol/minicart/advert.phtml"/>
+                <action method="setTemplate"><template>qixol/promo/minicart/minicart.phtml</template></action>
+                <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>qixol/promo/minicart/default.phtml</template></action>
+                <action method="addItemRender"><type>simple</type><block>checkout/cart_item_renderer</block><template>qixol/promo/minicart/default.phtml</template></action>
+                <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>qixol/promo/minicart/default.phtml</template></action>
+                <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>qixol/promo/minicart/default.phtml</template></action>
+                <block type="checkout/onepage_link" name="qixolminicartwrap" as="qixolminicartwrap"  template="qixol/promo/minicart/advert.phtml"/>
          </reference>        
     </default>
           
     <catalog_product_view>
         <reference name="content">
-            <block type="catalog/product_view" after='-' name="qixol-promo-wrap-data" template="qixol/product/qixol_product_info.phtml"/>
+            <block type="catalog/product_view" after='-' name="qixol-promo-wrap-data" template="qixol/promo/product/qixol_product_info.phtml"/>
         </reference>
         <reference name="product.info.addtocart">
-            <block type="catalog/product_view" name="qixol-promo-details" template="qixol/product/qixol_info_details.phtml"/>
+            <block type="catalog/product_view" name="qixol-promo-details" template="qixol/promo/product/qixol_info_details.phtml"/>
         </reference>
     </catalog_product_view>
     
     <catalog_category_default>
       <reference name="content">
-        <block type="catalog/product_list" name="qixol-wrap-text" after="category.products" template="qixol/product/qixol_adv.phtml"/>
+        <block type="catalog/product_list" name="qixol-wrap-text" after="category.products" template="qixol/promo/product/qixol_adv.phtml"/>
       </reference>
     </catalog_category_default>
 
     <catalog_category_layered>
       <reference name="content">
-        <block type="catalog/product_list" name="qixol-wrap-text" after="category.products" template="qixol/product/qixol_adv.phtml"/>
+        <block type="catalog/product_list" name="qixol-wrap-text" after="category.products" template="qixol/promo/product/qixol_adv.phtml"/>
       </reference>
     </catalog_category_layered>
 
     <checkout_cart_index>
         <reference name="checkout.cart">           
-          <action method="setTemplate"><template>qixol/cart/cart.phtml</template></action>
+          <action method="setTemplate"><template>qixol/promo/cart/cart.phtml</template></action>
           <action method="addItemRender">
-            <type>simple</type><block>checkout/cart_item_renderer</block><template>qixol/cart/item/default.phtml</template>
+            <type>simple</type><block>checkout/cart_item_renderer</block><template>qixol/promo/cart/item/default.phtml</template>
           </action>
           <action method="addItemRender">
-            <type>grouped</type><block>checkout/cart_item_renderer</block><template>qixol/cart/item/default.phtml</template>
+            <type>grouped</type><block>checkout/cart_item_renderer</block><template>qixol/promo/cart/item/default.phtml</template>
           </action>
           <action method="addItemRender">
-            <type>configurable</type><block>checkout/cart_item_renderer</block><template>qixol/cart/item/default.phtml</template>
+            <type>configurable</type><block>checkout/cart_item_renderer</block><template>qixol/promo/cart/item/default.phtml</template>
           </action>         
-            <block type="checkout/cart_totals" name="promo.checkout.cart.totals" as="totals" template="qixol/cart/totals.phtml"/>
+            <block type="checkout/cart_totals" name="promo.checkout.cart.totals" as="totals" template="qixol/promo/cart/totals.phtml"/>
         </reference>   
         <reference name="checkout.cart.extra"> 
-           <block type="core/template" name="bonuspointsbox" as="bonuspointsbox" template="qixol/cart/bonuspointbox.phtml" />
+           <block type="core/template" name="bonuspointsbox" as="bonuspointsbox" template="qixol/promo/cart/bonuspointbox.phtml" />
         </reference>                    
         <reference name="content">
-          <block type="checkout/onepage_link" name="qixolcartwrap" as="qixolcartwrap"  template="qixol/cart/advert.phtml"/>
+          <block type="checkout/onepage_link" name="qixolcartwrap" as="qixolcartwrap"  template="qixol/promo/cart/advert.phtml"/>
         </reference>
     </checkout_cart_index>
     
     
     <checkout_onepage_review>
         <reference name="root">
-          <action method="setTemplate"><template>qixol/onepage/review.phtml</template></action>
-            <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>qixol/onepage/item.phtml</template></action>
-            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>qixol/onepage/item.phtml</template></action>
-            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>qixol/onepage/item.phtml</template></action>      
+          <action method="setTemplate"><template>qixol/promo/onepage/review.phtml</template></action>
+            <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>qixol/promo/onepage/item.phtml</template></action>
+            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>qixol/promo/onepage/item.phtml</template></action>
+            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>qixol/promo/onepage/item.phtml</template></action>      
         </reference>   
         <reference name="checkout.onepage.review.info.items.after">
-          <block type="checkout/onepage_link" name="qixolreviewwrap" as="qixolreviewwrap"  template="qixol/onepage/advert.phtml"/>
+          <block type="checkout/onepage_link" name="qixolreviewwrap" as="qixolreviewwrap"  template="qixol/promo/onepage/advert.phtml"/>
         </reference>
     </checkout_onepage_review>
     
     <customer_account>
         <!-- Qixol issued coupons -->
         <reference name="customer_account_navigation">
-            <action method="addLink" translate="label" module="qixol"><name>issuedcoupon</name><path>qixol/issuedcoupon</path><label>Issued Coupons</label></action>
+            <action method="addLink" translate="label" module="qixol"><name>issuedcoupon</name><path>qixol/promo/issuedcoupon</path><label>Issued Coupons</label></action>
         </reference>
     </customer_account>
     
     <customer_account_index>
         <!-- Qixol issued points -->
         <reference name="customer_account_dashboard_top">
-            <action method="setTemplate"><template>qixol/issuedpoints/box.phtml</template></action>
-            <block type="core/template" name="customer_account_points"  as="points" template="qixol/issuedpoints/dashboard_points.phtml"/>
+            <action method="setTemplate"><template>qixol/promo/issuedpoints/box.phtml</template></action>
+            <block type="core/template" name="customer_account_points"  as="points" template="qixol/promo/issuedpoints/dashboard_points.phtml"/>
         </reference>
     </customer_account_index>    
     
@@ -89,15 +89,15 @@
         <label>Customer Qixol Issued Coupons</label>
         <update handle="customer_account"/>
         <reference name="my.account.wrapper">
-            <block type="qixol/issuedcoupon" name="qixol-issuedcoupon" template="qixol/issuedcoupon/list.phtml"/>
+            <block type="qixol/promo/issuedcoupon" name="qixol-issuedcoupon" template="qixol/promo/issuedcoupon/list.phtml"/>
         </reference>
     </qixol_issuedcoupon_index>
     
     <sales_order_view>
               <reference name="order_items">
-                    <action method="setTemplate"><template>qixol/myaccount/order/items/items.phtml</template></action>      
-                    <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>qixol/myaccount/order/items/default.phtml</template></action>
-                    <action method="addItemRender"><type>grouped</type><block>sales/order_item_renderer_grouped</block><template>qixol/myaccount/order/items/default.phtml</template></action>                
+                    <action method="setTemplate"><template>qixol/promo/myaccount/order/items/items.phtml</template></action>      
+                    <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>qixol/promo/myaccount/order/items/default.phtml</template></action>
+                    <action method="addItemRender"><type>grouped</type><block>sales/order_item_renderer_grouped</block><template>qixol/promo/myaccount/order/items/default.phtml</template></action>                
               </reference>              
         <reference name="order_totals">
             <block type="qixol/sales_order_total" name="qixol.sales.order.total" />
@@ -106,9 +106,9 @@
     
     <sales_order_print>
               <reference name="sales.order.print">
-                    <action method="setTemplate"><template>qixol/myaccount/order/print/print.phtml</template></action>      
-                    <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>qixol/myaccount/order/print/default.phtml</template></action>
-                    <action method="addItemRender"><type>grouped</type><block>sales/order_item_renderer_grouped</block><template>qixol/myaccount/order/print/default.phtml</template></action>                
+                    <action method="setTemplate"><template>qixol/promo/myaccount/order/print/print.phtml</template></action>      
+                    <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>qixol/promo/myaccount/order/print/default.phtml</template></action>
+                    <action method="addItemRender"><type>grouped</type><block>sales/order_item_renderer_grouped</block><template>qixol/promo/myaccount/order/print/default.phtml</template></action>                
               </reference>    
         <reference name="order_totals">
             <block type="qixol/sales_order_total" name="qixol.sales.order.total" />
@@ -117,9 +117,9 @@
     
     <sales_email_order_items>
               <reference name="items">
-                    <action method="setTemplate"><template>qixol/myaccount/order/email/items.phtml</template></action>        
-                    <action method="addItemRender"><type>default</type><block>sales/order_email_items_order_default</block><template>qixol/myaccount/order/email/default.phtml</template></action>
-                    <action method="addItemRender"><type>grouped</type><block>sales/order_email_items_order_grouped</block><template>qixol/myaccount/order/email/default.phtml</template></action>               
+                    <action method="setTemplate"><template>qixol/promo/myaccount/order/email/items.phtml</template></action>        
+                    <action method="addItemRender"><type>default</type><block>sales/order_email_items_order_default</block><template>qixol/promo/myaccount/order/email/default.phtml</template></action>
+                    <action method="addItemRender"><type>grouped</type><block>sales/order_email_items_order_grouped</block><template>qixol/promo/myaccount/order/email/default.phtml</template></action>               
               </reference>  
         <reference name="order_totals">
             <block type="qixol/sales_order_total" name="qixol.sales.order.total" />

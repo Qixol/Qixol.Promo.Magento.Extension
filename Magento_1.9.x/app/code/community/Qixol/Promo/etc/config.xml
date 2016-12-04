@@ -335,7 +335,7 @@
 	<layout>
 	  <updates>
 		<qixol>
-		  <file>qixol.xml</file>
+		  <file>qixol_promo.xml</file>
 		</qixol>
 	  </updates>
 	</layout>
@@ -363,7 +363,7 @@
     <layout>
       <updates>
       <qixol>
-        <file>qixol.xml</file>
+        <file>qixol_promo.xml</file>
       </qixol>
       </updates>
     </layout>

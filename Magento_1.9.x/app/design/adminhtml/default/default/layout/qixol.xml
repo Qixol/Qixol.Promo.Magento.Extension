@@ -2,7 +2,7 @@
 <layout version="1.0.1">
   <qixol_admin_adminhtml_qixolbackend_index>
 	<reference name="content">
-	  <block type="qixol/adminhtml_qixolbackend" name="qixolbackend" template="qixol/qixolbackend.phtml"/>
+	  <block type="qixol_promo/adminhtml_qixolbackend" name="qixolbackend" template="qixol/promo/qixolbackend.phtml"/>
 	</reference>
   </qixol_admin_adminhtml_qixolbackend_index>
     <qixol_admin_adminhtml_banner_edit>
@@ -10,7 +10,7 @@
     </qixol_admin_adminhtml_banner_edit>  
     <qixol_admin_adminhtml_banner_index>
         <reference name="content">
-            <block type="qixol/adminhtml_banner" name="banner" />
+            <block type="qixol_promo/adminhtml_banner" name="banner" />
         </reference>
     </qixol_admin_adminhtml_banner_index>  
     
@@ -22,7 +22,7 @@
     </qixol_admin_adminhtml_sticker_edit>  
     <qixol_admin_adminhtml_sticker_index>
         <reference name="content">
-            <block type="qixol/adminhtml_sticker" name="sticker" />
+            <block type="qixol_promo/adminhtml_sticker" name="sticker" />
         </reference>
     </qixol_admin_adminhtml_sticker_index>  
     
@@ -31,7 +31,7 @@
     </qixol_admin_adminhtml_bannerboxes_edit>  
     <qixol_admin_adminhtml_bannerboxes_index>
         <reference name="content">
-            <block type="qixol/adminhtml_bannerboxes" name="bannerboxes" />
+            <block type="qixol_promo/adminhtml_bannerboxes" name="bannerboxes" />
         </reference>
     </qixol_admin_adminhtml_bannerboxes_index>  
     
@@ -41,7 +41,7 @@
     
     <qixol_admin_adminhtml_shippingmap_index>
         <reference name="content">
-            <block type="qixol/adminhtml_shippingmap" name="shippingmap" />
+            <block type="qixol_promo/adminhtml_shippingmap" name="shippingmap" />
         </reference>
     </qixol_admin_adminhtml_shippingmap_index>     
     
@@ -52,7 +52,7 @@
     
     <qixol_admin_adminhtml_customergrouspmap_index>
         <reference name="content">
-            <block type="qixol/adminhtml_customergrouspmap" name="customergrouspmap" />
+            <block type="qixol_promo/adminhtml_customergrouspmap" name="customergrouspmap" />
         </reference>
     </qixol_admin_adminhtml_customergrouspmap_index> 
     
@@ -62,40 +62,40 @@
     
     <qixol_admin_adminhtml_storesmap_index>
         <reference name="content">
-            <block type="qixol/adminhtml_storesmap" name="storesmap" />
+            <block type="qixol_promo/adminhtml_storesmap" name="storesmap" />
         </reference>
     </qixol_admin_adminhtml_storesmap_index>      
     
     <adminhtml_sales_order_view>
         <reference name="left">
-          <block type="adminhtml/sales_order_view_items" name="qixolorderitemswrap" as="qixolorderitemswrap"  template="qixol/order/advert.phtml"/>
+          <block type="adminhtml/sales_order_view_items" name="qixolorderitemswrap" as="qixolorderitemswrap"  template="qixol/promo/order/advert.phtml"/>
         </reference>
         <reference name="order_totals">
-            <block type="qixol/adminhtml_sales_order_total" name="qixol.sales.order.total" />
+            <block type="qixol_promo/adminhtml_sales_order_total" name="qixol.sales.order.total" />
         </reference>        
     </adminhtml_sales_order_view>      
     
     <!--adminhtml_sales_order_invoice_new>
         <reference name="invoice_totals">
-            <block type="qixol/adminhtml_sales_order_total" name="qixol.sales.order.total" />
+            <block type="qixol_promo/adminhtml_sales_order_total" name="qixol.sales.order.total" />
         </reference>              
     </adminhtml_sales_order_invoice_new>
     
     <adminhtml_sales_order_invoice_updateqty>
         <reference name="invoice_totals">
-            <block type="qixol/adminhtml_sales_order_total" name="qixol.sales.order.total" />
+            <block type="qixol_promo/adminhtml_sales_order_total" name="qixol.sales.order.total" />
         </reference>              
     </adminhtml_sales_order_invoice_updateqty-->   
     
     <adminhtml_sales_order_invoice_view>
         <reference name="invoice_totals">
-            <block type="qixol/adminhtml_sales_order_total" name="qixol.sales.order.total" />
+            <block type="qixol_promo/adminhtml_sales_order_total" name="qixol.sales.order.total" />
         </reference>              
      </adminhtml_sales_order_invoice_view>    
 
     <adminhtml_sales_order_creditmemo_view>
         <reference name="creditmemo_totals">
-            <block type="qixol/adminhtml_sales_order_total" name="qixol.sales.order.total" />
+            <block type="qixol_promo/adminhtml_sales_order_total" name="qixol.sales.order.total" />
         </reference>              
      </adminhtml_sales_order_creditmemo_view>     
      

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Qixol_Missedpromotions>
+            <version>1.0.0</version>
+        </Qixol_Missedpromotions>
+    </modules>
+ 
+    <global>
+        <blocks>
+            <qixol_missedpromotions>
+                <class>Qixol_Missedpromotions_Block</class>
+            </qixol_missedpromotions>
+            <checkout>
+                <rewrite>
+                    <onepage>Qixol_Missedpromotions_Block_Checkout_Onepage</onepage>
+                    <!--<onepage_abstract>Qixol_Missedpromotions_Block_Checkout_Onepage_Abstract</onepage_abstract>-->
+                </rewrite>
+            </checkout>
+        </blocks>
+        <models>
+            <checkout>
+                <rewrite>
+                    <type_onepage>Qixol_Missedpromotions_Model_Checkout_Type_Onepage</type_onepage>
+                </rewrite>
+            </checkout>
+        </models>
+    </global>
+</config>
