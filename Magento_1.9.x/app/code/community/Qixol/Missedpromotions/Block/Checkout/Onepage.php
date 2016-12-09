@@ -1,18 +1,6 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of Onepage
- *
- * @author ken
- */
 class Qixol_Missedpromotions_Block_Checkout_Onepage extends Mage_Checkout_Block_Onepage
-//class Qixol_Missedpromotions_Block_Checkout_Onepage extends Qixol_Missedpromotions_Block_Checkout_Onepage_Abstract
 {
     public function getSteps()
     {

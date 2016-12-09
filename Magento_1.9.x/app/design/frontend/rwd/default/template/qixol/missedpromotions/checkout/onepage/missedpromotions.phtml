@@ -8,9 +8,9 @@
                     <label for="missedpromotions:like" class="required"><em>*</em><?php echo $this->__('Do you like Missedpromotions Magento Blog?') ?></label>
                     <div class="input-box">
                         <select class="required-entry" name="missedpromotions[like]" id="missedpromotions:like">
-                            <option value='' selected="selected"><?php echo $this->__('Please Choose..');?></option>
-                            <option value='1'><?php echo $this->__('Yes');?></option>
-                            <option value='2'><?php echo $this->__('No');?></option>
+                            <option value=''><?php echo $this->__('Please Choose..');?></option>
+                            <option value='1' <?php if($this->getQuote()->getMissedpromotionsLike() == 1){echo 'selected="selected"';} ?>><?php echo $this->__('Yes');?></option>
+                            <option value='2' <?php if($this->getQuote()->getMissedpromotionsLike() == 2){echo 'selected="selected"';} ?>><?php echo $this->__('No');?></option>
                         </select>
                     </div>
                 </li>
@@ -29,7 +29,7 @@
 </form>
 <script type="text/javascript">
 //<![CDATA[
-    var missedpromotions = new MissedpromotionsMethod('co-missedpromotions-form','<?php echo $this->getUrl('custom/onepage/saveMissedpromotions') ?>');
+    var missedpromotions = new MissedPromotions('co-missedpromotions-form','<?php echo $this->getUrl('qixolmissedpromotions/checkout/onepage/saveMissedpromotions') ?>');
     var missedpromotionsForm = new VarienForm('co-missedpromotions-form');
 //]]>
 </script>

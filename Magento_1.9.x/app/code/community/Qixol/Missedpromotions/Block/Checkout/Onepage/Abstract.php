@@ -12,16 +12,16 @@
  *
  * @author ken
  */
-abstract class Qixol_Missedpromotions_Block_Checkout_Onepage_Abstract extends Mage_Checkout_Block_Onepage_Abstract
-{
-
-    /**
-     * Get checkout steps codes
-     *
-     * @return array
-     */
-    public function _getStepCodes()
-    {
-        return array('login', 'missedpromotions', 'billing', 'shipping', 'shipping_method', 'payment', 'review');
-    }
-}
+//abstract class Qixol_Missedpromotions_Block_Checkout_Onepage_Abstract extends Mage_Checkout_Block_Onepage_Abstract
+//{
+//
+//    /**
+//     * Get checkout steps codes
+//     *
+//     * @return array
+//     */
+//    public function _getStepCodes()
+//    {
+//        return array('login', 'missedpromotions', 'billing', 'shipping', 'shipping_method', 'payment', 'review');
+//    }
+//}

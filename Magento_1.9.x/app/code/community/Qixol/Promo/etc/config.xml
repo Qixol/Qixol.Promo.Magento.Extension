@@ -363,7 +363,7 @@
     <layout>
       <updates>
       <qixol>
-        <file>qixol_promo.xml</file>
+        <file>qixol/promo/promo.xml</file>
       </qixol>
       </updates>
     </layout>

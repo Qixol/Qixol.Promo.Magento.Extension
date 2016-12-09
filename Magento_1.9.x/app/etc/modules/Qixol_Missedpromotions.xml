@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Qixol_Missedpromotions>
+<!--        <depends>
+            <Qixol_Promo/>
+        </depends>-->
+      <active>true</active>
+      <codePool>community</codePool>
+      <version>1.0.0</version>
+    </Qixol_Missedpromotions>
+  </modules>
+</config>

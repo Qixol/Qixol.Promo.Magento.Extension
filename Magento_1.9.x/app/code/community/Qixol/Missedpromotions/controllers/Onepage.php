@@ -1,26 +1,17 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+require_once 'Mage/Checkout/controllers/OnepageController.php';
 
-/**
- * Description of Onepage
- *
- * @author ken
- */
 class Qixol_Missedpromotions_OnepageController extends Mage_Checkout_OnepageController
 {
-    public function saveExcellenceAction(){
+    public function saveMissedpromotionsAction(){
         if ($this->_expireAjax()) {
             return;
         }
         if ($this->getRequest()->isPost()) {
-            $data = $this->getRequest()->getPost('excellence', array());
+            $data = $this->getRequest()->getPost('missedpromotions', array());
  
-            $result = $this->getOnepage()->saveExcellence($data);
+            $result = $this->getOnepage()->saveMissedpromotions($data);
  
             if (!isset($result['error'])) {
                 $result['goto_section'] = 'billing';

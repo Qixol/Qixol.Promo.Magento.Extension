@@ -79,7 +79,7 @@
       <path>
          <path/>
          <path>Qixol/Promo</path>
-         <path>frontend/base/default/layout/qixol.xml</path>
+         <path>frontend/base/default/layout/qixol/promo.xml</path>
          <path>frontend/base/default/template/qixol</path>
          <path>adminhtml/default/default/layout/qixol.xml</path>
          <path>adminhtml/default/default/template/qixol</path>

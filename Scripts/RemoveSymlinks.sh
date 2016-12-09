@@ -4,12 +4,14 @@ magentoPath="/var/www/magento"
 
 # app directories and files
 unlink $magentoPath/app/etc/modules/Qixol_Promo.xml
+unlink $magentoPath/app/etc/modules/Qixol_Missedpromotions.xml
 rm -rf $magentoPath/app/code/community/Qixol
 unlink $magentoPath/app/design/adminhtml/default/default/layout/qixol.xml
 rm -rf $magentoPath/app/design/adminhtml/default/default/template/qixol
-unlink $magentoPath/app/design/frontend/base/default/layout/qixol.xml
+rm -rf $magentoPath/app/design/frontend/base/default/layout/qixol
 rm -rf $magentoPath/app/design/frontend/base/default/template/qixol
 rm -rf $magentoPath/app/design/frontend/rwd/default/template/qixol
+rm -rf $magentoPath/app/design/frontend/rwd/default/layout/qixol
 unlink $magentoPath/app/locale/en_US/Qixol_Promo.csv
 
 # media directories and files
@@ -24,6 +26,8 @@ unlink $magentoPath/skin/frontend/base/default/css/qixol.css
 rm -rf $magentoPath/skin/frontend/base/default/qixol
 rm -rf $magentoPath/skin/frontend/base/default/media
 rm -rf $magentoPath/skin/frontend/base/default/js/lib
+rm -rf $magentoPath/skin/frontend/base/default/js/qixol
+rm -rf $magentoPath/skin/frontend/rwd/default/js/qixol
 
 # var directories and files
 rm -rf $magentoPath/var/logs_qixol

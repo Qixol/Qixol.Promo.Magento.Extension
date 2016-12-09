@@ -1,6 +1,14 @@
 <?xml version="1.0"?>   
 <layout version="1.0.1">
-     <default>
+<!--    <default>
+        <reference name="before_body_end">
+            <block type="core/template"
+                name="ken_footer"
+                template="ken/footer.phtml" />
+        </reference>
+    </default>
+-->
+    <default>
         <reference name="head">
             <action method="addItem"><type>skin_css</type><name>css/qixol.css</name></action>
         </reference>
