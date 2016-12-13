@@ -259,16 +259,16 @@
 		<title>Qixol Promo</title>
 		<sort_order>100</sort_order>
 		<children>
-      <banner module="qixol">
-          <title>Banners</title>
-          <sort_order>2</sort_order>
-          <action>qixol_admin/adminhtml_banner</action>
-      </banner>
       <sticker module="qixol">
           <title>Stickers</title>
           <sort_order>1</sort_order>
           <action>qixol_admin/adminhtml_sticker</action>
       </sticker>
+      <banner module="qixol">
+          <title>Banners</title>
+          <sort_order>2</sort_order>
+          <action>qixol_admin/adminhtml_banner</action>
+      </banner>
       <bannerboxes module="qixol">
           <title>Banner Position</title>
           <sort_order>3</sort_order>
@@ -335,7 +335,7 @@
 	<layout>
 	  <updates>
 		<qixol>
-		  <file>qixol_promo.xml</file>
+		  <file>qixol/promo/promo.xml</file>
 		</qixol>
 	  </updates>
 	</layout>

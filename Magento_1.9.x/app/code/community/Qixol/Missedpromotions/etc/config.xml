@@ -28,19 +28,19 @@
  
   <frontend>  
     <routers>
-      <qixol>
+      <qixol_missedpromotions>
           <use>standard</use>
           <args>
-              <module>Qixol_Promo</module>
-              <frontName>qixol</frontName>
+              <module>Qixol_Missedpromotions</module>
+              <frontName>qixol_missedpromotions</frontName>
           </args>
-      </qixol>
+      </qixol_missedpromotions>
     </routers>
     <layout>
       <updates>
-      <qixol>
+      <qixol_missedpromotions>
         <file>qixol/missedpromotions/checkout.xml</file>
-      </qixol>
+      </qixol_missedpromotions>
       </updates>
     </layout>
   </frontend>

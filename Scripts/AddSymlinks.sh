@@ -19,7 +19,7 @@ fi
 # app directories and files
 ln -s $1/app/etc/modules/Qixol_Promo.xml $2/app/etc/modules/Qixol_Promo.xml
 ln -s $1/app/code/community/Qixol $2/app/code/community/
-ln -s $1/app/design/adminhtml/default/default/layout/qixol.xml $2/app/design/adminhtml/default/default/layout/qixol.xml
+ln -s $1/app/design/adminhtml/default/default/layout/qixol $2/app/design/adminhtml/default/default/layout/
 ln -s $1/app/design/adminhtml/default/default/template/qixol $2/app/design/adminhtml/default/default/template/
 ln -s $1/app/design/frontend/base/default/layout/qixol $2/app/design/frontend/base/default/layout/qixol
 ln -s $1/app/design/frontend/base/default/template/qixol $2/app/design/frontend/base/default/template/

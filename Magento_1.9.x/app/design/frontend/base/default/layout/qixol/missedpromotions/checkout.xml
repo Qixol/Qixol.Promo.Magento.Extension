@@ -19,12 +19,14 @@
         </reference>
         <reference name='checkout.progress'>
               <action method='setTemplate'><template>/qixol/missedpromotions/checkout/onepage/progress.phtml</template></action>
+              <block type="qixol_missedpromotions/checkout_onepage_progress" name="missedpromotions.progress" template="qixol/missedpromotions/checkout/onepage/progress/missedpromotions.phtml"></block>
         </reference>
     </checkout_onepage_index>
     
     <checkout_onepage_progress>
         <reference name='root'>
             <action method='setTemplate'><template>/qixol/missedpromotions/checkout/onepage/progress.phtml</template></action>
+              <block type="qixol_missedpromotions/checkout_onepage_progress" name="missedpromotions.progress" template="qixol/missedpromotions/checkout/onepage/progress/missedpromotions.phtml"></block>
         </reference>
     </checkout_onepage_progress>
 

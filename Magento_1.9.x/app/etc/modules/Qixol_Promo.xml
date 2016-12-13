@@ -2,7 +2,7 @@
 <config>
   <modules>
     <Qixol_Promo>
-      <active>false</active>
+      <active>true</active>
       <codePool>community</codePool>
       <version>1.0.1</version>
     </Qixol_Promo>

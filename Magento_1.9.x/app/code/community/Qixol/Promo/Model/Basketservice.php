@@ -33,10 +33,10 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
 
     function run_processOrder($cart){
         global $_SESSION;
-        return $this->run_ValidateBasket($cart,true);// set true to confirm cart(process cart)
+        return $this->run_ValidateBasket($cart, false, true);// set true to confirm cart(process cart)
     }
 
-    function run_ValidateBasket($cart, $set_confirmed = false, $get_missed_promotions = true)
+    function run_ValidateBasket($cart, $get_missed_promotions = false, $set_confirmed = false)
     {
         global $_SESSION;
         $_SESSION['inside_request']=time();

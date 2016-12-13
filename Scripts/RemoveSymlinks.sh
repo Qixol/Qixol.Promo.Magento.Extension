@@ -6,7 +6,7 @@ magentoPath="/var/www/magento"
 unlink $magentoPath/app/etc/modules/Qixol_Promo.xml
 unlink $magentoPath/app/etc/modules/Qixol_Missedpromotions.xml
 rm -rf $magentoPath/app/code/community/Qixol
-unlink $magentoPath/app/design/adminhtml/default/default/layout/qixol.xml
+rm -rf $magentoPath/app/design/adminhtml/default/default/layout/qixol
 rm -rf $magentoPath/app/design/adminhtml/default/default/template/qixol
 rm -rf $magentoPath/app/design/frontend/base/default/layout/qixol
 rm -rf $magentoPath/app/design/frontend/base/default/template/qixol

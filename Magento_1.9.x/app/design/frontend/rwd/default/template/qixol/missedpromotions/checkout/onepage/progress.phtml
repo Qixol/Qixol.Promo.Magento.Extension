@@ -10,6 +10,10 @@
             <div id="missedpromotions-progress-opcheckout">
                 <?php echo $this->getChildHtml('missedpromotions.progress') ?>
             </div>
+            <?php else: ?>
+                <dt>
+                    <?php echo $this->__('Missed Promotions - is_show not set') ?>
+                </dt>
             <?php endif; ?>
 
             <?php if ($this->getCheckout()->getStepData('billing', 'is_show')): ?>

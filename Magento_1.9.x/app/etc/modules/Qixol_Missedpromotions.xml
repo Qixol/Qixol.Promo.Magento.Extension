@@ -2,9 +2,9 @@
 <config>
   <modules>
     <Qixol_Missedpromotions>
-<!--        <depends>
+        <depends>
             <Qixol_Promo/>
-        </depends>-->
+        </depends>
       <active>true</active>
       <codePool>community</codePool>
       <version>1.0.0</version>

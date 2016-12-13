@@ -15,6 +15,7 @@ class Qixol_Missedpromotions_Model_Checkout_Type_Onepage extends Mage_Checkout_M
         }
 
         $checkout->setStepData('missedpromotions', 'allow', true);
+        $checkout->setStepData('missedpromotions', 'is_show', true);
 
         /*
         * want to laod the correct customer information by assiging to address
