@@ -4,7 +4,7 @@
         <?php $missedPromotions = $this->getMissedPromotions(); ?>
         <?php foreach ($missedPromotions as $missedPromotion)
         {
-          echo $missedPromotion;  
+          echo $missedPromotion['name'] . ': ' . $missedPromotion['type'] . ': ' . $missedPromotion['displaytext'] . '<br />';  
         }
         ?>
     <li id="missedpromotions-form">

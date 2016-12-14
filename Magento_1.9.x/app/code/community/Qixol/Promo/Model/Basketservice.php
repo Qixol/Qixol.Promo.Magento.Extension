@@ -248,15 +248,15 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
 
     function parseBasketXml($basketResponseXml, $cart)
     {
-        $xml_object = simplexml_load_string($basketResponseXml);
-        if (!$xml_object)
+        $basketResponseXml = simplexml_load_string($basketResponseXml);
+        if (!$basketResponseXml)
         {
             return false;
         }
 
         $basketResponse = [];
         
-        $attributes_cart = $xml_object->attributes();
+        $attributes_cart = $basketResponseXml->attributes();
         $basketResponse['cart_data'] = [];
         $basketResponse['cart_data']['id']=(isset($attributes_cart['id'])?(string)$attributes_cart['id']:0);
         $basketResponse['cart_data']['manualdiscount']=(isset($attributes_cart['manualdiscount'])?(float)$attributes_cart['manualdiscount']:0);
@@ -271,37 +271,21 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
         $basketResponse['cart_data']['deliverytotaldiscount']=(isset($attributes_cart['deliverytotaldiscount'])?(float)$attributes_cart['deliverytotaldiscount']:0);
         $basketResponse['cart_data']['deliveryoriginalprice']=(isset($attributes_cart['deliveryoriginalprice'])?(float)$attributes_cart['deliveryoriginalprice']:0);
 
-
-        if ($xml_object instanceof SimpleXMLElement)
+        if ($basketResponseXml instanceof SimpleXMLElement)
         {
-            foreach ($xml_object as $xml_root_key=>$xml_object_sub)
-            {
-                switch ($xml_root_key)
-                {
-                    case 'items':
-                        $basketResponse['items'] = $this->parseBasketItemsXml($xml_object_sub, $cart);
-                        break;
-                    case 'coupons':
-                        $basketResponse['coupons'] = $this->parseBasketCouponsXml($xml_object_sub);
-                        break;
-                    case 'summary':
-                        $basketResponse['summary'] = $this->parseBasketSummaryXml($xml_object_sub);
-                        break;
-                    case 'missedpromotions':
-                        $basketResponse['missedpromotions'] = $this->parseBasketMissedPromotionsXml($xml_object_sub);
-                        break;
-                       
-                }
-            }
+            $basketResponse['items'] = $this->parseBasketItemsXml($basketResponseXml->items, $cart);
+            $basketResponse['coupons'] = $this->parseBasketCouponsXml($basketResponseXml->coupons);
+            $basketResponse['summary'] = $this->parseBasketSummaryXml($basketResponseXml->summary);
+            $basketResponse['missedpromotions'] = $this->parseBasketMissedPromotionsXml($basketResponseXml->missedpromotions, $cart);
         }
         
         return $basketResponse;
     }
 
-    function parseBasketItemsXml($xml_object_sub, $cart)
+    function parseBasketItemsXml($itemsXml, $cart)
     {
         $basketResponseItems = [];
-        foreach ($xml_object_sub as $item_key=>$xml_items_sub)
+        foreach ($itemsXml->item as $xml_items_sub)
         {
             $item_attributes=$xml_items_sub->attributes();
 
@@ -347,7 +331,7 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
                     $basketResponseItems[(int)$item_attributes['id']]['updated_qty']=false;
                     $basketResponseItems[(int)$item_attributes['id']]['updated_price']=false;
                     $product_updated=false;
-                    //echo "/".$cart_item->getProductType()."||".(string)$item_attributes['productcode']."==".$product_search_tmp_sku."+".(string)$item_attributes['variantcode']."==".$cart_item->getSku()."||";
+
                     if ((!$cart_item->isDeleted() && !$cart_item->getParentItemId()/*check is visible*/)&&($cart_item->getProductType()=='configurable'&&(string)$item_attributes['productcode']==$product_search_tmp_sku&&(string)$item_attributes['variantcode']==$cart_item->getSku()) 
                                 || ((string)$item_attributes['variantcode']==''&&(string)$item_attributes['productcode']==$cart_item->getSku()))
                     {
@@ -428,29 +412,23 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
                     $is_splitted_line=true;
                 }
             }
-            foreach ($xml_items_sub as $item_tag_key=>$xml_item_sub)
+            $basketResponseItems[(int)$item_attributes['id']]['promotions']=array();
+            foreach ($xml_items_sub->promotions->promotion as $promotion)
             {
-                if($item_tag_key=='promotions')
-                {
-                    $basketResponseItems[(int)$item_attributes['id']]['promotions']=array();
-                    foreach ($xml_item_sub as $promotion_id=>$promotion)
-                    {
-                        $promotion_attributes=$promotion->attributes();
-                        $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]=array();
-                        //print_r($promotion_attributes);
-                        $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['id']=(int)$promotion_attributes['id'];
+                $promotion_attributes=$promotion->attributes();
+                $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]=array();
+                //print_r($promotion_attributes);
+                $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['id']=(int)$promotion_attributes['id'];
 
-                        //$basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['id']=(isset($promotion_attributes['discountamount'])?(float)$promotion_attributes['discountamount']:0);
-                        $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['instance']=(isset($promotion_attributes['instance'])?(int)$promotion_attributes['instance']:0);
-                        $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['basketlevel']=(isset($promotion_attributes['basketlevel'])&&strtolower($promotion_attributes['basketlevel'])=='true'?(true):false);
-                        $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['discountamount']=(isset($promotion_attributes['discountamount'])?(float)$promotion_attributes['discountamount']:0);
-                        if ($is_splitted_line)
-                        { //check is promotion exists in main linea
-                            if (!isset($basketResponseItems[(int)$item_attributes['splitfromlineid']]['promotions'][(int)$promotion_attributes['id']]))
-                            {
-                                $basketResponseItems[(int)$item_attributes['splitfromlineid']]['promotions'][(int)$promotion_attributes['id']]=$basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']];        
-                            }
-                        }
+                //$basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['id']=(isset($promotion_attributes['discountamount'])?(float)$promotion_attributes['discountamount']:0);
+                $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['instance']=(isset($promotion_attributes['instance'])?(int)$promotion_attributes['instance']:0);
+                $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['basketlevel']=(isset($promotion_attributes['basketlevel'])&&strtolower($promotion_attributes['basketlevel'])=='true'?(true):false);
+                $basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']]['discountamount']=(isset($promotion_attributes['discountamount'])?(float)$promotion_attributes['discountamount']:0);
+                if ($is_splitted_line)
+                { //check is promotion exists in main linea
+                    if (!isset($basketResponseItems[(int)$item_attributes['splitfromlineid']]['promotions'][(int)$promotion_attributes['id']]))
+                    {
+                        $basketResponseItems[(int)$item_attributes['splitfromlineid']]['promotions'][(int)$promotion_attributes['id']]=$basketResponseItems[(int)$item_attributes['id']]['promotions'][(int)$promotion_attributes['id']];        
                     }
                 }
             }
@@ -459,11 +437,11 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
         return $basketResponseItems;
     }
 
-    function parseBasketCouponsXml($xml_object_sub)
+    function parseBasketCouponsXml($couponsXml)
     {
         $basketResponseCoupons = [];
 
-        foreach ($xml_object_sub as $item_key=>$xml_items_sub)
+        foreach ($couponsXml->coupon as $item_key=>$xml_items_sub)
         {
             if ($item_key=='coupon')
             {
@@ -525,56 +503,81 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
         return $basketResponseCoupons;
     }
 
-    function parseBasketSummaryXml($xml_object_sub)
+    function parseBasketSummaryXml($basketSummaryXml)
     {
         $basketResponseSummary = [];
-        foreach ($xml_object_sub as $item_key=>$xml_items_sub)
-        {
-            if ($item_key=='promotions')
-            {
-                foreach ($xml_items_sub as $item_1_key=>$xml_item_promotion)
-                {
 
-                    $promotion_attributes=$xml_item_promotion->attributes();
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['type']=(string)$promotion_attributes['type'];
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['display']=(string)$promotion_attributes['display'];
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['display_text']=(isset($xml_item_promotion->displaytext)?(string)$xml_item_promotion->displaytext:'');
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['discountamount']=(isset($promotion_attributes['discountamount'])?(float)$promotion_attributes['discountamount']:0);
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['basketlevel']=(isset($promotion_attributes['basketlevel'])&&strtolower($promotion_attributes['basketlevel'])=='true'?(true):false);
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['deliverylevel']=(isset($promotion_attributes['deliverylevel'])&&strtolower($promotion_attributes['deliverylevel'])=='true'?(true):false);
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['issuedpoints']=(isset($promotion_attributes['issuedpoints'])?((int)$promotion_attributes['issuedpoints']):0);
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['issuedcoupon']=(isset($promotion_attributes['issuedcoupon'])&&strtolower($promotion_attributes['issuedcoupon'])=='true'?(true):false);
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['unpublished']=(isset($promotion_attributes['unpublished'])&&strtolower($promotion_attributes['unpublished'])=='true'?(true):false);
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['issuedproduct']=(isset($promotion_attributes['issuedproduct'])&&strtolower($promotion_attributes['issuedproduct'])=='true'?(true):false);
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['description']=(isset($xml_item_promotion->description)?(string)$xml_item_promotion->description:'');
-                    $basketResponseSummary[(int)$promotion_attributes['id']]['data']['name']=(isset($xml_item_promotion->name)?(string)$xml_item_promotion->name:'');
-                }
-            }
-            elseif($item_key=='messages')
-            {
-                // TODO - ???
-                $new_cart_structure['messages'] = array();
-            }
+        foreach ($basketSummaryXml->promotions->promotion as $promotion)
+        {
+            $promotion_attributes = $promotion->attributes();
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['type'] = (string)$promotion_attributes['type'];
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['display'] = (string)$promotion_attributes['display'];
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['display_text']=(isset($promotion->displaytext)?(string)$promotion->displaytext:'');
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['discountamount']=(isset($promotion_attributes['discountamount'])?(float)$promotion_attributes['discountamount']:0);
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['basketlevel']=(isset($promotion_attributes['basketlevel'])&&strtolower($promotion_attributes['basketlevel'])=='true'?(true):false);
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['deliverylevel']=(isset($promotion_attributes['deliverylevel'])&&strtolower($promotion_attributes['deliverylevel'])=='true'?(true):false);
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['issuedpoints']=(isset($promotion_attributes['issuedpoints'])?((int)$promotion_attributes['issuedpoints']):0);
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['issuedcoupon']=(isset($promotion_attributes['issuedcoupon'])&&strtolower($promotion_attributes['issuedcoupon'])=='true'?(true):false);
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['unpublished']=(isset($promotion_attributes['unpublished'])&&strtolower($promotion_attributes['unpublished'])=='true'?(true):false);
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['issuedproduct']=(isset($promotion_attributes['issuedproduct'])&&strtolower($promotion_attributes['issuedproduct'])=='true'?(true):false);
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['description']=(isset($promotion->description)?(string)$promotion->description:'');
+            $basketResponseSummary[(int)$promotion_attributes['id']]['data']['name']=(isset($promotion->name)?(string)$promotion->name:'');
         }
+            
+//        foreach ($basketSummaryXml->messages as $message)
+//        {
+//            // TODO - ???
+//            $new_cart_structure['messages'] = array();
+//        }
         
         return $basketResponseSummary;
     }
 
-    function parseBasketMissedPromotionsXml($xml_object_sub)
+    function parseBasketMissedPromotionsXml($missedPromotions, $cart)
     {
         $basketResponseMissedPromotions = [];
-        foreach ($xml_object_sub as $item_key=>$xml_items_sub)
+        foreach ($missedPromotions->promotion as $promotion)
         {
-            if ($item_key == "promotion")
+            $promotion_attributes = $promotion->attributes();
+            $promotion_type = (string)$promotion_attributes['type'];
+            $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['name'] = (isset($promotion->name) ? (string)$promotion->name : '');
+            $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['type'] = $promotion_type;
+            $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['display'] = (string)$promotion_attributes['display'];
+            $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['displaytext'] = (isset($promotion->displaytext) ? (string)$promotion->displaytext : '');
+            $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['matcheditems'] = [];
+            $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['missingproducts'] = [];
+            
+            foreach($promotion->criteria->criteriaitems as $criteriaitems)
             {
-                $promotion_attributes = $xml_items_sub->attributes();
-                $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['name'] = (isset($xml_items_sub->name) ? (string)$xml_items_sub->name : '');
-                //$basketResponseMissedPromotions[(int)$promotion_attributes['id']]['name'] = (string)$xml_items_sub['name'];
-                //$basketResponseMissedPromotions[(int)$promotion_attributes['id']]['name'] = (string)$xml_items_sub['name'];
-                $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['type'] = (string)$promotion_attributes['type'];
+                $$criteriaitems_attributes = $criteriaitems->attributes();
+                $fullymatched = (bool)$$criteriaitems_attributes['fullymatched'];
+                if ($fullymatched)
+                {
+                    // find matched cart items
+                    foreach($criteriaitems_attributes->criteriaitem as $criteriumitem)
+                    {
+                        foreach($criteriumitem->matcheditems->item as $item)
+                        {
+                            $basketResponseMissedPromotions[(int)$promotion_attributes['id']]['matcheditems'][] = $this->getMatchedCartItems($item, $cart);
+                        }
+                    }
+                }
+                else
+                {
+                    // find matched cart items (if matched) and missing items (whether matched or !matched)
+                }
             }
         }
         
         return $basketResponseMissedPromotions;
+    }
+    
+    private function getMatchedCartItems($item, $cart)
+    {
+        $matchedCartItems = [];
+        
+        
+        
+        return $matchedCartItems;
     }
 }

@@ -37,6 +37,6 @@ class Qixol_Missedpromotions_Block_Checkout_Onepage_MissedPromotions extends Mag
             $qixol_quoted_items['cart_session_id'] = $_SESSION['qixol_quoted_items']['cart_session_id'];
         }
         
-        return $qixol_quoted_items['cart_session_id']['misedpromotions'];
+        return $qixol_quoted_items['missedpromotions'];
     }
 }
