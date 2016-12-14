@@ -169,50 +169,93 @@ if ((int)Mage::getStoreConfig('qixol/frontend/cartjavascr')==0&&($_SESSION['qixo
 <?php
 //{{qixol start wrap block
 
-if (isset($_SESSION['qixol_quoted_items'])){
-foreach ($_SESSION['qixol_quoted_items']['items']  as $idx_cart=>$item_to_show){
-    if ($item_to_show['new']>0&&(int)$item_to_show['data']['isdelivery']==0&&(int)$item_to_show['data']['splitfromlineid']==0){
-          if ($productId=Mage::getModel('catalog/product')->getIdBySku((string)$item_to_show['data']['variantcode']!=''?(string)$item_to_show['data']['variantcode']:(string)$item_to_show['data']['productcode'])){
+if (isset($_SESSION['qixol_quoted_items']))
+{
+    foreach ($_SESSION['qixol_quoted_items']['items']  as $idx_cart=>$item_to_show){
+        if ($item_to_show['new']>0&&(int)$item_to_show['data']['isdelivery']==0&&(int)$item_to_show['data']['splitfromlineid']==0){
+              if ($productId=Mage::getModel('catalog/product')->getIdBySku((string)$item_to_show['data']['variantcode']!=''?(string)$item_to_show['data']['variantcode']:(string)$item_to_show['data']['productcode'])){
 
-             $productObj = Mage::getModel('catalog/product')->load($productId);
-             $quoteItem = Mage::getModel('sales/quote_item')->setStoreId(Mage::app()->getStore()->getId())->setProduct($productObj);
-             $quoteItem->setConvertedPrice((string)$item_to_show['data']['price']);
-             $quoteItem->setRowTotal((string)$item_to_show['data']['price']);
-             $quoteItem->setBaseRowTotal((string)$item_to_show['data']['price']);
-             $quoteItem->setQty((string)$item_to_show['data']['quantity']);
-             $quoteItem->setFreeProduct((int)$item_to_show['free_added']);
-             $quoteItem->setQuote($this);
-             $quoteItem->setId($idx_cart);
-             echo $this->getItemHtml($quoteItem);
-          }
+                 $productObj = Mage::getModel('catalog/product')->load($productId);
+                 $quoteItem = Mage::getModel('sales/quote_item')->setStoreId(Mage::app()->getStore()->getId())->setProduct($productObj);
+                 $quoteItem->setConvertedPrice((string)$item_to_show['data']['price']);
+                 $quoteItem->setRowTotal((string)$item_to_show['data']['price']);
+                 $quoteItem->setBaseRowTotal((string)$item_to_show['data']['price']);
+                 $quoteItem->setQty((string)$item_to_show['data']['quantity']);
+                 $quoteItem->setFreeProduct((int)$item_to_show['free_added']);
+                 $quoteItem->setQuote($this);
+                 $quoteItem->setId($idx_cart);
+                 echo $this->getItemHtml($quoteItem);
+              }
+        }
+    }
+
+    if (isset($_SESSION['qixol_quoted_items']['coupons']))
+    {
+        foreach($_SESSION['qixol_quoted_items']['coupons'] as $couponCode => $issuedCoupon)
+        {
+        ?>
+            <tr class='promotion_cart_inline_box'>
+                <td class="product-cart-image">&nbsp;</td>
+                <td class="product-cart-info" colspan='5'>
+                    <?php echo $issuedCoupon['displaytext']; ?>
+                </td>
+            </tr>
+        <?php
+        }
+    }
+    if (isset($_SESSION['qixol_quoted_items']['summary']))
+    {
+        foreach ($_SESSION['qixol_quoted_items']['summary']  as $inline_cart_promotion)
+        {
+            switch ($inline_cart_promotion['data']['type'])
+            {
+                case 'ISSUEPOINTS';
+                    ?>
+                    <tr class='promotion_cart_inline_box'>
+                        <td class="product-cart-image">&nbsp;</td>
+                        <td class="product-cart-info" colspan='3'>
+                            <?php echo $inline_cart_promotion['data']['display_text']; ?>
+                        </td>
+                        <td class="product-cart-total" colspan='2'>
+                          <?php echo $inline_cart_promotion['data']['issuedpoints']."&nbsp;pt."; ?>
+                        </td>
+                    </tr>
+                    <?php
+                    break;
+                case 'DELIVERYREDUCTION';
+                    ?>
+                    <tr class='promotion_cart_inline_box'>
+                        <td class="product-cart-image">&nbsp;</td>
+                        <td class="product-cart-info" colspan='3'>
+                            <?php echo $inline_cart_promotion['data']['display_text']; ?>
+                        </td>
+                        <td class="product-cart-total" colspan='2'>
+                            <?php echo $this->helper('checkout')->formatPrice($inline_cart_promotion['data']['discountamount']); ?>
+                        </td>
+                    </tr>
+                    <?php
+                    break;
+                case 'BASKETREDUCTION';
+                    if ($inline_cart_promotion['data']['basketlevel']>0)
+                    {
+                        ?>
+                        <tr class='promotion_cart_inline_box'>
+                            <td class="product-cart-image">&nbsp;</td>
+                            <td class="product-cart-info" colspan='3'>
+                                <?php echo $inline_cart_promotion['data']['display_text']; ?>
+                            </td>
+                            <td class="product-cart-total" colspan='2'>
+                                <?php echo $this->helper('checkout')->formatPrice($inline_cart_promotion['data']['discountamount']); ?>
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                    break;
+            }
+        }
     }
 }
 
-//if (isset($_SESSION['qixol_quoted_items']['summary'])){
-//foreach ($_SESSION['qixol_quoted_items']['summary']  as $inline_cart_promotion)
-//  if($inline_cart_promotion['data']['basketlevel']>0){
-?>
-<!--<tr class='promotion_cart_inline_box'>
-    <td class="product-cart-image">&nbsp;</td>
-    <td class="product-cart-info" colspan='3'><?php //echo $inline_cart_promotion['data']['display_text']; ?></td>
-    <td class="product-cart-total" colspan='2'><?php 
-//switch ($inline_cart_promotion['data']['type']){
-//case 'ISSUEPOINTS';
-//      echo $inline_cart_promotion['data']['issuedpoints']."&nbsp;pt."; 
-//break;
-//case 'DELIVERYREDUCTION';
-//      echo $this->helper('checkout')->formatPrice($inline_cart_promotion['data']['discountamount']); 
-//break;
-//case 'BASKETREDUCTION';
-//      echo $this->helper('checkout')->formatPrice($inline_cart_promotion['data']['discountamount']); 
-//break;
-//}
-?></td>
-</tr>-->
-<?php
-//  }
-//}
-}
 //}} qixol end wrap block
 ?>
             </tbody>

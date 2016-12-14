@@ -617,7 +617,6 @@ class Qixol_Promo_Model_Observer
                     $issued_coupon_model = Mage::getModel('qixol/issuedcoupon');
                     $issued_coupon_model->setCustomerId($customerData_to_work_with->getId());
                     $issued_coupon_model->setCouponCodeValue($_coupons_code);
-                    $issued_coupon_model->setCouponValidTill($tmp_val['validtill']);
                     $issued_coupon_model->setCouponDescription($tmp_val['description']);
                     $issued_coupon_model->setCreatedTime(now());
                     $issued_coupon_model->save();

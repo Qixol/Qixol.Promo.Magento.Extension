@@ -441,63 +441,12 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
     {
         $basketResponseCoupons = [];
 
-        foreach ($couponsXml->coupon as $item_key=>$xml_items_sub)
+        foreach ($couponsXml->coupon as $coupon)
         {
-            if ($item_key=='coupon')
-            {
-                $coupon_attributes=$xml_items_sub->attributes();
-                if (!(strtolower((string)$coupon_attributes['issued'])=='true'))
-                {
-                    if(isset($coupon_attributes['code'])&&(string)$coupon_attributes['code']!='')
-                    {
-                        $basketResponseCoupons[(string)$coupon_attributes['code']]['issued']=false;
-                        $basketResponseCoupons[(string)$coupon_attributes['code']]['code']=(string)$coupon_attributes['code'];
-                        $basketResponseCoupons[(string)$coupon_attributes['code']]['description']=(isset($xml_items_sub->couponname)&&(string)$xml_items_sub->couponname!=''?(string)$xml_items_sub->couponname:(string)$coupon_attributes['code']);
-                    }
-                    else
-                    {
-                        unset($_SESSION['qixol_quoted_items']['coupons'][(string)$coupon_attributes['code']]);
-                    }
-                }
-                else
-                {
-                    //!!!!!!!!!!!!!!! get valid to for coupon
-                    $validtill='0000-00-00 00:00:00';
-
-                    $result = $this->promoService->CouponCodeValidate((string)$coupon_attributes['code']);
-                    if ($result->success)
-                    {
-                        $update_item=false;
-                        $xml_coupon_code_validated = $result->message;
-                        if (strlen($xml_coupon_code_validated)>10)
-                        {
-                            $xml_coupon_object = simplexml_load_string($xml_coupon_code_validated);
-                            foreach ($xml_coupon_object as $xml_coupon_object_root_key=>$xml_coupon_object_object_sub)
-                            {
-                                if ($xml_coupon_object_root_key=='coupon')
-                                {
-                                    foreach ($xml_coupon_object_object_sub as $xml_coupon_object_coupon_key=>$xml_coupon_object_object_coupon)
-                                    {
-                                        if ($xml_coupon_object_coupon_key=='codes')
-                                        {
-                                            foreach ($xml_coupon_object_object_coupon as $xml_coupon_object_object_coupon_obj)
-                                            {
-                                                $xml_coupon_object_object_coupon_attributes=$xml_coupon_object_object_coupon_obj->attributes();
-                                                $validtill=date("Y-m-d H:i:s",strtotime((string)$xml_coupon_object_object_coupon_attributes['validto']));
-                                            }                                            
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    //!!!!!!!!!!!!!!! end valid to for coupon
-                    $basketResponseCoupons[(string)$coupon_attributes['code']]['description']=(string)$xml_items_sub->couponname;//(string)$coupon_attributes['reportingcode']
-                    $basketResponseCoupons[(string)$coupon_attributes['code']]['validtill']=($validtill=='1970-01-01 00:00:00'?"0000-00-00 00:00:00":$validtill);//(string)$coupon_attributes['code']
-                    $basketResponseCoupons[(string)$coupon_attributes['code']]['issued']=true;
-
-                }
-            }
+            $coupon_attributes = $coupon->attributes();
+            $basketResponseCoupons[(string)$coupon_attributes['code']]['description'] = (string)$coupon->couponname;
+            $basketResponseCoupons[(string)$coupon_attributes['code']]['displaytext'] = (string)$coupon->displaytext;
+            $basketResponseCoupons[(string)$coupon_attributes['code']]['issued']=true;
         }
         
         return $basketResponseCoupons;
