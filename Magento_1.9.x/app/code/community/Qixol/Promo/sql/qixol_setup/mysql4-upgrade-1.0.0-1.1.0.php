@@ -4,6 +4,20 @@ $installer = $this;
 $installer->startSetup();
 
 $sql=<<<SQLTEXT
+insert into `core_config_data` (`path`, `value`)
+values ('qixol/promo/useHTTPS', '1')
+ON DUPLICATE KEY UPDATE
+`value` = '1';
+SQLTEXT;
+$installer->run($sql);
+
+$sql=<<<SQLTEXT
+    update qixol_stickers
+    set `filename`  = replace(filename, 'custom/stickers',  'Qixol/Promo/stickers')
+SQLTEXT;
+$installer->run($sql);
+
+$sql=<<<SQLTEXT
 ALTER TABLE {$installer->getTable('qixol_promotions_type')}
     CHANGE `from_date` `from_date` DATETIME NOT NULL DEFAULT '0001-01-01 00:00:00',
     DROP `is_everyday`

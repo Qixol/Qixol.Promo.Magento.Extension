@@ -68,7 +68,7 @@ class Qixol_Promo_Adminhtml_BannerimageController extends Mage_Adminhtml_Control
 
                 $uploader->save($path, $fname);
 
-                $imagedata['filename'] = 'custom/banners/'.$fname;
+                $imagedata['filename'] = 'Qixol/Promo/banners/'.$fname;
             } catch (Exception $e) {
                 Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
                 $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));

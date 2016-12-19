@@ -15,8 +15,7 @@ rm -rf $magentoPath/app/design/frontend/rwd/default/layout/qixol
 unlink $magentoPath/app/locale/en_US/Qixol_Promo.csv
 
 # media directories and files
-# TODO: should this directory be renamed to qixol_promo?
-rm -rf $magentoPath/media/custom
+rm -rf $magentoPath/media/Qixol
 
 # skin directories and files
 unlink $magentoPath/skin/adminhtml/default/default/images/_run.gif

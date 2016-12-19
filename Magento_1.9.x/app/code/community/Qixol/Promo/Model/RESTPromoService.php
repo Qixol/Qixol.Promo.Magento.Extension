@@ -48,8 +48,13 @@ class RESTPromoService extends PromoService implements iPromoService
 
     private function restServiceUrl()
     {
-        $evaluationServicesUrl = 'http://evaluation.qixolpromo.com/';
-        $liveServicesUrl = 'http://evaluation.qixolpromo.com/';
+        $protocol = 'https';
+        if (Mage::getStoreConfig('qixol/promo/useHTTPS') === 0)
+        {
+            $protocol = 'http';
+        }
+        $evaluationServicesUrl = $protocol . '://evaluation.qixolpromo.com/';
+        $liveServicesUrl = $protocol . '://evaluation.qixolpromo.com/';
 
         switch (Mage::getStoreConfig('qixol/integration/services')) {
           case 'evaluation':

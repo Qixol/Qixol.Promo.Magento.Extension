@@ -67,7 +67,7 @@ class Qixol_Promo_Adminhtml_StickerController extends Mage_Adminhtml_Controller_
 
                 $uploader->save($path, $fname);
 
-                $imagedata['filename'] = 'custom/stickers/'.$fname;
+                $imagedata['filename'] = 'Qixol/Promo/stickers/'.$fname;
             } catch (Exception $e) {
                 Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
                 $this->_redirect('*/*/edit', array('id' => $this->getRequest()->getParam('id')));

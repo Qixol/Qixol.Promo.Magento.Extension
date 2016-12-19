@@ -20,7 +20,7 @@ class Qixol_Promo_Block_Sticker extends Mage_Core_Block_Template {
         $mediaDir = Mage::getBaseDir('media');
         $mediaUrl = Mage::getBaseUrl('media');
         $resizeDir = $mediaDir . DS . 'custom' . DS . 'stickers' . DS . 'resize' . DS;
-        $resizeUrl = $mediaUrl.'custom/stickers/resize/';
+        $resizeUrl = $mediaUrl.'Qixol/Promo/stickers/resize/';
         $imageName = basename($bannerDirPath);
 
         if (@file_exists($mediaDir . DS . $bannerDirPath)) {

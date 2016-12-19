@@ -20,7 +20,7 @@ class Qixol_Promo_Block_Banner extends Mage_Core_Block_Template {
         $mediaDir = Mage::getBaseDir('media');
         $mediaUrl = Mage::getBaseUrl('media');
         $resizeDir = $mediaDir . DS . 'custom' . DS . 'banners' . DS . 'resize' . DS;
-        $resizeUrl = $mediaUrl.'custom/banners/resize/';
+        $resizeUrl = $mediaUrl.'Qixol/Promo/banners/resize/';
         $imageName = basename($bannerDirPath);
 
         if (@file_exists($mediaDir . DS . $bannerDirPath)) {

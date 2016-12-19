@@ -6,9 +6,20 @@ require_once('PromoService.php');
 class SOAPPromoService extends PromoService implements iPromoService
 {
 
+    private function protocol()
+    {
+        $protocol = 'https';
+        if (Mage::getStoreConfig('qixol/promo/useHTTPS') === 0)
+        {
+            $protocol = 'http';
+        }
+        
+        return $protocol;
+    }
+    
     private function importServiceUrl() {
-        $evaluationImportServicesUrl = 'http://evaluation.qixolpromo.com/ImportService.svc';
-        $liveImportServicesUrl = 'http://evaluation.qixolpromo.com/ImportService.svc';
+        $evaluationImportServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/ImportService.svc';
+        $liveImportServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/ImportService.svc';
 
         switch (Mage::getStoreConfig('qixol/integration/services')) {
               case 'evaluation':
@@ -28,8 +39,8 @@ class SOAPPromoService extends PromoService implements iPromoService
     }
     
     private function exportServiceUrl() {
-        $evaluationExportServicesUrl = 'http://evaluation.qixolpromo.com/ExportService.svc';
-        $liveExportServicesUrl = 'http://evaluation.qixolpromo.com/ExportService.svc';
+        $evaluationExportServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/ExportService.svc';
+        $liveExportServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/ExportService.svc';
 
         switch (Mage::getStoreConfig('qixol/integration/services')) {
               case 'evaluation':
@@ -50,8 +61,8 @@ class SOAPPromoService extends PromoService implements iPromoService
 
     private function basketServiceUrl() {
 
-        $evaluationBasketServicesUrl = 'http://evaluation.qixolpromo.com/BasketService.svc';
-        $liveBasketServicesUrl = 'http://evaluation.qixolpromo.com/BaskettService.svc';
+        $evaluationBasketServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/BasketService.svc';
+        $liveBasketServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/BaskettService.svc';
 
         switch (Mage::getStoreConfig('qixol/integration/services')) {
           case 'evaluation':

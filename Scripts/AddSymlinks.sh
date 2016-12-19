@@ -28,8 +28,7 @@ ln -s $1/app/design/frontend/rwd/default/layout/qixol $2/app/design/frontend/rwd
 ln -s $1/app/locale/en_US/Qixol_Promo.csv $2/app/locale/en_US/Qixol_Promo.csv
 
 # media directories and files
-# TODO: should this directory be renamed to qixol_promo?
-ln -s $1/media/custom $2/media/
+ln -s $1/media/Qixol $2/media/
 
 # skin directories and files
 ln -s $1/skin/adminhtml/default/default/images/_run.gif $2/skin/adminhtml/default/default/images/_run.gif

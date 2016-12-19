@@ -29,27 +29,100 @@ var MissedPromotionsCheckout = Class.create(Checkout, {
         }
     }
 });
+//
+//MissedPromotionsCheckout.prototype.gotoSection = function (section, reloadProgressBlock) {
+//    // Adds class so that the page can be styled to only show the "Checkout Method" step
+//    if ((this.currentStep == 'login' || this.currentStep == 'missedpromotions') && section == 'missedpromotions') {
+//        $j('body').addClass('opc-has-progressed-from-login');
+//    }
+//
+//    if (reloadProgressBlock) {
+//        this.reloadProgressBlock(this.currentStep);
+//    }
+//    this.currentStep = section;
+//    var sectionElement = $('opc-' + section);
+//    sectionElement.addClassName('allow');
+//    this.accordion.openSection('opc-' + section);
+//
+//    // Scroll viewport to top of checkout steps for smaller viewports
+//    if (Modernizr.mq('(max-width: ' + bp.xsmall + 'px)')) {
+//        $j('html,body').animate({scrollTop: $j('#checkoutSteps').offset().top}, 800);
+//    }
+//
+//    if (!reloadProgressBlock) {
+//        this.resetPreviousSteps();
+//    }
+//}
 
-MissedPromotionsCheckout.prototype.gotoSection = function (section, reloadProgressBlock) {
-    // Adds class so that the page can be styled to only show the "Checkout Method" step
-    if ((this.currentStep == 'login' || this.currentStep == 'missedpromotions') && section == 'missedpromotions') {
-        $j('body').addClass('opc-has-progressed-from-login');
-    }
-
-    if (reloadProgressBlock) {
-        this.reloadProgressBlock(this.currentStep);
-    }
-    this.currentStep = section;
-    var sectionElement = $('opc-' + section);
-    sectionElement.addClassName('allow');
-    this.accordion.openSection('opc-' + section);
-
-    // Scroll viewport to top of checkout steps for smaller viewports
-    if (Modernizr.mq('(max-width: ' + bp.xsmall + 'px)')) {
-        $j('html,body').animate({scrollTop: $j('#checkoutSteps').offset().top}, 800);
-    }
-
-    if (!reloadProgressBlock) {
-        this.resetPreviousSteps();
+var MissedPromotions = Class.create();
+MissedPromotions.prototype = {
+    initialize: function(form, saveUrl){
+        console.log(saveUrl);
+        this.form = form;
+        if ($(this.form)) {
+            $(this.form).observe('submit', function(event){this.save();Event.stop(event);}.bind(this));
+        }
+        this.saveUrl = saveUrl;
+        this.validator = new Validation(this.form);
+        this.onSave = this.nextStep.bindAsEventListener(this);
+        this.onComplete = this.resetLoadWaiting.bindAsEventListener(this);
+    },
+ 
+    validate: function() {
+        if(!this.validator.validate()) {
+            return false;
+        }
+        return true;
+    },
+ 
+    save: function(){
+        console.log('save was clicked');
+        if (checkout.loadWaiting!=false) return;
+        if (this.validate()) {
+            checkout.setLoadWaiting('missedpromotions');
+            var request = new Ajax.Request(
+                this.saveUrl,
+                {
+                    method:'post',
+                    onComplete: this.onComplete,
+                    onSuccess: this.onSave,
+                    onFailure: checkout.ajaxFailure.bind(checkout),
+                    parameters: Form.serialize(this.form)
+                }
+            );
+        }
+    },
+ 
+    resetLoadWaiting: function(transport){
+        checkout.setLoadWaiting(false);
+    },
+ 
+    nextStep: function(transport){
+        if (transport && transport.responseText){
+            try{
+                response = eval('(' + transport.responseText + ')');
+            }
+            catch (e) {
+                response = {};
+            }
+        }
+ 
+        if (response.error) {
+            alert(response.message);
+            return false;
+        }
+ 
+        if (response.update_section) {
+            $('checkout-'+response.update_section.name+'-load').update(response.update_section.html);
+        }
+ 
+ 
+        if (response.goto_section) {
+            checkout.gotoSection(response.goto_section);
+            checkout.reloadProgressBlock();
+            return;
+        }
+ 
+        checkout.setBilling();
     }
 }
