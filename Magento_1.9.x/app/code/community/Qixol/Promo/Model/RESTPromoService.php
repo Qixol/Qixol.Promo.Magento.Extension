@@ -3,9 +3,15 @@
 require_once ('config.php');
 require_once('PromoService.php');
 
+abstract class ServiceType
+{
+    const BASKET_SERVICE = 0;
+    const IMPORT_SERVICE = 1;
+    const EXPORT_SERVICE = 2;   
+}
+
 class RESTPromoService extends PromoService implements iPromoService
 {
-    
     private function callQixolPromoRestService($method, $url, $data = false)
     {
         $curl = curl_init();
@@ -46,15 +52,23 @@ class RESTPromoService extends PromoService implements iPromoService
         return $result;
     }
 
-    private function restServiceUrl()
+    private function restServiceUrl(ServiceType $serviceType)
     {
-        $protocol = 'https';
-        if (Mage::getStoreConfig('qixol/promo/useHTTPS') === 0)
+        $evaluationServicesUrl = 'https://evaluation.qixolpromo.com/';
+        switch ($serviceType)
         {
-            $protocol = 'http';
+            case ServiceType::BASKET_SERVICE:
+                $liveServicesUrl = 'https://basketmanager.qixolpromo.com/';
+                break;
+            case ServiceType::IMPORT_SERVICE:
+                $liveServicesUrl = 'https://datamanager.qixolpromo.com/';
+                break;
+            case ServiceType::EXPORT_SERVICE:
+                $liveServicesUrl = 'https://datamanager.qixolpromo.com/';
+                break;
+            default:
+                break;
         }
-        $evaluationServicesUrl = $protocol . '://evaluation.qixolpromo.com/';
-        $liveServicesUrl = $protocol . '://evaluation.qixolpromo.com/';
 
         switch (Mage::getStoreConfig('qixol/integration/services')) {
           case 'evaluation':

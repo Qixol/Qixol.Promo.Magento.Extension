@@ -6,20 +6,9 @@ require_once('PromoService.php');
 class SOAPPromoService extends PromoService implements iPromoService
 {
 
-    private function protocol()
-    {
-        $protocol = 'https';
-        if (Mage::getStoreConfig('qixol/promo/useHTTPS') === 0)
-        {
-            $protocol = 'http';
-        }
-        
-        return $protocol;
-    }
-    
     private function importServiceUrl() {
-        $evaluationImportServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/ImportService.svc';
-        $liveImportServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/ImportService.svc';
+        $evaluationImportServicesUrl = 'https://evaluation.qixolpromo.com/ImportService.svc';
+        $liveImportServicesUrl = 'https://datamanager.qixolpromo.com/ImportService.svc';
 
         switch (Mage::getStoreConfig('qixol/integration/services')) {
               case 'evaluation':
@@ -39,8 +28,8 @@ class SOAPPromoService extends PromoService implements iPromoService
     }
     
     private function exportServiceUrl() {
-        $evaluationExportServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/ExportService.svc';
-        $liveExportServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/ExportService.svc';
+        $evaluationExportServicesUrl = 'https://evaluation.qixolpromo.com/ExportService.svc';
+        $liveExportServicesUrl = 'https://datamanager.qixolpromo.com/ExportService.svc';
 
         switch (Mage::getStoreConfig('qixol/integration/services')) {
               case 'evaluation':
@@ -61,8 +50,8 @@ class SOAPPromoService extends PromoService implements iPromoService
 
     private function basketServiceUrl() {
 
-        $evaluationBasketServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/BasketService.svc';
-        $liveBasketServicesUrl = $this->protocol() . '://evaluation.qixolpromo.com/BaskettService.svc';
+        $evaluationBasketServicesUrl = 'https://evaluation.qixolpromo.com/BasketService.svc';
+        $liveBasketServicesUrl = 'https://basketmanager.qixolpromo.com/BaskettService.svc';
 
         switch (Mage::getStoreConfig('qixol/integration/services')) {
           case 'evaluation':
@@ -83,8 +72,10 @@ class SOAPPromoService extends PromoService implements iPromoService
     
     function CustomerGroupExport($data)
     {
-        $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                      'location'  => $this->importServiceUrl()));
+        $importServiceUrl = $this->importServiceUrl();
+        $importServiceUrlWsdlRequest = $importServiceUrl . '?singleWsdl';
+        $soapclient = new soapclient($importServiceUrlWsdlRequest, array(  'trace'     => 1,
+                                                                                      'location'  => $importServiceUrl));
         $types_array = $soapclient->__getTypes();
         $functions_array = $soapclient->__getFunctions();
 
@@ -102,8 +93,10 @@ class SOAPPromoService extends PromoService implements iPromoService
     
     function ShippingMethodsExport($data)
     {
-        $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                      'location'  => $this->importServiceUrl()));
+        $importServiceUrl = $this->importServiceUrl();
+        $importServiceUrlWsdlRequest = $importServiceUrl . '?singleWsdl';
+        $soapclient = new soapclient($mportServiceUrlWsdlRequest, array(  'trace'     => 1,
+                                                                                      'location'  => $importServiceUrl));
         $types_array = $soapclient->__getTypes();
         $functions_array = $soapclient->__getFunctions();
         try {
@@ -120,8 +113,10 @@ class SOAPPromoService extends PromoService implements iPromoService
 
     function CurrenciesExport($data)
     {
-        $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                      'location'  => $this->importServiceUrl()));
+        $importServiceUrl = $this->importServiceUrl();
+        $importServiceUrlWsdlRequest = $importServiceUrl . '?singleWsdl';
+        $soapclient = new soapclient($importServiceUrlWsdlRequest, array(  'trace'     => 1,
+                                                                                      'location'  => $importServiceUrl));
         $types_array = $soapclient->__getTypes();
         $functions_array = $soapclient->__getFunctions();
         try {
@@ -138,8 +133,10 @@ class SOAPPromoService extends PromoService implements iPromoService
 
     function StoresExport($data)
     {
-        $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                      'location'  => $this->importServiceUrl()));
+        $importServiceUrl = $this->importServiceUrl();
+        $importServiceUrlWsdlRequest = $importServiceUrl . '?singleWsdl';
+        $soapclient = new soapclient($importServiceUrlWsdlRequest, array(  'trace'     => 1,
+                                                                                      'location'  => $importServiceUrl));
         $types_array = $soapclient->__getTypes();
         $functions_array = $soapclient->__getFunctions();
         try {
@@ -157,8 +154,10 @@ class SOAPPromoService extends PromoService implements iPromoService
     
     function ProductsExport($data)
     {
-        $soapclient = new soapclient($this->importServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                                            'location'  => $this->importServiceUrl()));
+        $importServiceUrl = $this->importServiceUrl();
+        $importServiceUrlWsdlRequest = $importServiceUrl . '?singleWsdl';
+        $soapclient = new soapclient($importServiceUrlWsdlRequest, array(  'trace'     => 1,
+                                                                                            'location'  => $importServiceUrl));
         $types_array = $soapclient->__getTypes();
         $functions_array = $soapclient->__getFunctions();
             try {
@@ -175,8 +174,10 @@ class SOAPPromoService extends PromoService implements iPromoService
     
     public function PromotionsForProducts($data)
     {
-        $soapclient = new soapclient($this->exportServiceUrl().'?singleWsdl', array(    'trace'     => 1,
-                                                                                        'location'  => $this->exportServiceUrl()));
+        $exportServiceUrl = $this->exportServiceUrl();
+        $exportServiceUrlWsdlRequest = $exportServiceUrl . '?singleWsdl';
+        $soapclient = new soapclient($exportServiceUrlWsdlRequest, array(    'trace'     => 1,
+                                                                                        'location'  => $exportServiceUrl));
         try {
             $result = $soapclient->__soapCall('RetrievePromotionsForProducts', array('RetrievePromotionsForProducts' => array('xmlExportRequest' => $data)));
             $returnValue->message = $result->RetrievePromotionsForProductsResult;
@@ -191,8 +192,10 @@ class SOAPPromoService extends PromoService implements iPromoService
 
     public function PromotionsForBaskets($data)
     {
-        $soapclient = new soapclient($this->exportServiceUrl().'?singleWsdl', array(  'trace'     => 1,
-                                                                              'location'  => $this->exportServiceUrl()));
+        $exportServiceUrl = $this->exportServiceUrl();
+        $exportServiceUrlWsdlRequest = $exportServiceUrl . '?singleWsdl';
+        $soapclient = new soapclient($exportServiceUrlWsdlRequest, array(  'trace'     => 1,
+                                                                              'location'  => $exportServiceUrl));
 
         try
         {
@@ -218,8 +221,10 @@ class SOAPPromoService extends PromoService implements iPromoService
     
     public function BasketValidate($data)
     {
-        $soapclient = new soapclient($this->basketServiceUrl().'?singleWsdl', array(    'trace' => 1,
-                                                                          'location' => $this->basketServiceUrl()));
+        $basketServiceUrl = $this->basketServiceUrl();
+        $basketServiceUrlWsdlRequest = $basketServiceUrl . '?singleWsdl';
+        $soapclient = new soapclient($basketServiceUrlWsdlRequest, array(    'trace' => 1,
+                                                                          'location' => $basketServiceUrl));
 
         try
         {
@@ -242,8 +247,10 @@ class SOAPPromoService extends PromoService implements iPromoService
 
     public function CouponCodeValidate($couponCode)
     {
-        $soapclient_coupon = new soapclient($this->basketServiceUrl().'?singleWsdl', array( 'trace'     => 1,
-                                                                                'location'  => $this->basketServiceUrl()));
+        $basketServiceUrl = $this->basketServiceUrl();
+        $basketServiceUrlWsdlRequest = $basketServiceUrl . '?singleWsdl';
+        $soapclient_coupon = new soapclient($basketServiceUrlWsdlRequest, array( 'trace'     => 1,
+                                                                                'location'  => $basketServiceUrl));
         
         try
         {

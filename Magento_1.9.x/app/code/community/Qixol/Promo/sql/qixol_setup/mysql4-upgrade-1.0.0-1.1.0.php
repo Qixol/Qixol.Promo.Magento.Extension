@@ -4,14 +4,6 @@ $installer = $this;
 $installer->startSetup();
 
 $sql=<<<SQLTEXT
-insert into `core_config_data` (`path`, `value`)
-values ('qixol/promo/useHTTPS', '1')
-ON DUPLICATE KEY UPDATE
-`value` = '1';
-SQLTEXT;
-$installer->run($sql);
-
-$sql=<<<SQLTEXT
     update qixol_stickers
     set `filename`  = replace(filename, 'custom/stickers',  'Qixol/Promo/stickers')
 SQLTEXT;

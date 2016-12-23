@@ -62,17 +62,6 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </serviceProtocol>
-                        <useHTTPS>
-                            <label>Use HTTPS [strongly recommended]</label>
-                            <comment>Use HTTPS</comment>
-                            <frontend_type>select</frontend_type>
-                            <config_path>qixol/promo/useHTTPS</config_path>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>35</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>0</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </useHTTPS>
                         <restServiceAddress translate="label comment">
                             <label>REST Service Address</label>
                             <comment>REST Service Address</comment>

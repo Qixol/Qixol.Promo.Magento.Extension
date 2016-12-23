@@ -2,12 +2,7 @@
 $installer = $this;
 
 $installer->startSetup();
-
-$sql=<<<SQLTEXT
-insert into `core_config_data` (`path`, `value`) values ('qixol/promo/useHTTPS', '1');
-SQLTEXT;
-$installer->run($sql);
-        
+       
 $sql=<<<SQLTEXT
 create table {$installer->getTable('qixol_product_to_delete')}(
  entity_id int unsigned not null default 0,

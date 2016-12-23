@@ -246,9 +246,9 @@ class Qixol_Promo_Model_Basketservice extends Mage_Core_Model_Abstract
         }
     }
 
-    function parseBasketXml($basketResponseXml, $cart)
+    function parseBasketXml($basketResponseXmlString, $cart)
     {
-        $basketResponseXml = simplexml_load_string($basketResponseXml);
+        $basketResponseXml = simplexml_load_string($basketResponseXmlString);
         if (!$basketResponseXml)
         {
             return false;
